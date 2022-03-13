@@ -17,5 +17,13 @@ namespace diplom.Data
         }
 
         public DbSet<diplom.Models.Company> Company { get; set; }
+
+        public DbSet<diplom.Models.Country> Countries { get; set; }
+
+        public DbSet<diplom.Models.Exchange> Exchanges { get; set; }
+
+        public DbSet<diplom.Models.Sector> Sectors { get; set; }
+
+        public DbSet<diplom.Models.Share> Shares { get; set; }
     }
 }

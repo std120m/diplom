@@ -9,6 +9,8 @@ builder.Services.AddDbContext<diplomContext>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddInvestApiClient((_, settings) => settings.AccessToken = builder.Configuration["API:token"]);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
