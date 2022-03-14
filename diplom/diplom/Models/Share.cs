@@ -19,10 +19,14 @@ namespace diplom.Models
         public Country? Country { get; set; }
         public Sector? Sector { get; set; }
         public ShareType ShareType { get; set; }
+        public ICollection<Candle> Candles { get; set; }
 
-        public Share() { }
+        public Share() 
+        {
+            Candles = new List<Candle>();
+        }
 
-        public Share(string? figi, string? ticker, string? classCode, string? currency, string? name, Exchange? exchange, DateTime? ipoDate, long? issueSize, long? issuePlanSize, Country? country, Sector? sector, ShareType shareType)
+        public Share(string? figi, string? ticker, string? classCode, string? currency, string? name, Exchange? exchange, DateTime? ipoDate, long? issueSize, long? issuePlanSize, Country? country, Sector? sector, ShareType shareType) : this()
         {
             Figi = figi;
             Ticker = ticker;
@@ -38,7 +42,7 @@ namespace diplom.Models
             ShareType = shareType;
         }
 
-        public Share(ApiShare apiShare)
+        public Share(ApiShare apiShare):this()
         {
             this.Update(apiShare);
         }

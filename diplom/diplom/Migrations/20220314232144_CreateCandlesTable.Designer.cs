@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using diplom.Data;
 
@@ -10,9 +11,10 @@ using diplom.Data;
 namespace diplom.Migrations
 {
     [DbContext(typeof(diplomContext))]
-    partial class diplomContextModelSnapshot : ModelSnapshot
+    [Migration("20220314232144_CreateCandlesTable")]
+    partial class CreateCandlesTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

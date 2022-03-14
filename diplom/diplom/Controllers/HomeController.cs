@@ -1,4 +1,5 @@
 ﻿using diplom.Models;
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using Tinkoff.InvestApi;

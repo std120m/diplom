@@ -11,7 +11,10 @@ using diplom.Models;
 using Tinkoff.InvestApi.V1;
 using Tinkoff.InvestApi;
 using ApiShare = Tinkoff.InvestApi.V1.Share;
+using ApiCandle = Tinkoff.InvestApi.V1.HistoricCandle;
 using Share = diplom.Models.Share;
+using Candle = diplom.Models.Candle;
+using Google.Protobuf.WellKnownTypes;
 
 namespace diplom.Controllers
 {
@@ -19,11 +22,13 @@ namespace diplom.Controllers
     {
         private readonly diplomContext _context;
         private readonly InvestApiClient _investApi;
+        private readonly IConfiguration _configuration;
 
-        public SharesController(diplomContext context, InvestApiClient investApi)
+        public SharesController(diplomContext context, InvestApiClient investApi, IConfiguration configuration)
         {
             _context = context;
             _investApi = investApi;
+            _configuration = configuration;
         }
 
         // GET: Shares
@@ -177,6 +182,30 @@ namespace diplom.Controllers
                         _context.Exchanges.Add(exchange);
                     }
 
+                    IQueryable<Country> countries = from c in _context.Countries select c;
+                    Country country = null;
+                    if (countries.Count() > 0 && countries.First(country => country.Name == apiShare.CountryOfRiskName && country.Code == apiShare.CountryOfRisk) != null)
+                    {
+                        country = countries.First(country => country.Name == apiShare.CountryOfRiskName && country.Code == apiShare.CountryOfRisk);
+                    }
+                    else
+                    {
+                        country = new Country(apiShare.CountryOfRiskName, apiShare.CountryOfRisk);
+                        _context.Countries.Add(country);
+                    }
+
+                    IQueryable<Sector> sectors = from s in _context.Sectors select s;
+                    Sector sector = null;
+                    if (sectors.Count() > 0 && sectors.First(sector => sector.Name == apiShare.Sector) != null)
+                    {
+                        sector = sectors.First(sector => sector.Name == apiShare.Sector);
+                    }
+                    else
+                    {
+                        sector = new Sector(apiShare.Sector);
+                        _context.Sectors.Add(sector);
+                    }
+
                     IQueryable<Share> shares = from s in _context.Shares select s;
                     Share share = null;
                     if (shares.Count() > 0 && shares.First(shares => shares.Figi == apiShare.Figi) != null)
@@ -184,20 +213,57 @@ namespace diplom.Controllers
                         share = shares.First(shares => shares.Figi == apiShare.Figi);
                         share.Update(apiShare);
                         share.Exchange = exchange;
+                        share.Country = country;
+                        share.Sector = sector;
+                        share.Candles = GetCandles(share);
                         _context.Shares.Update(share);
                     }
                     else
                     {
                         share = new Share(apiShare);
                         share.Exchange = exchange;
+                        share.Country = country;
+                        share.Sector = sector;
+                        share.Candles = GetCandles(share);
                         _context.Shares.Add(share);
-                    }
+                    }                    
                 }
 
                 await _context.SaveChangesAsync();
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private List<Candle> GetCandles(Share share)
+        {
+            List<Candle> candles = new List<Candle>();
+
+            GetCandlesRequest candlesRequest = new GetCandlesRequest();
+            candlesRequest.Figi = share.Figi;
+            candlesRequest.Interval = CandleInterval.Hour;
+            int startYear = int.Parse(_configuration["ParsingPeriod:Start:year"]);
+            int startMonth = int.Parse(_configuration["ParsingPeriod:Start:month"]);
+            int startDay = int.Parse(_configuration["ParsingPeriod:Start:day"]);
+            DateTime startParsingDate = new DateTime(startYear, startMonth, startDay);
+            if (share.Candles.Count() > 0)
+                startParsingDate = share.Candles.Last().Time;
+            while (startParsingDate < DateTime.Now)
+            {
+                DateTime tillParsingDate = startParsingDate.AddDays(1);
+                candlesRequest.From = Timestamp.FromDateTime(startParsingDate.ToUniversalTime());
+                candlesRequest.To = Timestamp.FromDateTime(tillParsingDate.ToUniversalTime());
+                GetCandlesResponse candlesResponse = _investApi.MarketData.GetCandles(candlesRequest);
+                startParsingDate = tillParsingDate;
+                foreach (ApiCandle apiCandle in candlesResponse.Candles)
+                {
+                    Candle candle = new Candle(apiCandle);
+                    candles.Add(candle);
+                    _context.Candles.Add(candle);
+                }
+            }
+
+            return candles;
         }
     }
 }
