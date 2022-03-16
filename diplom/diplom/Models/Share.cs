@@ -46,6 +46,10 @@ namespace diplom.Models
         {
             this.Update(apiShare);
         }
+        public Share(ApiShare apiShare, Exchange exchange, Country country, Sector sector):this()
+        {
+            this.Update(apiShare, exchange, country, sector);
+        }
 
         public void Update(ApiShare apiShare)
         {
@@ -58,6 +62,13 @@ namespace diplom.Models
             IssueSize = apiShare.IssueSize;
             IssuePlanSize = apiShare.IssueSizePlan;
             IpoDate = apiShare.IpoDate.ToDateTime();
+        }
+        public void Update(ApiShare apiShare, Exchange exchange, Country country, Sector sector)
+        {
+            this.Exchange = exchange;
+            this.Country = country;
+            this.Sector = sector;
+            this.Update(apiShare);
         }
     }
 }

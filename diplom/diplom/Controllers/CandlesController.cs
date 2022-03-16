@@ -8,16 +8,27 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using diplom.Data;
 using diplom.Models;
+using Tinkoff.InvestApi.V1;
+using Tinkoff.InvestApi;
+using ApiShare = Tinkoff.InvestApi.V1.Share;
+using ApiCandle = Tinkoff.InvestApi.V1.HistoricCandle;
+using Share = diplom.Models.Share;
+using Candle = diplom.Models.Candle;
+using Google.Protobuf.WellKnownTypes;
 
 namespace diplom.Controllers
 {
     public class CandlesController : Controller
     {
         private readonly diplomContext _context;
+        private readonly InvestApiClient _investApi;
+        private readonly IConfiguration _configuration;
 
-        public CandlesController(diplomContext context)
+        public CandlesController(diplomContext context, InvestApiClient investApi, IConfiguration configuration)
         {
             _context = context;
+            _investApi = investApi;
+            _configuration = configuration;
         }
 
         // GET: Candles
@@ -150,6 +161,36 @@ namespace diplom.Controllers
         {
             return _context.Candles.Any(e => e.Id == id);
         }
+        
+        public List<Candle> GetCandles(Share share)
+        {
+            List<Candle> candles = new List<Candle>();
 
+            GetCandlesRequest candlesRequest = new GetCandlesRequest();
+            candlesRequest.Figi = share.Figi;
+            candlesRequest.Interval = CandleInterval.Hour;
+            int startYear = int.Parse(_configuration["ParsingPeriod:Start:year"]);
+            int startMonth = int.Parse(_configuration["ParsingPeriod:Start:month"]);
+            int startDay = int.Parse(_configuration["ParsingPeriod:Start:day"]);
+            DateTime startParsingDate = new DateTime(startYear, startMonth, startDay);
+            if (share.Candles.Count() > 0)
+                startParsingDate = share.Candles.Last().Time;
+            while (startParsingDate < DateTime.Now)
+            {
+                DateTime tillParsingDate = startParsingDate.AddDays(1);
+                candlesRequest.From = Timestamp.FromDateTime(startParsingDate.ToUniversalTime());
+                candlesRequest.To = Timestamp.FromDateTime(tillParsingDate.ToUniversalTime());
+                GetCandlesResponse candlesResponse = _investApi.MarketData.GetCandles(candlesRequest);
+                startParsingDate = tillParsingDate;
+                foreach (ApiCandle apiCandle in candlesResponse.Candles)
+                {
+                    Candle candle = new Candle(apiCandle);
+                    candles.Add(candle);
+                    _context.Candles.Add(candle);
+                }
+            }
+
+            return candles;
+        }
     }
 }

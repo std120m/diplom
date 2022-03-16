@@ -34,7 +34,6 @@ namespace diplom.Controllers
         // GET: Shares
         public async Task<IActionResult> Index()
         {
-            await UpdateShares();
             return View(await _context.Shares.ToListAsync());
         }
 
@@ -161,109 +160,6 @@ namespace diplom.Controllers
         private bool ShareExists(int id)
         {
             return _context.Shares.Any(e => e.Id == id);
-        }
-
-        public async Task<IActionResult> UpdateShares(int? id = null)
-        {
-            if (id == null)
-            {
-                SharesResponse sharesResponse = _investApi.Instruments.Shares();
-                foreach (ApiShare apiShare in sharesResponse.Instruments)
-                {
-                    IQueryable<Exchange> exchanges = from e in _context.Exchanges select e;
-                    Exchange exchange = null;
-                    if (exchanges.Count() > 0 && exchanges.First(exchange => exchange.Name == apiShare.Exchange) != null)
-                    {
-                        exchange = exchanges.First(exchange => exchange.Name == apiShare.Exchange);
-                    }
-                    else
-                    {
-                        exchange = new Exchange(apiShare.Exchange);
-                        _context.Exchanges.Add(exchange);
-                    }
-
-                    IQueryable<Country> countries = from c in _context.Countries select c;
-                    Country country = null;
-                    if (countries.Count() > 0 && countries.First(country => country.Name == apiShare.CountryOfRiskName && country.Code == apiShare.CountryOfRisk) != null)
-                    {
-                        country = countries.First(country => country.Name == apiShare.CountryOfRiskName && country.Code == apiShare.CountryOfRisk);
-                    }
-                    else
-                    {
-                        country = new Country(apiShare.CountryOfRiskName, apiShare.CountryOfRisk);
-                        _context.Countries.Add(country);
-                    }
-
-                    IQueryable<Sector> sectors = from s in _context.Sectors select s;
-                    Sector sector = null;
-                    if (sectors.Count() > 0 && sectors.First(sector => sector.Name == apiShare.Sector) != null)
-                    {
-                        sector = sectors.First(sector => sector.Name == apiShare.Sector);
-                    }
-                    else
-                    {
-                        sector = new Sector(apiShare.Sector);
-                        _context.Sectors.Add(sector);
-                    }
-
-                    IQueryable<Share> shares = from s in _context.Shares select s;
-                    Share share = null;
-                    if (shares.Count() > 0 && shares.First(shares => shares.Figi == apiShare.Figi) != null)
-                    {
-                        share = shares.First(shares => shares.Figi == apiShare.Figi);
-                        share.Update(apiShare);
-                        share.Exchange = exchange;
-                        share.Country = country;
-                        share.Sector = sector;
-                        share.Candles = GetCandles(share);
-                        _context.Shares.Update(share);
-                    }
-                    else
-                    {
-                        share = new Share(apiShare);
-                        share.Exchange = exchange;
-                        share.Country = country;
-                        share.Sector = sector;
-                        share.Candles = GetCandles(share);
-                        _context.Shares.Add(share);
-                    }                    
-                }
-
-                await _context.SaveChangesAsync();
-            }
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        private List<Candle> GetCandles(Share share)
-        {
-            List<Candle> candles = new List<Candle>();
-
-            GetCandlesRequest candlesRequest = new GetCandlesRequest();
-            candlesRequest.Figi = share.Figi;
-            candlesRequest.Interval = CandleInterval.Hour;
-            int startYear = int.Parse(_configuration["ParsingPeriod:Start:year"]);
-            int startMonth = int.Parse(_configuration["ParsingPeriod:Start:month"]);
-            int startDay = int.Parse(_configuration["ParsingPeriod:Start:day"]);
-            DateTime startParsingDate = new DateTime(startYear, startMonth, startDay);
-            if (share.Candles.Count() > 0)
-                startParsingDate = share.Candles.Last().Time;
-            while (startParsingDate < DateTime.Now)
-            {
-                DateTime tillParsingDate = startParsingDate.AddDays(1);
-                candlesRequest.From = Timestamp.FromDateTime(startParsingDate.ToUniversalTime());
-                candlesRequest.To = Timestamp.FromDateTime(tillParsingDate.ToUniversalTime());
-                GetCandlesResponse candlesResponse = _investApi.MarketData.GetCandles(candlesRequest);
-                startParsingDate = tillParsingDate;
-                foreach (ApiCandle apiCandle in candlesResponse.Candles)
-                {
-                    Candle candle = new Candle(apiCandle);
-                    candles.Add(candle);
-                    _context.Candles.Add(candle);
-                }
-            }
-
-            return candles;
         }
     }
 }
