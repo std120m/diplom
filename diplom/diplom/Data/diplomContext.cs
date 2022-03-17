@@ -16,7 +16,7 @@ namespace diplom.Data
         {
         }
 
-        public DbSet<diplom.Models.Company> Company { get; set; }
+        public DbSet<diplom.Models.Company> Companies { get; set; }
 
         public DbSet<diplom.Models.Country> Countries { get; set; }
 

@@ -13,10 +13,109 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Symbol)
+                @Html.DisplayNameFor(model => model.Website)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.longName)
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EnterpriseValue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ForwardPE)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProfitMargins)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FloatShares)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FullTimeEmployees)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SharesOutstanding)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SharesShort)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SharesShortPriorMonth)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ShortRatio)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ShortPercentOfFloat)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BookValuePerShare)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PriceToBook)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NetIncomeToCommon)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TrailingEps)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EnterpriseToRevenue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EnterpriseToEbitda)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Week52Change)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SandP52WeekChange)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalCash)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalCashPerShare)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Ebitda)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalDebt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CurrentRatio)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Revenue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DebtToEquity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RevenuePerShare)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReturnOnAssets)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReturnOnEquity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GrossProfits)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FreeCashflow)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OperatingCashflow)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RevenueGrowth)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OperatingMargins)
             </th>
             <th></th>
         </tr>
@@ -25,10 +124,109 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Symbol)
+                @Html.DisplayFor(modelItem => item.Website)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.longName)
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EnterpriseValue)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ForwardPE)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProfitMargins)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FloatShares)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullTimeEmployees)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SharesOutstanding)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SharesShort)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SharesShortPriorMonth)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShortRatio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShortPercentOfFloat)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BookValuePerShare)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PriceToBook)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NetIncomeToCommon)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TrailingEps)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EnterpriseToRevenue)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EnterpriseToEbitda)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Week52Change)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SandP52WeekChange)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalCash)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalCashPerShare)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Ebitda)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalDebt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CurrentRatio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Revenue)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DebtToEquity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RevenuePerShare)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReturnOnAssets)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReturnOnEquity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GrossProfits)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FreeCashflow)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OperatingCashflow)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RevenueGrowth)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OperatingMargins)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

@@ -23,7 +23,7 @@ namespace diplom.Controllers
         // GET: Companies
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Company.ToListAsync());
+            return View(await _context.Companies.ToListAsync());
         }
 
         // GET: Companies/Details/5
@@ -34,7 +34,7 @@ namespace diplom.Controllers
                 return NotFound();
             }
 
-            var company = await _context.Company
+            var company = await _context.Companies
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (company == null)
             {
@@ -55,7 +55,7 @@ namespace diplom.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Symbol,longName")] Company company)
+        public async Task<IActionResult> Create([Bind("Id,Website,Description,EnterpriseValue,ForwardPE,ProfitMargins,FloatShares,FullTimeEmployees,SharesOutstanding,SharesShort,SharesShortPriorMonth,ShortRatio,ShortPercentOfFloat,BookValuePerShare,PriceToBook,NetIncomeToCommon,TrailingEps,EnterpriseToRevenue,EnterpriseToEbitda,Week52Change,SandP52WeekChange,TotalCash,TotalCashPerShare,Ebitda,TotalDebt,CurrentRatio,Revenue,DebtToEquity,RevenuePerShare,ReturnOnAssets,ReturnOnEquity,GrossProfits,FreeCashflow,OperatingCashflow,RevenueGrowth,OperatingMargins")] Company company)
         {
             if (ModelState.IsValid)
             {
@@ -74,7 +74,7 @@ namespace diplom.Controllers
                 return NotFound();
             }
 
-            var company = await _context.Company.FindAsync(id);
+            var company = await _context.Companies.FindAsync(id);
             if (company == null)
             {
                 return NotFound();
@@ -87,7 +87,7 @@ namespace diplom.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Symbol,longName")] Company company)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Website,Description,EnterpriseValue,ForwardPE,ProfitMargins,FloatShares,FullTimeEmployees,SharesOutstanding,SharesShort,SharesShortPriorMonth,ShortRatio,ShortPercentOfFloat,BookValuePerShare,PriceToBook,NetIncomeToCommon,TrailingEps,EnterpriseToRevenue,EnterpriseToEbitda,Week52Change,SandP52WeekChange,TotalCash,TotalCashPerShare,Ebitda,TotalDebt,CurrentRatio,Revenue,DebtToEquity,RevenuePerShare,ReturnOnAssets,ReturnOnEquity,GrossProfits,FreeCashflow,OperatingCashflow,RevenueGrowth,OperatingMargins")] Company company)
         {
             if (id != company.Id)
             {
@@ -125,7 +125,7 @@ namespace diplom.Controllers
                 return NotFound();
             }
 
-            var company = await _context.Company
+            var company = await _context.Companies
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (company == null)
             {
@@ -140,15 +140,15 @@ namespace diplom.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var company = await _context.Company.FindAsync(id);
-            _context.Company.Remove(company);
+            var company = await _context.Companies.FindAsync(id);
+            _context.Companies.Remove(company);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool CompanyExists(int id)
         {
-            return _context.Company.Any(e => e.Id == id);
+            return _context.Companies.Any(e => e.Id == id);
         }
     }
 }
