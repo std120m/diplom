@@ -36,7 +36,9 @@ namespace diplom.Controllers
         {
             IQueryable<Share> shares = from s in _context.Shares select s;
             Share? share = shares.First(shares => shares.Figi == figi);
-            
+            if (share == null)
+                return;
+
             HttpClient client = new HttpClient();
             string result = await client.GetStringAsync("https://query1.finance.yahoo.com/v10/finance/quoteSummary/" + share.Ticker + "?modules=" + string.Join(',', Company.ApiModulesParams));
             using JsonDocument doc = JsonDocument.Parse(result);
@@ -45,10 +47,10 @@ namespace diplom.Controllers
         }
 
         // GET: api/shares/update
-        [HttpGet("shares/update/{id?}")]
-        public void UpdateShares(int? id = null)
+        [HttpGet("shares/update/{figi?}")]
+        public void UpdateShares(int? figi = null)
         {
-            if (id == null)
+            if (figi == null)
             {
                 SharesResponse sharesResponse = _investApi.Instruments.Shares();
                 foreach (ApiShare apiShare in sharesResponse.Instruments)
@@ -108,6 +110,13 @@ namespace diplom.Controllers
 
                 _context.SaveChangesAsync();
             }
+        }
+
+        // GET: api/company/{figi}/events
+        [HttpGet("company/{figi}/events")]
+        public void UpdateCompanyEvents(string figi)
+        {
+
         }
 
         // GET: api

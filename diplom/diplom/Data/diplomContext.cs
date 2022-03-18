@@ -27,5 +27,9 @@ namespace diplom.Data
         public DbSet<diplom.Models.Share> Shares { get; set; }
 
         public DbSet<diplom.Models.Candle> Candles { get; set; }
+
+        public DbSet<diplom.Models.CompanyEvents> CompanyEvents { get; set; }
+
+        public DbSet<diplom.Models.CompanyFilings> CompanyFilings { get; set; }
     }
 }

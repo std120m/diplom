@@ -39,6 +39,8 @@
         public double? RevenueGrowth { get; set; }
         public double? OperatingMargins { get; set; }
         public Share? Share { get; set; }
+        public ICollection<CompanyEvents> Events { get; set; }
+        public ICollection<CompanyFilings> Filings { get; set; }
 
         public static string[] ApiModulesParams = new string[]
         {
@@ -55,7 +57,16 @@
             "earningsTrend",
             "industryTrend",
             "indexTrend",
-            "sectorTrend"
+            "sectorTrend",
+            "secFilings",
+            "calendarEvents",
+            "institutionOwnership"
         };
+
+        public Company()
+        {
+            Events = new List<CompanyEvents>();
+            Filings = new List<CompanyFilings>();
+        }
     }
 }
