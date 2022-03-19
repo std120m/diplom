@@ -1,4 +1,6 @@
-﻿namespace diplom.Models
+﻿using System.Text.Json;
+
+namespace diplom.Models
 {
     public class Company
     {
@@ -44,7 +46,7 @@
 
         public static string[] ApiModulesParams = new string[]
         {
-            "modules=assetProfile",
+            "assetProfile",
             "defaultKeyStatistics",
             "financialData",
             "recommendationTrend",
@@ -67,6 +69,24 @@
         {
             Events = new List<CompanyEvents>();
             Filings = new List<CompanyFilings>();
+        }
+        public Company(Share share) : this()
+        {
+            Share = share;
+            Update();
+        }
+
+        public async void Update()
+        {
+            if (Share == null)
+                return;
+
+            HttpClient client = new HttpClient();
+            string result = await client.GetStringAsync("https://query1.finance.yahoo.com/v10/finance/quoteSummary/" + Share.Ticker + "?modules=" + string.Join(',', Company.ApiModulesParams));
+            using JsonDocument doc = JsonDocument.Parse(result);
+            JsonElement root = doc.RootElement;
+            JsonElement companyInfo = root.GetProperty("quoteSummary").GetProperty("result")[0];
+            //Website = 
         }
     }
 }

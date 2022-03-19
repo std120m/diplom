@@ -31,24 +31,26 @@ namespace diplom.Controllers
         }
 
         // GET: api/company
-        [HttpGet("company/{figi?}")]
-        public async void GetCompanyInfo(string figi)
+        [HttpGet("company/{id?}")]
+        public async void UpdateCompanyInfo(int? id = null)
         {
-            IQueryable<Share> shares = from s in _context.Shares select s;
-            Share? share = shares.First(shares => shares.Figi == figi);
-            if (share == null)
+            IQueryable<Company> companies = from c in _context.Companies select c;
+            Company? company = companies.First(company => company.Id == id);
+            if (company == null || company.Share == null)
                 return;
 
             HttpClient client = new HttpClient();
-            string result = await client.GetStringAsync("https://query1.finance.yahoo.com/v10/finance/quoteSummary/" + share.Ticker + "?modules=" + string.Join(',', Company.ApiModulesParams));
+            string result = await client.GetStringAsync("https://query1.finance.yahoo.com/v10/finance/quoteSummary/" + company.Share.Ticker + "?modules=" + string.Join(',', Company.ApiModulesParams));
             using JsonDocument doc = JsonDocument.Parse(result);
             JsonElement root = doc.RootElement;
+            JsonElement companyInfo = root.GetProperty("quoteSummary").GetProperty("result")[0];
+            
             client.Dispose();
         }
 
         // GET: api/shares/update
         [HttpGet("shares/update/{figi?}")]
-        public void UpdateShares(int? figi = null)
+        public async void UpdateShares(int? figi = null)
         {
             if (figi == null)
             {
@@ -56,59 +58,61 @@ namespace diplom.Controllers
                 foreach (ApiShare apiShare in sharesResponse.Instruments)
                 {
                     IQueryable<Exchange> exchanges = from e in _context.Exchanges select e;
-                    Exchange? exchange = null;
-                    if (exchanges.Count() > 0 && exchanges.First(exchange => exchange.Name == apiShare.Exchange) != null)
-                    {
-                        exchange = exchanges.First(exchange => exchange.Name == apiShare.Exchange);
-                    }
-                    else
+                    Exchange? exchange = exchanges.Count() > 0 ? exchanges.First(exchange => exchange.Name == apiShare.Exchange) : null;
+                    if (exchange == null)
                     {
                         exchange = new Exchange(apiShare.Exchange);
                         _context.Exchanges.Add(exchange);
                     }
 
                     IQueryable<Country> countries = from c in _context.Countries select c;
-                    Country? country = null;
-                    if (countries.Count() > 0 && countries.First(country => country.Name == apiShare.CountryOfRiskName && country.Code == apiShare.CountryOfRisk) != null)
-                    {
-                        country = countries.First(country => country.Name == apiShare.CountryOfRiskName && country.Code == apiShare.CountryOfRisk);
-                    }
-                    else
+                    Country? country = countries.Count() > 0 ? countries.First(country => country.Name == apiShare.CountryOfRiskName && country.Code == apiShare.CountryOfRisk) : null;
+                    if (country == null)
                     {
                         country = new Country(apiShare.CountryOfRiskName, apiShare.CountryOfRisk);
                         _context.Countries.Add(country);
                     }
 
                     IQueryable<Sector> sectors = from s in _context.Sectors select s;
-                    Sector? sector = null;
-                    if (sectors.Count() > 0 && sectors.First(sector => sector.Name == apiShare.Sector) != null)
-                    {
-                        sector = sectors.First(sector => sector.Name == apiShare.Sector);
-                    }
-                    else
+                    Sector? sector = sectors.Count() > 0 ? sectors.First(sector => sector.Name == apiShare.Sector) : null;
+                    if (sector == null)
                     {
                         sector = new Sector(apiShare.Sector);
                         _context.Sectors.Add(sector);
                     }
 
                     IQueryable<Share> shares = from s in _context.Shares select s;
-                    Share? share = null;
-                    if (shares.Count() > 0 && shares.First(shares => shares.Figi == apiShare.Figi) != null)
+                    Share? share = shares.Count() > 0 ? shares.First(shares => shares.Figi == apiShare.Figi) : null;
+                    if (share != null)
                     {
-                        share = shares.First(shares => shares.Figi == apiShare.Figi);
                         share.Update(apiShare, exchange, country, sector);
-                        share.Candles = new CandlesController(_context, _investApi, _configuration).GetCandles(share);
+                        new CandlesController(_context, _investApi, _configuration).GetCandles(share);
                         _context.Shares.Update(share);
                     }
                     else
                     {
                         share = new Share(apiShare, exchange, country, sector);
-                        share.Candles = new CandlesController(_context, _investApi, _configuration).GetCandles(share);
+                        new CandlesController(_context, _investApi, _configuration).GetCandles(share);
+                        _context.Shares.Add(share);
+                    }
+
+                    IQueryable<Company> companies = from c in _context.Companies select c;
+                    Company? company = null;
+                    if (companies.Count() > 0)
+                        company = companies.First(company => company.Share != null && company.Share.Figi == share.Figi);
+                    if (company != null)
+                    {
+                        company.Update();
+                        _context.Companies.Update(company);
+                    }
+                    else
+                    {
+                        company = new Company(share);
                         _context.Shares.Add(share);
                     }
                 }
 
-                _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
         }
 
@@ -131,13 +135,6 @@ namespace diplom.Controllers
         public string Get(int id)
         {
             return "value";
-        }
-
-        // GET api/test
-        [HttpGet("test/1")]
-        public string Test(int id)
-        {
-            return "test";
         }
 
         // POST api

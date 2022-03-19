@@ -162,7 +162,7 @@ namespace diplom.Controllers
             return _context.Candles.Any(e => e.Id == id);
         }
         
-        public List<Candle> GetCandles(Share share)
+        public async void GetCandles(Share share)
         {
             List<Candle> candles = new List<Candle>();
 
@@ -188,9 +188,11 @@ namespace diplom.Controllers
                     candles.Add(candle);
                     _context.Candles.Add(candle);
                 }
+                Thread.Sleep(1000);
             }
+            share.Candles = candles;
 
-            return candles;
+            await _context.SaveChangesAsync();
         }
     }
 }
