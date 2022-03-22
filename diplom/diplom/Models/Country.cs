@@ -5,9 +5,11 @@
         public int Id { get; set; }
         public string? Name { get; set; }
         public string? Code { get; set; }
+        public ICollection<Share> Shares { get; set; }
 
         public Country(string? name, string? code)
         {
+            Shares = new List<Share>();
             Name = name;
             Code = code;
         }

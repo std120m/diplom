@@ -23,7 +23,6 @@ namespace diplom.Models
 
         public Share() 
         {
-            Candles = new List<Candle>();
         }
 
         public Share(string? figi, string? ticker, string? classCode, string? currency, string? name, Exchange? exchange, DateTime? ipoDate, long? issueSize, long? issuePlanSize, Country? country, Sector? sector, ShareType shareType) : this()
@@ -44,6 +43,7 @@ namespace diplom.Models
 
         public Share(ApiShare apiShare):this()
         {
+            Candles = new List<Candle>();
             this.Update(apiShare);
         }
         public Share(ApiShare apiShare, Exchange exchange, Country country, Sector sector):this()

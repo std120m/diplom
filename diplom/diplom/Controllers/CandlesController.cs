@@ -164,8 +164,6 @@ namespace diplom.Controllers
         
         public async void GetCandles(Share share)
         {
-            List<Candle> candles = new List<Candle>();
-
             GetCandlesRequest candlesRequest = new GetCandlesRequest();
             candlesRequest.Figi = share.Figi;
             candlesRequest.Interval = CandleInterval.Hour;
@@ -181,16 +179,17 @@ namespace diplom.Controllers
                 candlesRequest.From = Timestamp.FromDateTime(startParsingDate.ToUniversalTime());
                 candlesRequest.To = Timestamp.FromDateTime(tillParsingDate.ToUniversalTime());
                 GetCandlesResponse candlesResponse = _investApi.MarketData.GetCandles(candlesRequest);
-                startParsingDate = tillParsingDate;
                 foreach (ApiCandle apiCandle in candlesResponse.Candles)
                 {
                     Candle candle = new Candle(apiCandle);
-                    candles.Add(candle);
+                    if (candle.Time <= startParsingDate)
+                        break;
+                    share.Candles.Add(candle);
                     _context.Candles.Add(candle);
                 }
+                startParsingDate = tillParsingDate;
                 Thread.Sleep(1000);
             }
-            share.Candles = candles;
 
             await _context.SaveChangesAsync();
         }
