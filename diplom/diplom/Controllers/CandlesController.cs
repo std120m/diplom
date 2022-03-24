@@ -162,7 +162,7 @@ namespace diplom.Controllers
             return _context.Candles.Any(e => e.Id == id);
         }
         
-        public async void GetCandles(Share share)
+        public async Task UpdateCandles(Share share)
         {
             GetCandlesRequest candlesRequest = new GetCandlesRequest();
             candlesRequest.Figi = share.Figi;

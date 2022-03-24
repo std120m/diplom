@@ -34,25 +34,14 @@ namespace diplom.Controllers
 
         // GET: api/company
         [HttpGet("company/{id?}")]
-        public async void UpdateCompanyInfo(int? id = null)
+        public void UpdateCompanyInfo(int? id = null)
         {
-            IQueryable<Company> companies = from c in _context.Companies select c;
-            Company? company = companies.First(company => company.Id == id);
-            if (company == null || company.Share == null)
-                return;
 
-            HttpClient client = new HttpClient();
-            string result = await client.GetStringAsync("https://query1.finance.yahoo.com/v10/finance/quoteSummary/" + company.Share.Ticker + "?modules=" + string.Join(',', Company.ApiModulesParams));
-            using JsonDocument doc = JsonDocument.Parse(result);
-            JsonElement root = doc.RootElement;
-            JsonElement companyInfo = root.GetProperty("quoteSummary").GetProperty("result")[0];
-            
-            client.Dispose();
         }
 
         // GET: api/shares/update
         [HttpGet("shares/update/{id?}")]
-        public async void UpdateShares(int? id = null)
+        public async Task UpdateShares(int? id = null)
         {
             ICollection<ApiShare> apiShares = new RepeatedField<ApiShare>();
             if (id == null)
@@ -103,13 +92,13 @@ namespace diplom.Controllers
                 if (share != null)
                 {
                     share.Update(apiShare, exchange, country, sector);
-                    new CandlesController(_context, _investApi, _configuration).GetCandles(share);
+                    await new CandlesController(_context, _investApi, _configuration).UpdateCandles(share);
                     _context.Shares.Update(share);
                 }
                 else
                 {
                     share = new Share(apiShare, exchange, country, sector);
-                    new CandlesController(_context, _investApi, _configuration).GetCandles(share);
+                    await new CandlesController(_context, _investApi, _configuration).UpdateCandles(share);
                     _context.Shares.Add(share);
                 }
 
@@ -117,12 +106,13 @@ namespace diplom.Controllers
                 Company? company = companies.Any() ? companies.FirstOrDefault(company => company.Share != null && company.Share.Figi == share.Figi) : null;
                 if (company != null)
                 {
-                    company.Update();
+                    await new CompaniesController(_context).UpdateCompany(share, company);
                     _context.Companies.Update(company);
                 }
                 else
                 {
-                    company = new Company(share);
+                    company = new Company();
+                    await new CompaniesController(_context).UpdateCompany(share, company);
                     _context.Companies.Add(company);
                 }
             }
