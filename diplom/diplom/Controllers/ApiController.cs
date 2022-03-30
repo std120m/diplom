@@ -12,6 +12,9 @@ using System.Net;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Google.Protobuf.Collections;
+using System.Text;
+using System.Text.RegularExpressions;
+using diplom.Helpers;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -33,10 +36,10 @@ namespace diplom.Controllers
         }
 
         // GET: api/company
-        [HttpGet("company/{id?}")]
-        public void UpdateCompanyInfo(int? id = null)
+        [HttpGet("news")]
+        public async Task UpdateWorldNews()
         {
-
+            await new WorldNewsController(_context, _configuration).UpdateWorldNews();
         }
 
         // GET: api/shares/update
