@@ -156,50 +156,92 @@ namespace diplom.Controllers
 
         public async Task UpdateCompany(Share share, Company company)
         {
-            company.Share = share;
-            if (company.Share == null)
+            if (share == null)
                 return;
+            if ((company.Shares as List<Share>).IndexOf(share) < 0)
+                company.Shares.Add(share);
 
+            string result = String.Empty;
             HttpClient client = new HttpClient();
-            string result = await client.GetStringAsync("https://query1.finance.yahoo.com/v10/finance/quoteSummary/" + company.Share.Ticker + "?modules=" + string.Join(',', Company.ApiModulesParams));
+            try
+            {
+                result = await client.GetStringAsync("https://query1.finance.yahoo.com/v10/finance/quoteSummary/" + share.Ticker + "?modules=" + string.Join(',', Company.ApiModulesParams));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
             using JsonDocument doc = JsonDocument.Parse(result);
             JsonElement root = doc.RootElement;
             JsonElement companyInfo = root.GetProperty("quoteSummary").GetProperty("result")[0];
             company.Website = Helper.GetValueFromJson(companyInfo, "assetProfile.website");
             company.Description = Helper.GetValueFromJson(companyInfo, "assetProfile.longBusinessSummary");
-            company.EnterpriseValue = long.Parse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.enterpriseValue.raw"), CultureInfo.InvariantCulture);
-            company.ForwardPE = double.Parse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.forwardPE.raw"), CultureInfo.InvariantCulture);
-            company.ProfitMargins = double.Parse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.profitMargins.raw"), CultureInfo.InvariantCulture);
-            company.FloatShares = long.Parse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.floatShares.raw"), CultureInfo.InvariantCulture);
-            company.FullTimeEmployees = int.Parse(Helper.GetValueFromJson(companyInfo, "assetProfile.fullTimeEmployees"));
-            company.SharesOutstanding = long.Parse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.sharesOutstanding.raw"), CultureInfo.InvariantCulture);
-            company.SharesShort = long.Parse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.sharesShort.raw"), CultureInfo.InvariantCulture);
-            company.SharesShortPriorMonth = long.Parse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.sharesShortPriorMonth.raw"), CultureInfo.InvariantCulture);
-            company.ShortRatio = double.Parse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.shortRatio.raw"), CultureInfo.InvariantCulture);
-            company.ShortPercentOfFloat = double.Parse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.shortPercentOfFloat.raw"), CultureInfo.InvariantCulture);
-            company.BookValuePerShare = double.Parse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.bookValue.raw"), CultureInfo.InvariantCulture);
-            company.PriceToBook = double.Parse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.priceToBook.raw"), CultureInfo.InvariantCulture);
-            company.NetIncomeToCommon = long.Parse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.netIncomeToCommon.raw"), CultureInfo.InvariantCulture);
-            company.TrailingEps = double.Parse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.trailingEps.raw"), CultureInfo.InvariantCulture);
-            company.EnterpriseToRevenue = double.Parse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.enterpriseToRevenue.raw"), CultureInfo.InvariantCulture);
-            company.EnterpriseToEbitda = double.Parse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.enterpriseToEbitda.raw"), CultureInfo.InvariantCulture);
-            company.Week52Change = double.Parse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.52WeekChange.raw"), CultureInfo.InvariantCulture);
-            company.SandP52WeekChange = double.Parse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.SandP52WeekChange.raw"), CultureInfo.InvariantCulture);
-            company.TotalCash = long.Parse(Helper.GetValueFromJson(companyInfo, "financialData.totalCash.raw"), CultureInfo.InvariantCulture);
-            company.TotalCashPerShare = double.Parse(Helper.GetValueFromJson(companyInfo, "financialData.totalCashPerShare.raw"), CultureInfo.InvariantCulture);
-            company.Ebitda = long.Parse(Helper.GetValueFromJson(companyInfo, "financialData.ebitda.raw"), CultureInfo.InvariantCulture);
-            company.TotalDebt = long.Parse(Helper.GetValueFromJson(companyInfo, "financialData.totalDebt.raw"), CultureInfo.InvariantCulture);
-            company.CurrentRatio = double.Parse(Helper.GetValueFromJson(companyInfo, "financialData.currentRatio.raw"), CultureInfo.InvariantCulture);
-            company.Revenue = long.Parse(Helper.GetValueFromJson(companyInfo, "financialData.totalRevenue.raw"), CultureInfo.InvariantCulture);
-            company.DebtToEquity = double.Parse(Helper.GetValueFromJson(companyInfo, "financialData.debtToEquity.raw"), CultureInfo.InvariantCulture);
-            company.RevenuePerShare = double.Parse(Helper.GetValueFromJson(companyInfo, "financialData.revenuePerShare.raw"), CultureInfo.InvariantCulture);
-            company.ReturnOnAssets = double.Parse(Helper.GetValueFromJson(companyInfo, "financialData.returnOnAssets.raw"), CultureInfo.InvariantCulture);
-            company.ReturnOnEquity = double.Parse(Helper.GetValueFromJson(companyInfo, "financialData.returnOnEquity.raw"), CultureInfo.InvariantCulture);
-            company.GrossProfits = long.Parse(Helper.GetValueFromJson(companyInfo, "financialData.grossProfits.raw"), CultureInfo.InvariantCulture);
-            company.FreeCashflow = long.Parse(Helper.GetValueFromJson(companyInfo, "financialData.freeCashflow.raw"), CultureInfo.InvariantCulture);
-            company.OperatingCashflow = long.Parse(Helper.GetValueFromJson(companyInfo, "financialData.operatingCashflow.raw"), CultureInfo.InvariantCulture);
-            company.RevenueGrowth = double.Parse(Helper.GetValueFromJson(companyInfo, "financialData.revenueGrowth.raw"), CultureInfo.InvariantCulture);
-            company.OperatingMargins = double.Parse(Helper.GetValueFromJson(companyInfo, "financialData.operatingMargins.raw"), CultureInfo.InvariantCulture);
+            bool parseResult = long.TryParse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.enterpriseValue.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out long enterpriseValue);
+            company.EnterpriseValue = parseResult ? enterpriseValue : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.forwardPE.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double forwardPE);
+            company.ForwardPE = parseResult ? forwardPE : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.profitMargins.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double profitMargins);
+            company.ProfitMargins = parseResult ? profitMargins : null;
+            parseResult = long.TryParse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.floatShares.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out long floatShares);
+            company.FloatShares = parseResult ? floatShares : null;
+            parseResult = int.TryParse(Helper.GetValueFromJson(companyInfo, "assetProfile.fullTimeEmployees"), out int fullTimeEmployees);
+            company.FullTimeEmployees = parseResult ? fullTimeEmployees : null;
+            parseResult = long.TryParse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.sharesOutstanding.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out long sharesOutstanding);
+            company.SharesOutstanding = parseResult ? sharesOutstanding : null;
+            parseResult = long.TryParse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.sharesShort.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out long sharesShort);
+            company.SharesShort = parseResult ? sharesShort : null;
+            parseResult = long.TryParse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.sharesShortPriorMonth.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out long sharesShortPriorMonth);
+            company.SharesShortPriorMonth = parseResult ? sharesShortPriorMonth : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.shortRatio.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double shortRatio);
+            company.ShortRatio = parseResult ? shortRatio : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.shortPercentOfFloat.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double shortPercentOfFloat);
+            company.ShortPercentOfFloat = parseResult ? shortPercentOfFloat : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.bookValue.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double bookValuePerShare);
+            company.BookValuePerShare = parseResult ? bookValuePerShare : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.priceToBook.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double priceToBook);
+            company.PriceToBook = parseResult ? priceToBook : null;
+            parseResult = long.TryParse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.netIncomeToCommon.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out long netIncomeToCommon);
+            company.NetIncomeToCommon = parseResult ? netIncomeToCommon : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.trailingEps.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double trailingEps);
+            company.TrailingEps = parseResult ? trailingEps : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.enterpriseToRevenue.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double enterpriseToRevenue);
+            company.EnterpriseToRevenue = parseResult ? enterpriseToRevenue : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.enterpriseToEbitda.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double enterpriseToEbitda);
+            company.EnterpriseToEbitda = parseResult ? enterpriseToEbitda : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.52WeekChange.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double week52Change);
+            company.Week52Change = parseResult ? week52Change : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "defaultKeyStatistics.SandP52WeekChange.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double sandP52WeekChange);
+            company.SandP52WeekChange = parseResult ? sandP52WeekChange : null;
+            parseResult = long.TryParse(Helper.GetValueFromJson(companyInfo, "financialData.totalCash.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out long totalCash);
+            company.TotalCash = parseResult ? totalCash : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "financialData.totalCashPerShare.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double totalCashPerShare);
+            company.TotalCashPerShare = parseResult ? totalCashPerShare : null;
+            parseResult = long.TryParse(Helper.GetValueFromJson(companyInfo, "financialData.ebitda.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out long ebitda);
+            company.Ebitda = parseResult ? ebitda : null;
+            parseResult = long.TryParse(Helper.GetValueFromJson(companyInfo, "financialData.totalDebt.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out long totalDebt);
+            company.TotalDebt = parseResult ? totalDebt : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "financialData.currentRatio.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double currentRatio);
+            company.CurrentRatio = parseResult ? currentRatio : null;
+            parseResult = long.TryParse(Helper.GetValueFromJson(companyInfo, "financialData.totalRevenue.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out long revenue);
+            company.Revenue = parseResult ? revenue : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "financialData.debtToEquity.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double debtToEquity);
+            company.DebtToEquity = parseResult ? debtToEquity : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "financialData.revenuePerShare.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double revenuePerShare);
+            company.RevenuePerShare = parseResult ? revenuePerShare : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "financialData.returnOnAssets.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double returnOnAssets);
+            company.ReturnOnAssets = parseResult ? returnOnAssets : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "financialData.returnOnEquity.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double returnOnEquity);
+            company.ReturnOnEquity = parseResult ? returnOnEquity : null;
+            parseResult = long.TryParse(Helper.GetValueFromJson(companyInfo, "financialData.grossProfits.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out long grossProfits);
+            company.GrossProfits = parseResult ? grossProfits : null;
+            parseResult = long.TryParse(Helper.GetValueFromJson(companyInfo, "financialData.freeCashflow.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out long freeCashflow);
+            company.FreeCashflow = parseResult ? freeCashflow : null;
+            parseResult = long.TryParse(Helper.GetValueFromJson(companyInfo, "financialData.operatingCashflow.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out long operatingCashflow);
+            company.OperatingCashflow = parseResult ? operatingCashflow : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "financialData.revenueGrowth.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double revenueGrowth);
+            company.RevenueGrowth = parseResult ? revenueGrowth : null;
+            parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "financialData.operatingMargins.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double operatingMargins);
+            company.OperatingMargins = parseResult ? operatingMargins : null;
 
             if (company.Id > 0)
                 _context.Companies.Update(company);

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using diplom.Data;
 
@@ -10,9 +11,10 @@ using diplom.Data;
 namespace diplom.Migrations
 {
     [DbContext(typeof(diplomContext))]
-    partial class diplomContextModelSnapshot : ModelSnapshot
+    [Migration("20220403095315_CreateNewsQuotesImpactsTable")]
+    partial class CreateNewsQuotesImpactsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -146,6 +148,9 @@ namespace diplom.Migrations
                     b.Property<double?>("SandP52WeekChange")
                         .HasColumnType("double");
 
+                    b.Property<int?>("ShareId")
+                        .HasColumnType("int");
+
                     b.Property<long?>("SharesOutstanding")
                         .HasColumnType("bigint");
 
@@ -180,6 +185,8 @@ namespace diplom.Migrations
                         .HasColumnType("double");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ShareId");
 
                     b.ToTable("Companies");
                 });
@@ -274,8 +281,8 @@ namespace diplom.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<double>("Influence")
-                        .HasColumnType("double");
+                    b.Property<long>("Influence")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("WorldNewsId")
                         .HasColumnType("int");
@@ -312,9 +319,6 @@ namespace diplom.Migrations
                     b.Property<string>("ClassCode")
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("CompanyId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("CountryId")
                         .HasColumnType("int");
 
@@ -349,8 +353,6 @@ namespace diplom.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CompanyId");
 
                     b.HasIndex("CountryId");
 
@@ -399,6 +401,15 @@ namespace diplom.Migrations
                     b.Navigation("Share");
                 });
 
+            modelBuilder.Entity("diplom.Models.Company", b =>
+                {
+                    b.HasOne("diplom.Models.Share", "Share")
+                        .WithMany()
+                        .HasForeignKey("ShareId");
+
+                    b.Navigation("Share");
+                });
+
             modelBuilder.Entity("diplom.Models.CompanyEvents", b =>
                 {
                     b.HasOne("diplom.Models.Company", null)
@@ -434,10 +445,6 @@ namespace diplom.Migrations
 
             modelBuilder.Entity("diplom.Models.Share", b =>
                 {
-                    b.HasOne("diplom.Models.Company", "Company")
-                        .WithMany("Shares")
-                        .HasForeignKey("CompanyId");
-
                     b.HasOne("diplom.Models.Country", "Country")
                         .WithMany("Shares")
                         .HasForeignKey("CountryId");
@@ -449,8 +456,6 @@ namespace diplom.Migrations
                     b.HasOne("diplom.Models.Sector", "Sector")
                         .WithMany("Shares")
                         .HasForeignKey("SectorId");
-
-                    b.Navigation("Company");
 
                     b.Navigation("Country");
 
@@ -466,8 +471,6 @@ namespace diplom.Migrations
                     b.Navigation("Filings");
 
                     b.Navigation("NewsQuotesImpacts");
-
-                    b.Navigation("Shares");
                 });
 
             modelBuilder.Entity("diplom.Models.Country", b =>

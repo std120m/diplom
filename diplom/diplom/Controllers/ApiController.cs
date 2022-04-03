@@ -73,6 +73,7 @@ namespace diplom.Controllers
                     exchange = new Exchange(apiShare.Exchange);
                     _context.Exchanges.Add(exchange);
                 }
+                await _context.SaveChangesAsync();
 
                 IQueryable<Country> countries = _context.Countries.Include(country => country.Shares);
                 Country? country = countries.Any() ? countries.FirstOrDefault(country => country.Name == apiShare.CountryOfRiskName && country.Code == apiShare.CountryOfRisk) : null;
@@ -81,6 +82,7 @@ namespace diplom.Controllers
                     country = new Country(apiShare.CountryOfRiskName, apiShare.CountryOfRisk);
                     _context.Countries.Add(country);
                 }
+                await _context.SaveChangesAsync();
 
                 IQueryable<Sector> sectors = _context.Sectors.Include(sector => sector.Shares);
                 Sector? sector = sectors.Any() ? sectors.FirstOrDefault(sector => sector.Name == apiShare.Sector) : null;
@@ -89,38 +91,29 @@ namespace diplom.Controllers
                     sector = new Sector(apiShare.Sector);
                     _context.Sectors.Add(sector);
                 }
+                await _context.SaveChangesAsync();
 
                 IQueryable<Share> shares = _context.Shares.Include(share => share.Candles);
                 Share? share = shares.Any() ? shares.FirstOrDefault(shares => shares.Figi == apiShare.Figi) : null;
                 if (share != null)
                 {
                     share.Update(apiShare, exchange, country, sector);
-                    await new CandlesController(_context, _investApi, _configuration).UpdateCandles(share);
                     _context.Shares.Update(share);
                 }
                 else
                 {
                     share = new Share(apiShare, exchange, country, sector);
-                    await new CandlesController(_context, _investApi, _configuration).UpdateCandles(share);
                     _context.Shares.Add(share);
                 }
+                await _context.SaveChangesAsync();
+                await new CandlesController(_context, _investApi, _configuration).UpdateCandles(share);
 
                 IQueryable<Company> companies = _context.Companies;
-                Company? company = companies.Any() ? companies.FirstOrDefault(company => company.Share != null && company.Share.Figi == share.Figi) : null;
-                if (company != null)
-                {
-                    await new CompaniesController(_context).UpdateCompany(share, company);
-                    _context.Companies.Update(company);
-                }
-                else
-                {
+                Company? company = companies.Any() ? companies.FirstOrDefault(company => company.Shares.Count() > 0 && company.Shares.FirstOrDefault(companyShare => companyShare.Figi == share.Figi) != null) : null;
+                if (company == null)
                     company = new Company();
-                    await new CompaniesController(_context).UpdateCompany(share, company);
-                    _context.Companies.Add(company);
-                }
+                await new CompaniesController(_context).UpdateCompany(share, company);
             }
-
-            await _context.SaveChangesAsync();
         }
 
         // GET: api/company/{id}/events

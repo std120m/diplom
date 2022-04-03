@@ -35,7 +35,10 @@ namespace diplom.Helpers
             JsonElement result = json;
             foreach (string propertyName in propertyNames)
             {
-                result = result.GetProperty(propertyName);
+                bool hasPropertyValue = result.TryGetProperty(propertyName, out JsonElement propertyValue);
+                if (!hasPropertyValue)
+                    return String.Empty;
+                result = propertyValue;
             }
 
             return result.ToString();

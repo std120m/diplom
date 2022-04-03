@@ -17,9 +17,10 @@ namespace diplom.Models
         public long? IssueSize { get; set; }
         public long? IssuePlanSize { get; set; }
         public Country? Country { get; set; }
+        public Company? Company { get; set; }
         public Sector? Sector { get; set; }
         public ShareType ShareType { get; set; }
-        public ICollection<Candle> Candles { get; set; }
+        public ICollection<Candle> Candles { get; set; } = new List<Candle>();
 
         public Share() 
         {
@@ -43,7 +44,6 @@ namespace diplom.Models
 
         public Share(ApiShare apiShare):this()
         {
-            Candles = new List<Candle>();
             this.Update(apiShare);
         }
         public Share(ApiShare apiShare, Exchange exchange, Country country, Sector sector):this()
@@ -61,7 +61,7 @@ namespace diplom.Models
             ShareType = apiShare.ShareType;
             IssueSize = apiShare.IssueSize;
             IssuePlanSize = apiShare.IssueSizePlan;
-            IpoDate = apiShare.IpoDate.ToDateTime();
+            IpoDate = (apiShare.IpoDate == null ? null : apiShare.IpoDate.ToDateTime());
         }
         public void Update(ApiShare apiShare, Exchange exchange, Country country, Sector sector)
         {

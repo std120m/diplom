@@ -188,7 +188,8 @@ namespace diplom.Controllers
                     _context.Candles.Add(candle);
                 }
                 startParsingDate = tillParsingDate;
-                Thread.Sleep(1000);
+                await _context.SaveChangesAsync();
+                Thread.Sleep(500);
             }
 
             await _context.SaveChangesAsync();

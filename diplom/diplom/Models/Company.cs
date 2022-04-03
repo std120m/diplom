@@ -41,9 +41,11 @@ namespace diplom.Models
         public long? OperatingCashflow { get; set; }
         public double? RevenueGrowth { get; set; }
         public double? OperatingMargins { get; set; }
-        public Share? Share { get; set; }
+        public ICollection<Share> Shares { get; set; }
         public ICollection<CompanyEvents> Events { get; set; }
         public ICollection<CompanyFilings> Filings { get; set; }
+        public ICollection<NewsQuotesImpact> NewsQuotesImpacts { get; set; }
+        public ICollection<WorldNews> WorldNews { get; set; }
 
         public static string[] ApiModulesParams = new string[]
         {
@@ -68,8 +70,11 @@ namespace diplom.Models
 
         public Company()
         {
+            Shares = new List<Share>();
             Events = new List<CompanyEvents>();
             Filings = new List<CompanyFilings>();
+            WorldNews = new List<WorldNews>();
+            NewsQuotesImpacts = new List<NewsQuotesImpact>();
         }
     }
 }
