@@ -170,6 +170,8 @@ namespace diplom.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                await SaveCompany(company);
+                return;
             }
             using JsonDocument doc = JsonDocument.Parse(result);
             JsonElement root = doc.RootElement;
@@ -243,6 +245,11 @@ namespace diplom.Controllers
             parseResult = double.TryParse(Helper.GetValueFromJson(companyInfo, "financialData.operatingMargins.raw"), NumberStyles.Any, CultureInfo.InvariantCulture, out double operatingMargins);
             company.OperatingMargins = parseResult ? operatingMargins : null;
 
+            await SaveCompany(company);
+        }
+
+        private async Task SaveCompany(Company company)
+        {
             if (company.Id > 0)
                 _context.Companies.Update(company);
             else
