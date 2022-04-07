@@ -11,6 +11,8 @@ using diplom.Models;
 using System.Text.Json;
 using System.Globalization;
 using diplom.Helpers;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace diplom.Controllers
 {
@@ -163,6 +165,7 @@ namespace diplom.Controllers
 
             string result = String.Empty;
             HttpClient client = new HttpClient();
+            await SetBrandInfo(company, share);
             try
             {
                 result = await client.GetStringAsync("https://query1.finance.yahoo.com/v10/finance/quoteSummary/" + share.Ticker + "?modules=" + string.Join(',', Company.ApiModulesParams));
@@ -256,6 +259,37 @@ namespace diplom.Controllers
                 _context.Companies.Add(company);
 
             await _context.SaveChangesAsync();
+        }
+        private async Task SetBrandInfo(Company company, Share share)
+        {
+            string result = String.Empty;
+            HttpClient client = new HttpClient();
+            try
+            {
+                result = await client.GetStringAsync("https://www.tinkoff.ru/api/trading/symbols/brands");
+
+                JObject brandInfo = (JObject)JsonConvert.DeserializeObject(result);
+                JToken brands = brandInfo.First.Next.First.First.First;
+
+                foreach (JToken brand in brands)
+                {
+                    JToken tickers = brand["tickers"];
+                    foreach (JToken ticker in tickers)
+                    {
+                        if (ticker.ToString() == share.Ticker)
+                        {
+                            company.BrandInfo = brand["brandInfo"].ToString();
+                            break;
+                        }
+                    }
+                    if (company.BrandInfo != null)
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }

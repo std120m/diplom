@@ -1,6 +1,8 @@
-﻿using System.Net;
+﻿using Newtonsoft.Json;
+using System.Net;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Tinkoff.InvestApi.V1;
 
 namespace diplom.Helpers
@@ -40,6 +42,14 @@ namespace diplom.Helpers
                     return String.Empty;
                 result = propertyValue;
             }
+
+            return result.ToString();
+        }
+        public static string GetArrayFromJson(string json, string path)
+        {
+            dynamic? result = JsonConvert.DeserializeObject(json);
+
+
 
             return result.ToString();
         }

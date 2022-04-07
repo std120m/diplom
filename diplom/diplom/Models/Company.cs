@@ -8,6 +8,7 @@ namespace diplom.Models
         public int Id { get; set; }
         public string? Website { get; set; }
         public string? Description { get; set; }
+        public string? BrandInfo { get; set; }
         public long? EnterpriseValue { get; set; }
         public double? ForwardPE { get; set; }
         public double? ProfitMargins { get; set; }
