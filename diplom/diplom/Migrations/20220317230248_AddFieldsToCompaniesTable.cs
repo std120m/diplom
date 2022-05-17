@@ -20,7 +20,7 @@ namespace diplom.Migrations
                     Description = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     EnterpriseValue = table.Column<long>(type: "bigint", nullable: true),
-                    ForwardPE = table.Column<long>(type: "bigint", nullable: true),
+                    ForwardPE = table.Column<double>(type: "double", nullable: true),
                     ProfitMargins = table.Column<double>(type: "double", nullable: true),
                     FloatShares = table.Column<long>(type: "bigint", nullable: true),
                     FullTimeEmployees = table.Column<int>(type: "int", nullable: true),

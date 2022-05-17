@@ -160,43 +160,67 @@ namespace diplom.Controllers
         public async Task UpdateWorldNews()
         {
             IQueryable<WorldNews> worldNews = _context.WorldNews;
-            WorldNews lastWorldNews = worldNews.Any() ? worldNews.Last() : null;
+            WorldNews lastWorldNews = worldNews.Any() ? worldNews.OrderBy(news => news.DateTime).Last() : null;
 
-            string dateFormat = "yyyyMMdd";
             int startYear = int.Parse(_configuration["ParsingPeriod:Start:year"]);
             int startMonth = int.Parse(_configuration["ParsingPeriod:Start:month"]);
             int startDay = int.Parse(_configuration["ParsingPeriod:Start:day"]);
-            DateTime startParsingDate = new DateTime(startYear, startMonth, startDay);
+            DateTime parsingDate = new DateTime(startYear, startMonth, startDay);
 
             if (lastWorldNews != null)
-                startParsingDate = lastWorldNews.DateTime;
+                parsingDate = lastWorldNews.DateTime;
 
-            while (startParsingDate != DateTime.Now)
+            while (parsingDate != DateTime.Now)
             {
-                string pattern = @"list-item__content.*?<a.*?<a.*?list-item__title.*?>(.*?)<.*?list-item__date.*?>(.*?)" + (Helper.IsCurrentYear(startParsingDate) ? " " : " (.*?) ") + "(.*?), (.*?)<";
-                string url = $"/services/tagsearch/?date_start={startParsingDate.ToString(dateFormat)}&date={startParsingDate.ToString(dateFormat)}&tags%5B%5D=world";
-                string text = Helper.GetStringFromHtml(_configuration["WorldNewsDomain"] + url, Encoding.GetEncoding(65001));
-                foreach (Match match in Regex.Matches(text, pattern, RegexOptions.IgnoreCase))
-                {
-                    try
-                    {
-                        int timeIndex = Helper.IsCurrentYear(startParsingDate) ? 4 : 5;
-                        string title = match.Groups[1].Value;
-                        DateTime newsDate = new DateTime(Helper.IsCurrentYear(startParsingDate) ? DateTime.Now.Year : int.Parse(match.Groups[4].Value),
-                                                        int.Parse(Helper.MonthToNumber[match.Groups[3].Value]),
-                                                        int.Parse(match.Groups[2].Value),
-                                                        int.Parse(match.Groups[timeIndex].Value.Split(':')[0]),
-                                                        int.Parse(match.Groups[timeIndex].Value.Split(':')[1]), 0);
+                string formatDate = parsingDate.ToString("dd");
+                string formatMonth = parsingDate.ToString("MM");
+                string url = $"/news/{startYear}/{formatMonth}/{formatDate}";
 
-                        WorldNews news = new WorldNews();
-                        _context.WorldNews.Add(news);
+                ParseWorldNews(url, parsingDate);
+                parsingDate = parsingDate.AddDays(1);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private void ParseWorldNews(string url, DateTime parsingDate)
+        {
+            string pattern = "item news.*?class=\"time\">(.*?)<.*?<a class=\"titles\" href=\"(.*?)\">.*?class=\"card-title\">(.*?)<";
+            string formatDate = parsingDate.ToString("dd");
+            string formatMonth = parsingDate.ToString("MM");
+            string text = Helper.GetStringFromHtml(_configuration["WorldNewsDomain"] + url, Encoding.GetEncoding(65001));
+            foreach (Match match in Regex.Matches(text, pattern))
+            {
+                try
+                {
+                    string title = match.Groups[3].Value;
+                    string[] time = match.Groups[1].Value.Split(':');
+                    DateTime newsPublicationDate = parsingDate.AddHours(int.Parse(time[0]));
+                    newsPublicationDate = newsPublicationDate.AddMinutes(int.Parse(time[1]));
+                    string newsUrl = _configuration["WorldNewsDomain"] + match.Groups[2].Value;
+                    Thread.Sleep(400);
+                    string newsText = Helper.GetStringFromHtml(newsUrl, Encoding.GetEncoding(65001));
+                    string newsTextPattern = "\"articleBody\":\"(.*?)\"}";
+                    foreach (Match textMatch in Regex.Matches(newsText, newsTextPattern))
+                    {
+                        newsText = textMatch.Groups[1].Value;
                     }
-                    catch (Exception e) { Console.WriteLine("Error: " + e.Message); }
+
+                    WorldNews news = new WorldNews(newsPublicationDate, newsUrl, newsText);
+                    _context.WorldNews.Add(news);
                 }
-                startParsingDate = startParsingDate.AddDays(1);
+                catch (Exception e) { Console.WriteLine("Error: " + e.Message); }
             }
 
-            await _context.SaveChangesAsync();
+            string moreNewsPattern = "<a class=\"button-more-news__link\" data-path=\"(.*?)\"";
+            foreach (Match match in Regex.Matches(text, moreNewsPattern))
+            {
+                try
+                {
+                    string moreNewsUrl = match.Groups[1].Value;
+                    ParseWorldNews(moreNewsUrl, parsingDate);
+                }
+                catch (Exception e) { Console.WriteLine("Error: " + e.Message); }
+            }
         }
     }
 }

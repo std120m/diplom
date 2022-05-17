@@ -37,7 +37,7 @@ namespace diplom.Controllers
             _configuration = configuration;
         }
 
-        // GET: api/company
+        // GET: api/news
         [HttpGet("news")]
         public async Task UpdateWorldNews()
         {

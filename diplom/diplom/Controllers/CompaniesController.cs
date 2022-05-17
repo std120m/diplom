@@ -169,6 +169,7 @@ namespace diplom.Controllers
             try
             {
                 result = await client.GetStringAsync("https://query1.finance.yahoo.com/v10/finance/quoteSummary/" + share.Ticker + "?modules=" + string.Join(',', Company.ApiModulesParams));
+                // result = await client.GetStringAsync("https://www.tinkoff.ru/invest/stocks/AAPL/fundamentals/");
             }
             catch (Exception ex)
             {

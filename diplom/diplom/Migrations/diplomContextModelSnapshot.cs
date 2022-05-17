@@ -373,6 +373,14 @@ namespace diplom.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.HasKey("Id");
 
                     b.ToTable("World_News");
