@@ -17,6 +17,8 @@ using System.Text.RegularExpressions;
 using diplom.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Microsoft.ML;
+using static Diplom.MLModel;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -35,6 +37,25 @@ namespace diplom.Controllers
             _context = context;
             _investApi = investApi;
             _configuration = configuration;
+
+            MLContext mlContext = new MLContext();
+            ITransformer mlModel = mlContext.Model.Load("MLModel.zip", out var modelInputSchema);
+            var predEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(mlModel);
+
+            Console.WriteLine("Write 0 to exit");
+
+            var inputStr = string.Empty;
+
+            //while (inputStr != "0")
+            //{
+            //    inputStr = Console.ReadLine();
+            //    var input = new ModelInput();
+            //    input.Message = inputStr;
+            //    ModelOutput result = predEngine.Predict(input);
+
+            //    Console.WriteLine(result.Prediction ? "This is spam" : "Normal message");
+            //    Console.WriteLine("---");
+            //}
         }
 
         // GET: api/news
