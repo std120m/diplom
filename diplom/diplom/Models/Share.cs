@@ -1,4 +1,6 @@
 ﻿using diplom.Data;
+using Microsoft.EntityFrameworkCore;
+using System;
 using Tinkoff.InvestApi.V1;
 using ApiShare = Tinkoff.InvestApi.V1.Share;
 
@@ -12,21 +14,22 @@ namespace diplom.Models
         public string? ClassCode { get; set; }
         public string? Currency { get; set; }
         public string? Name { get; set; }
-        public Exchange? Exchange { get; set; }
+        public virtual Exchange? Exchange { get; set; }
         public DateTime? IpoDate { get; set; }
         public long? IssueSize { get; set; }
         public long? IssuePlanSize { get; set; }
-        public Country? Country { get; set; }
-        public Company? Company { get; set; }
-        public Sector? Sector { get; set; }
-        public ShareType ShareType { get; set; }
-        public ICollection<Candle> Candles { get; set; } = new List<Candle>();
+        public virtual Country? Country { get; set; }
+        public virtual Company? Company { get; set; }
+        public int? CompanyId { get; set; }
+        public virtual Sector? Sector { get; set; }
+        public virtual ShareType? ShareType { get; set; }
+        public virtual ICollection<Candle> Candles { get; set; } = new List<Candle>();
 
         public Share() 
         {
         }
 
-        public Share(string? figi, string? ticker, string? classCode, string? currency, string? name, Exchange? exchange, DateTime? ipoDate, long? issueSize, long? issuePlanSize, Country? country, Sector? sector, ShareType shareType) : this()
+        public Share(string? figi, string? ticker, string? classCode, string? currency, string? name, Exchange exchange, DateTime? ipoDate, long? issueSize, long? issuePlanSize, Country country, Sector sector, ShareType shareType) : this()
         {
             Figi = figi;
             Ticker = ticker;
@@ -69,6 +72,20 @@ namespace diplom.Models
             this.Country = country;
             this.Sector = sector;
             this.Update(apiShare);
+        }
+
+        public List<CandlesByDay> GetCandlesByDay(diplomContext context)
+        {
+            try
+            {
+                context.Database.ExecuteSqlRaw(
+                    @"CREATE VIEW View_CandlesByDay AS
+                    SELECT avg(Open) as Open, avg(Close) as Close, avg(High) as High, avg(Low) as Low, avg(Volume) as Volume, DATE_FORMAT(Time, '%Y-%m-%d') as Time, ShareId
+                    FROM candles group by DATE_FORMAT(Time, '%Y-%m-%d'), ShareId order by Time");
+            }
+            catch { }
+
+            return context.CandlesByDay.Where(c => c.ShareId == this.Id).ToList();
         }
     }
 }

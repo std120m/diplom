@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public string? Name { get; set; }
-        public ICollection<Share> Shares { get; set; }
+        public virtual ICollection<Share> Shares { get; set; }
 
         public Exchange(string? name)
         {

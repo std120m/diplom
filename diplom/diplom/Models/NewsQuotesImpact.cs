@@ -7,10 +7,10 @@ namespace diplom.Models
     {
         public long Id { get; set; }
         public int CompanyId { get; set; }
-        public Company Company { get; set; }
+        public virtual Company Company { get; set; }
 
         public int WorldNewsId { get; set; }
-        public WorldNews WorldNews { get; set; }
+        public virtual WorldNews WorldNews { get; set; }
 
         public double Influence { get; set; }
 

@@ -13,7 +13,7 @@ namespace diplom.Models
         public double? Low { get; set; }
         public DateTime Time { get; set; }
         public long? Volume { get; set; }
-        public Share? Share { get; set; }
+        public virtual Share? Share { get; set; }
 
         public Candle() { }
 

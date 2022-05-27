@@ -9,8 +9,8 @@ namespace diplom.Models
         public DateTime DateTime { get; set; }
         public String Url { get; set; }
         public String Text { get; set; }
-        public ICollection<NewsQuotesImpact> NewsQuotesImpacts { get; set; } = new List<NewsQuotesImpact>();
-        public ICollection<Company> Companies { get; set; } = new List<Company>();
+        public virtual ICollection<NewsQuotesImpact> NewsQuotesImpacts { get; set; } = new List<NewsQuotesImpact>();
+        //public virtual ICollection<Company> Companies { get; set; } = new List<Company>();
 
         public WorldNews()
         {

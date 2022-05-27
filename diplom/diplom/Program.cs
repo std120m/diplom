@@ -4,7 +4,7 @@ using diplom.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<diplomContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("diplomContext"), ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("diplomContext"))));
+    options.UseLazyLoadingProxies().UseMySql(builder.Configuration.GetConnectionString("diplomContext"), ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("diplomContext"))));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

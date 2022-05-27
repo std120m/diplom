@@ -14,6 +14,7 @@ namespace diplom.Data
         public diplomContext (DbContextOptions<diplomContext> options)
             : base(options)
         {
+
         }
 
         public DbSet<diplom.Models.Company> Companies { get; set; }
@@ -33,5 +34,25 @@ namespace diplom.Data
         public DbSet<diplom.Models.CompanyFilings> CompanyFilings { get; set; }
 
         public DbSet<diplom.Models.WorldNews> WorldNews { get; set; }
+
+
+        public DbSet<CandlesByDay> CandlesByDay { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder
+                .Entity<CandlesByDay>(
+                    eb =>
+                    {
+                        eb.HasNoKey();
+                        eb.ToView("View_CandlesByDay");
+                        eb.Property(v => v.Volume).HasColumnName("Volume");
+                        eb.Property(v => v.Open).HasColumnName("Open");
+                        eb.Property(v => v.Close).HasColumnName("Close");
+                        eb.Property(v => v.Low).HasColumnName("Low");
+                        eb.Property(v => v.High).HasColumnName("High");
+                        eb.Property(v => v.Time).HasColumnName("Time");
+                        eb.Property(v => v.ShareId).HasColumnName("ShareId");
+                    });
+        }
     }
 }

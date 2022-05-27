@@ -4,5 +4,56 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
+    <h3>@ViewData["share"]</h3>
+    <p>@ViewData["candles"]</p>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+<div id="chart_div" style="width: 1500px; height: 1000px;"></div>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(getCandles);
+        
+        function getCandles() {
+            var json;
+            $.ajax({  
+                type: "GET",  
+                url: 'Home/GetCandles',  
+                data: {},  
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    json = response;
+                    console.log('SDDDDDD', json);
+                    drawChart(json);
+                },
+            });
+        }
+
+        function drawChart(json) {
+            console.log(json);
+            var data = [];
+            for (var i = 0; i < json.length; i++) {
+                let row = [];
+                row.push(json[i].Time);
+                row.push(json[i].Low);
+                row.push(json[i].Open);
+                row.push(json[i].Close);
+                row.push(json[i].High);
+
+                data.push(row);
+            }     
+            console.log(data);
+            var data = google.visualization.arrayToDataTable(data.slice(-30), true);
+
+            var options = {
+                legend:'none'
+            };
+
+            var chart = new google.visualization.CandlestickChart(document.getElementById('chart_div'));
+
+            chart.draw(data, options);
+        }
+    </script>
