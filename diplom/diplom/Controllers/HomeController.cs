@@ -43,7 +43,7 @@ namespace diplom.Controllers
 
         public Microsoft.AspNetCore.Mvc.JsonResult GetCandles()
         {
-            Models.Share? share = _context.Shares.Find(3);
+            Models.Share? share = _context.Shares.Find(5);
             if (share == null)
                 return Json("Share not found");
             //ViewData["share"] = share.Name;

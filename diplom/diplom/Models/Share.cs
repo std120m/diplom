@@ -80,8 +80,22 @@ namespace diplom.Models
             {
                 context.Database.ExecuteSqlRaw(
                     @"CREATE VIEW View_CandlesByDay AS
-                    SELECT avg(Open) as Open, avg(Close) as Close, avg(High) as High, avg(Low) as Low, avg(Volume) as Volume, DATE_FORMAT(Time, '%Y-%m-%d') as Time, ShareId
-                    FROM candles group by DATE_FORMAT(Time, '%Y-%m-%d'), ShareId order by Time");
+                    select
+                      min(low) as low,
+                      max(high) as high,
+                      avg(volume) as volume,
+                      DATE_FORMAT(Time, '%Y-%m-%d') as day,
+                      ShareId,
+                      CAST(substring_index(group_concat(cast(open as CHAR) order by Time asc), ',', 1) AS DECIMAL(9, 2)) as open,
+                      CAST(substring_index(group_concat(cast(close as CHAR) order by Time desc), ',', 1) AS DECIMAL(9, 2)) as close
+                    from
+                      candles
+                    group by
+                      DATE_FORMAT(day, '%Y-%m-%d'), ShareId
+                    order by
+                      day
+                    ;"
+               );
             }
             catch { }
 

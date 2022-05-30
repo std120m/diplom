@@ -8,8 +8,10 @@
     <p>@ViewData["candles"]</p>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
-
-<div id="chart_div" style="width: 1500px; height: 1000px;"></div>
+ <div id="dashboard">
+    <div id="chart_div" style="width: 1500px; height: 1000px;"></div>
+    <div id="control" style='width: 915px; height: 50px;'></div>
+</div>
 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
@@ -26,30 +28,34 @@
                 dataType: "json",
                 success: function (response) {
                     json = response;
-                    console.log('SDDDDDD', json);
                     drawChart(json);
                 },
             });
         }
 
         function drawChart(json) {
-            console.log(json);
+            //console.log(json);
             var data = [];
             for (var i = 0; i < json.length; i++) {
                 let row = [];
-                row.push(json[i].Time);
+                row.push(new Date(json[i].Day));
                 row.push(json[i].Low);
                 row.push(json[i].Open);
                 row.push(json[i].Close);
                 row.push(json[i].High);
 
                 data.push(row);
-            }     
-            console.log(data);
+            }
+            //console.log(data);
             var data = google.visualization.arrayToDataTable(data.slice(-30), true);
 
             var options = {
-                legend:'none'
+                legend:'none',
+                explorer: {
+                    axis: 'horizontal',
+                    keepInBounds: true,
+                    maxZoomIn: .03
+                }
             };
 
             var chart = new google.visualization.CandlestickChart(document.getElementById('chart_div'));
@@ -57,3 +63,59 @@
             chart.draw(data, options);
         }
     </script>
+
+@*<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> 
+<div id="chart_div" style="width: 900px; height: 500px;"></div> 
+<script type="text/javascript">
+    google.charts.load('current', {
+        'packages': ['annotationchart']
+    });
+
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'Date');
+        data.addColumn('number', 'Kepler-22b mission');
+        data.addColumn('string', 'Kepler title');
+        data.addColumn('string', 'Kepler text');
+        data.addColumn('number', 'Gliese 163 mission');
+        data.addColumn('string', 'Gliese title');
+        data.addColumn('string', 'Gliese text');
+        data.addRows([
+            [new Date(2314, 2, 15), 12400, undefined, undefined,
+            10645, undefined, undefined
+            ],
+            [new Date(2314, 2, 16), 24045, 'Lalibertines', 'First encounter',
+            12374, undefined, undefined
+            ],
+            [new Date(2314, 2, 17), 35022, 'Lalibertines', 'They are very tall',
+            15766, 'Gallantors', 'First Encounter'
+            ],
+            [new Date(2314, 2, 18), 12284, 'Lalibertines', 'Attack on our crew!',
+            34334, 'Gallantors', 'Statement of shared principles'
+            ],
+            [new Date(2314, 2, 19), 8476, 'Lalibertines', 'Heavy casualties',
+            66467, 'Gallantors', 'Mysteries revealed'
+            ],
+            [new Date(2314, 2, 20), 0, 'Lalibertines', 'All crew lost',
+            79463, 'Gallantors', 'Omniscience achieved'
+            ]
+        ]);
+        var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
+        var options = {
+            displayAnnotations: true
+        };
+        google.visualization.events.addListener(chart, 'ready', onReady);
+        chart.draw(data, options);
+        function onReady() {
+            var x = document.getElementById('chart_div_AnnotationChart_zoomControlContainer').getElementsByTagName('button');
+            document.getElementById('chart_div_AnnotationChart_zoomControlContainer').style.fontSize = '14px';
+            for (var i = 0; i < x.length; i++) {
+            x[i].style.height = '40px';
+            x[i].style.width = '40px';
+            x[i].style.fontSize = '14px';
+            }
+        }
+    }
+</script>*@
