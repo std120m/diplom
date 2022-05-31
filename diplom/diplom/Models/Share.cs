@@ -76,28 +76,25 @@ namespace diplom.Models
 
         public List<CandlesByDay> GetCandlesByDay(diplomContext context)
         {
-            try
-            {
-                context.Database.ExecuteSqlRaw(
-                    @"CREATE VIEW View_CandlesByDay AS
-                    select
-                      min(low) as low,
-                      max(high) as high,
-                      avg(volume) as volume,
-                      DATE_FORMAT(Time, '%Y-%m-%d') as day,
-                      ShareId,
-                      CAST(substring_index(group_concat(cast(open as CHAR) order by Time asc), ',', 1) AS DECIMAL(9, 2)) as open,
-                      CAST(substring_index(group_concat(cast(close as CHAR) order by Time desc), ',', 1) AS DECIMAL(9, 2)) as close
-                    from
-                      candles
-                    group by
-                      DATE_FORMAT(day, '%Y-%m-%d'), ShareId
-                    order by
-                      day
-                    ;"
-               );
-            }
-            catch { }
+            context.Database.ExecuteSqlRaw(@"
+                DROP VIEW if exists View_CandlesByDay;
+                CREATE VIEW View_CandlesByDay AS
+                select
+                    min(low) as low,
+                    max(high) as high,
+                    avg(volume) as volume,
+                    DATE_FORMAT(Time, '%Y-%m-%d') as day,
+                    ShareId,
+                    CAST(substring_index(group_concat(cast(open as CHAR) order by Time asc), ',', 1) AS DECIMAL(9, 2)) as open,
+                    CAST(substring_index(group_concat(cast(close as CHAR) order by Time desc), ',', 1) AS DECIMAL(9, 2)) as close
+                from
+                    candles
+                group by
+                    DATE_FORMAT(day, '%Y-%m-%d'), ShareId
+                order by
+                    day
+                ;"
+            );
 
             return context.CandlesByDay.Where(c => c.ShareId == this.Id).ToList();
         }

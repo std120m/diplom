@@ -1,4 +1,6 @@
-﻿using diplom.Helpers;
+﻿using diplom.Data;
+using diplom.Helpers;
+using Microsoft.EntityFrameworkCore;
 using Tinkoff.InvestApi.V1;
 using ApiCandle = Tinkoff.InvestApi.V1.HistoricCandle;
 

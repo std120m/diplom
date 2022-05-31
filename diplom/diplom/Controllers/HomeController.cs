@@ -28,27 +28,30 @@ namespace diplom.Controllers
 
         public IActionResult Index()
         {
-            Models.Share? share = _context.Shares.Find(3);
-            if (share == null)
-                return NotFound();
-            ViewData["share"] = share.Name;
-            JsonSerializerOptions options = new()
-            {
-                ReferenceHandler = ReferenceHandler.IgnoreCycles,
-                WriteIndented = true
-            };
-            ViewData["candles"] = Json(share.GetCandlesByDay(_context), options).Value;
+            //Models.Share? share = _context.Shares.Find(3);
+            //if (share == null)
+            //    return NotFound();
+            //ViewData["share"] = share.Name;
+            //JsonSerializerOptions options = new()
+            //{
+            //    ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            //    WriteIndented = true
+            //};
+            //ViewData["candles"] = Json(share.GetCandlesByDay(_context), options).Value;
             return View();
         }
 
         public Microsoft.AspNetCore.Mvc.JsonResult GetCandles()
         {
-            Models.Share? share = _context.Shares.Find(5);
+            Microsoft.Extensions.Primitives.StringValues period, shareId;
+            if (!Request.Query.TryGetValue("period", out period))
+                return Json(null);
+            if (!Request.Query.TryGetValue("share", out shareId))
+                return Json("Share not found");
+
+            Models.Share? share = _context.Shares.Find(int.Parse(shareId.ToString()));
             if (share == null)
                 return Json("Share not found");
-            //ViewData["share"] = share.Name;
-            //ViewData["candles"] = Json(share.Candles, JsonRequestBehavior.AllowGet);
-            //share = new Models.Share { Figi = "werwerw", Name = "sfsdf" };
             JsonSerializerOptions options = new()
             {
                 ReferenceHandler = ReferenceHandler.IgnoreCycles,
