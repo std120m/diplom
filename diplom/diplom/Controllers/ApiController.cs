@@ -10,13 +10,12 @@ using Tinkoff.InvestApi.V1;
 using diplom.Models;
 using System.Net;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Google.Protobuf.Collections;
 using System.Text;
 using System.Text.RegularExpressions;
 using diplom.Helpers;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Microsoft.ML;
 using static Diplom.MLModel;
 
@@ -26,7 +25,7 @@ namespace diplom.Controllers
 {
     [Route("api")]
     [ApiController]
-    public class ApiController : ControllerBase
+    public class ApiController : Controller
     {
         private readonly diplomContext _context;
         private readonly InvestApiClient _investApi;
@@ -56,6 +55,29 @@ namespace diplom.Controllers
             //    Console.WriteLine(result.Prediction ? "This is spam" : "Normal message");
             //    Console.WriteLine("---");
             //}
+        }
+
+        // GET: api/share/candles
+        [HttpGet("share/candles")]
+        public JsonResult GetCandles()
+        {
+            Microsoft.Extensions.Primitives.StringValues period, shareId;
+            if (!Request.Query.TryGetValue("period", out period))
+                return Json(null);
+            if (!Request.Query.TryGetValue("share", out shareId))
+                return Json("Share not found");
+
+            Models.Share? share = _context.Shares.Find(int.Parse(shareId.ToString()));
+            if (share == null)
+                return Json("Share not found");
+
+            StockRecommendation recommendation = FundamentalAnalysis.GetSummaryRecommendation(share);
+            JsonSerializerOptions options = new()
+            {
+                ReferenceHandler = ReferenceHandler.IgnoreCycles,
+                WriteIndented = true
+            };
+            return Json(share.GetCandlesByDay(_context), options);
         }
 
         // GET: api/news

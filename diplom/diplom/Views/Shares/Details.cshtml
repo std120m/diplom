@@ -5,6 +5,126 @@
 }
 
 <h1>Details</h1>
+<div id="dashboard">
+    <button id="changeChartType_b">Change chart type</button>
+    <div id="chart_div" style="width: 1500px; height: 1000px;"></div>
+    <div id="control" style='width: 915px; height: 50px;'></div>
+</div>
+
+<script type="text/javascript">
+    const Periods = { DAY: 'day', HOUR: 'hour' };
+    const ChartTypes = { CANDLES: 'candles', TREND: 'trend' };
+    const changeChartTypeButton = document.getElementById('changeChartType_b')
+    var currentChartType = ChartTypes.TREND;
+    var currentShareId = window.location.href.split('/')[5];
+    var currentChartPeriod = Periods.DAY;
+
+    changeChartTypeButton.addEventListener("click", () => {
+	    switch(currentChartType) {
+            case ChartTypes.CANDLES:
+                drawTrend(currentChartPeriod, currentShareId);
+                currentChartType = ChartTypes.TREND;
+                break;
+            case ChartTypes.TREND:
+                drawCandles(currentChartPeriod, currentShareId);
+                currentChartType = ChartTypes.CANDLES;
+                break;
+            default:
+                drawCandles(currentChartPeriod, currentShareId);
+                currentChartType = ChartTypes.CANDLES;
+                break;
+        }
+    });
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawTrend(Periods.DAY, currentShareId));
+        
+    function drawCandles(period, share) {
+        $.ajax({
+            type: "GET",
+            url: '/api/share/candles',  
+            data: {
+                period: period,
+                share: share
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                drawCandlesChart(response);
+            },
+        });
+    }
+
+    function drawTrend(period, share) {
+        $.ajax({
+            type: "GET",
+            url: '/api/share/candles',  
+            data: {
+                period: period,
+                share: share
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                drawTrendChart(response);
+            },
+        });
+    }
+
+    function drawTrendChart(json) {
+        var data = [];
+        for (var i = 0; i < json.length; i++) {
+            let row = [];
+            row.push(new Date(json[i].Day));
+            row.push(json[i].Open);
+
+            data.push(row);
+        }
+        var data = google.visualization.arrayToDataTable(data, true);
+
+        var options = {
+            legend:'none',
+            explorer: {
+                axis: 'horizontal',
+                keepInBounds: true,
+                maxZoomIn: .005,
+                maxZoomOut: 1.1
+            }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+    }
+
+    function drawCandlesChart(json) {
+        var data = [];
+        for (var i = 0; i < json.length; i++) {
+            let row = [];
+            row.push(new Date(json[i].Day));
+            row.push(json[i].Low);
+            row.push(json[i].Open);
+            row.push(json[i].Close);
+            row.push(json[i].High);
+
+            data.push(row);
+        }
+        var data = google.visualization.arrayToDataTable(data, true);
+
+        var options = {
+            legend:'none',
+            explorer: {
+                axis: 'horizontal',
+                keepInBounds: true,
+                maxZoomIn: .005,
+                maxZoomOut: 1.1
+            }
+        };
+
+        var chart = new google.visualization.CandlestickChart(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+    }
+</script>
 
 <div>
     <h4>Share</h4>

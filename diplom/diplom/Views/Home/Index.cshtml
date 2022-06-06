@@ -1,13 +1,15 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@model Share
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <h3>@ViewData["share"]</h3>
+    @*<h3>@Model.Ticker</h3>*@
     <p>@ViewData["candles"]</p>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
  <div id="dashboard">
     <button id="changeChartType_b">Change chart type</button>
     <div id="chart_div" style="width: 1500px; height: 1000px;"></div>

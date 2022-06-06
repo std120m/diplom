@@ -10,9 +10,12 @@ using Tinkoff.InvestApi;
 using Tinkoff.InvestApi.V1;
 using Candle = diplom.Models.Candle;
 using Controller = Microsoft.AspNetCore.Mvc.Controller;
+using HttpGetAttribute = Microsoft.AspNetCore.Mvc.HttpGetAttribute;
+using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
 namespace diplom.Controllers
 {
+    //[Route("/")]
     public class HomeController : Controller
     {
         private readonly diplomContext _context;
@@ -28,7 +31,7 @@ namespace diplom.Controllers
 
         public IActionResult Index()
         {
-            //Models.Share? share = _context.Shares.Find(3);
+            List<Models.Share> shares = _context.Shares.ToList();
             //if (share == null)
             //    return NotFound();
             //ViewData["share"] = share.Name;
@@ -37,8 +40,24 @@ namespace diplom.Controllers
             //    ReferenceHandler = ReferenceHandler.IgnoreCycles,
             //    WriteIndented = true
             //};
-            //ViewData["candles"] = Json(share.GetCandlesByDay(_context), options).Value;
+            ViewData["shares"] = shares;
             return View();
+        }
+
+        //[HttpGet("share/{id?}")]
+        public IActionResult Share(int? id = null)
+        {
+            Models.Share? share = _context.Shares.Find(3);
+            if (share == null)
+                return NotFound();
+            //ViewData["share"] = share.Name;
+            //JsonSerializerOptions options = new()
+            //{
+            //    ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            //    WriteIndented = true
+            //};
+            ViewData["share"] = share;
+            return View(share);
         }
 
         public Microsoft.AspNetCore.Mvc.JsonResult GetCandles()
