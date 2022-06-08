@@ -10,7 +10,7 @@ namespace diplom.Models
         public double? Close { get; set; }
         public double? High { get; set; }
         public double? Low { get; set; }
-        public string? Day { get; set; }
+        public string? Date { get; set; }
         //public DateTime Time
         //{
         //    get { return Time; }

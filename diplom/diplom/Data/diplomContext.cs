@@ -50,7 +50,7 @@ namespace diplom.Data
                         eb.Property(v => v.Close).HasColumnName("Close");
                         eb.Property(v => v.Low).HasColumnName("Low");
                         eb.Property(v => v.High).HasColumnName("High");
-                        eb.Property(v => v.Day).HasColumnName("Day");
+                        eb.Property(v => v.Date).HasColumnName("Date");
                         eb.Property(v => v.ShareId).HasColumnName("ShareId");
                     });
         }

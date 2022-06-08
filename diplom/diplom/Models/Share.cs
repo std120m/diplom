@@ -83,16 +83,16 @@ namespace diplom.Models
                     min(low) as low,
                     max(high) as high,
                     avg(volume) as volume,
-                    DATE_FORMAT(Time, '%Y-%m-%d') as day,
+                    DATE_FORMAT(Time, '%Y-%m-%d') as date,
                     ShareId,
                     CAST(substring_index(group_concat(cast(open as CHAR) order by Time asc), ',', 1) AS DECIMAL(9, 2)) as open,
                     CAST(substring_index(group_concat(cast(close as CHAR) order by Time desc), ',', 1) AS DECIMAL(9, 2)) as close
                 from
                     candles
                 group by
-                    DATE_FORMAT(day, '%Y-%m-%d'), ShareId
+                    DATE_FORMAT(date, '%Y-%m-%d'), ShareId
                 order by
-                    day
+                    date
                 ;"
             );
 

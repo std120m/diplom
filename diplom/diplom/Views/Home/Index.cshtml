@@ -1,63 +1,32 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-@model Share
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    @*<h3>@Model.Ticker</h3>*@
-    <p>@ViewData["candles"]</p>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
 
  <div id="dashboard">
-    <button id="changeChartType_b">Change chart type</button>
-    <div id="chart_div" style="width: 1500px; height: 1000px;"></div>
-    <div id="control" style='width: 915px; height: 50px;'></div>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> 
+    <div id="chart_div" style="width: 1500px; height: 500px;"></div>
+    <div style="margin-top: 50px">
+        <p>Список новостей</p>
+        <div id="news_container">
+
+        </div>
+    </div>
 </div>
 
 <script type="text/javascript">
     const Periods = { DAY: 'day', HOUR: 'hour' };
     const ChartTypes = { CANDLES: 'candles', TREND: 'trend' };
-    const changeChartTypeButton = document.getElementById('changeChartType_b')
-    var currentChartType = ChartTypes.TREND;
-    var currentShareId = 5;
-    var currentChartPeriod = Periods.DAY;
+    let currentChartType = ChartTypes.TREND;
+    let shareIds = [5, 6, 7, 10];
+    let currentChartPeriod = Periods.DAY;
 
-    changeChartTypeButton.addEventListener("click", () => {
-	    switch(currentChartType) {
-            case ChartTypes.CANDLES:
-                drawTrend(currentChartPeriod, currentShareId);
-                currentChartType = ChartTypes.TREND;
-                break;
-            case ChartTypes.TREND:
-                drawCandles(currentChartPeriod, currentShareId);
-                currentChartType = ChartTypes.CANDLES;
-                break;
-            default:
-                drawCandles(currentChartPeriod, currentShareId);
-                currentChartType = ChartTypes.CANDLES;
-                break;
-        }
-    });
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawTrend(Periods.DAY, currentShareId));
-        
-    function drawCandles(period, share) {
-        $.ajax({
-            type: "GET",
-            url: 'Home/GetCandles',  
-            data: {
-                period: period,
-                share: share
-            },
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: function (response) {
-                drawCandlesChart(response);
-            },
-        });
-    }
+    google.charts.load('current', {'packages': ['annotationchart']});
+    google.charts.setOnLoadCallback(function() { drawTrend(Periods.DAY, shareIds) });
 
     function drawTrend(period, share) {
         $.ajax({
@@ -65,124 +34,71 @@
             url: 'Home/GetCandles',  
             data: {
                 period: period,
-                share: share
+                shareIds: shareIds
             },
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (response) {
-                drawTrendChart(response);
+                drawChart(response);
             },
         });
     }
 
-    function drawTrendChart(json) {
-        var data = [];
-        for (var i = 0; i < json.length; i++) {
-            let row = [];
-            row.push(new Date(json[i].Day));
-            row.push(json[i].Open);
-
-            data.push(row);
+    function drawChart(json) {
+        let shares = json[1];
+        let news = json[0];
+        let data = new google.visualization.DataTable();
+        
+        for (let i = 0; i < shares.length; i++) {
+            data.addColumn('date', 'Date');
+            data.addColumn('number', 'open_' + shares[i][0]);
+            data.addColumn('string', shares[i][0]);
         }
-        var data = google.visualization.arrayToDataTable(data, true);
-
-        var options = {
-            legend:'none',
-            explorer: {
-                axis: 'horizontal',
-                keepInBounds: true,
-                maxZoomIn: .5,
-                maxZoomOut: 1.1
-            }
-        };
-
-        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-
-        chart.draw(data, options);
-    }
-
-    function drawCandlesChart(json) {
-        var data = [];
-        for (var i = 0; i < json.length; i++) {
+        let rows = [];
+        for (let i = 0; i < shares.length; i++) {
+            let shareName = shares[i][0];
+            let candles = shares[i][1];
             let row = [];
-            row.push(new Date(json[i].Day));
-            row.push(json[i].Low);
-            row.push(json[i].Open);
-            row.push(json[i].Close);
-            row.push(json[i].High);
-
-            data.push(row);
-        }
-        var data = google.visualization.arrayToDataTable(data, true);
-
-        var options = {
-            legend:'none',
-            explorer: {
-                axis: 'horizontal',
-                keepInBounds: true,
-                maxZoomIn: .1,
-                maxZoomOut: 1.1
+            for (let j = 0; j < candles.length; j++) {
+                row.push(new Date(candles[j].Date));
+                row.push(candles[j].Low);
+                row.push(shareName);
+                
             }
-        };
+        }
+        console.log(row);
+        rows.push(row);
+        console.log(rows);
+        data.addRows(rows);
 
-        var chart = new google.visualization.CandlestickChart(document.getElementById('chart_div'));
-
-        chart.draw(data, options);
-    }
-</script>
-
-@*<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> 
-<div id="chart_div" style="width: 900px; height: 500px;"></div> 
-<script type="text/javascript">
-    google.charts.load('current', {
-        'packages': ['annotationchart']
-    });
-
-    google.charts.setOnLoadCallback(drawChart);
-
-    function drawChart() {
-        var data = new google.visualization.DataTable();
-        data.addColumn('date', 'Date');
-        data.addColumn('number', 'Kepler-22b mission');
-        data.addColumn('string', 'Kepler title');
-        data.addColumn('string', 'Kepler text');
-        data.addColumn('number', 'Gliese 163 mission');
-        data.addColumn('string', 'Gliese title');
-        data.addColumn('string', 'Gliese text');
-        data.addRows([
-            [new Date(2314, 2, 15), 12400, undefined, undefined,
-            10645, undefined, undefined
-            ],
-            [new Date(2314, 2, 16), 24045, 'Lalibertines', 'First encounter',
-            12374, undefined, undefined
-            ],
-            [new Date(2314, 2, 17), 35022, 'Lalibertines', 'They are very tall',
-            15766, 'Gallantors', 'First Encounter'
-            ],
-            [new Date(2314, 2, 18), 12284, 'Lalibertines', 'Attack on our crew!',
-            34334, 'Gallantors', 'Statement of shared principles'
-            ],
-            [new Date(2314, 2, 19), 8476, 'Lalibertines', 'Heavy casualties',
-            66467, 'Gallantors', 'Mysteries revealed'
-            ],
-            [new Date(2314, 2, 20), 0, 'Lalibertines', 'All crew lost',
-            79463, 'Gallantors', 'Omniscience achieved'
-            ]
-        ]);
-        var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
-        var options = {
-            displayAnnotations: true
+        let chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
+        let options = {
+            displayAnnotations: false
         };
         google.visualization.events.addListener(chart, 'ready', onReady);
+        google.visualization.events.addListener(chart, 'select', onSelectDate);
         chart.draw(data, options);
         function onReady() {
-            var x = document.getElementById('chart_div_AnnotationChart_zoomControlContainer').getElementsByTagName('button');
+            let x = document.getElementById('chart_div_AnnotationChart_zoomControlContainer').getElementsByTagName('button');
             document.getElementById('chart_div_AnnotationChart_zoomControlContainer').style.fontSize = '14px';
-            for (var i = 0; i < x.length; i++) {
-            x[i].style.height = '40px';
-            x[i].style.width = '40px';
-            x[i].style.fontSize = '14px';
+            for (let i = 0; i < x.length; i++) {
+                x[i].style.height = '40px';
+                x[i].style.width = '40px';
+                x[i].style.fontSize = '14px';
+            }
+        }
+        function onSelectDate() {
+            let selection = chart.getSelection();
+            let i = selection[0].row;
+            let date = candles[i].Date;
+            console.log(new Date(news[0].DateTime).toDateString());
+            const result = news.filter(currentNews => new Date(currentNews.DateTime).toDateString() == new Date(date).toDateString());
+            console.log(result);
+            let newsContainer = document.getElementById('news_container');
+             for (let i = 0; i < result.length; i++) {
+                 let newsElement = '<p>'+result[i].Text+'</p>';
+                 $("#news_container").append(newsElement);
             }
         }
     }
-</script>*@
+</script>

@@ -62,21 +62,33 @@ namespace diplom.Controllers
 
         public Microsoft.AspNetCore.Mvc.JsonResult GetCandles()
         {
-            Microsoft.Extensions.Primitives.StringValues period, shareId;
+            Microsoft.Extensions.Primitives.StringValues period;
             if (!Request.Query.TryGetValue("period", out period))
                 return Json(null);
-            if (!Request.Query.TryGetValue("share", out shareId))
-                return Json("Share not found");
+            string[] shareIds = Request.Query.ToList()[1].Value.ToArray();
 
-            Models.Share? share = _context.Shares.Find(int.Parse(shareId.ToString()));
-            if (share == null)
-                return Json("Share not found");
+            List<Models.Share> shares = _context.Shares.Where(s => shareIds.Contains(s.Id.ToString())).ToList();
+            if (shares.Count == 0)
+                return Json("Shares not found");
             JsonSerializerOptions options = new()
             {
                 ReferenceHandler = ReferenceHandler.IgnoreCycles,
                 WriteIndented = true
             };
-            return Json(share.GetCandlesByDay(_context), options);
+            List<WorldNews> news = _context.WorldNews.ToList();
+            List<object[]> candles = new List<object[]>();
+            foreach (Models.Share share in shares)
+            {
+                object[] shareInfo = new object[2];
+                shareInfo[0] = share.Name ?? "";
+                shareInfo[1] = share.GetCandlesByDay(_context);
+                candles.Add(shareInfo);
+            }
+            object[] result = new object[2];
+            result[0] = news;
+            result[1] = candles;
+            return Json(result, options);
+            //return Json(share.GetCandlesByDay(_context), options);
         }
 
         public IActionResult Privacy()
