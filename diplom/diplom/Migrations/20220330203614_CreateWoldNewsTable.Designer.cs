@@ -195,7 +195,7 @@ namespace diplom.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("CompanyEvents");
+                    b.ToTable("Company_Events");
                 });
 
             modelBuilder.Entity("diplom.Models.CompanyFilings", b =>
@@ -223,7 +223,7 @@ namespace diplom.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("CompanyFilings");
+                    b.ToTable("Company_Filings");
                 });
 
             modelBuilder.Entity("diplom.Models.Country", b =>

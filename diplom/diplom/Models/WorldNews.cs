@@ -9,6 +9,7 @@ namespace diplom.Models
         public DateTime DateTime { get; set; }
         public String Url { get; set; }
         public String Text { get; set; }
+        public String Title { get; set; }
         public virtual ICollection<NewsQuotesImpact> NewsQuotesImpacts { get; set; } = new List<NewsQuotesImpact>();
         //public virtual ICollection<Company> Companies { get; set; } = new List<Company>();
 
@@ -16,13 +17,15 @@ namespace diplom.Models
         {
             Url = String.Empty;
             Text = String.Empty;
+            Title = String.Empty;
         }
 
-        public WorldNews(DateTime dateTime, string url, string text)
+        public WorldNews(DateTime dateTime, string url, string text, string title)
         {
             DateTime = dateTime;
             Url = url;
             Text = text;
+            Title = title;
         }
     }
 }

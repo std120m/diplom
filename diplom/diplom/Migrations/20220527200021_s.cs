@@ -9,39 +9,39 @@ namespace diplom.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_CompanyEvents_Companies_CompanyId",
-                table: "CompanyEvents");
+                name: "FK_Company_Events_Companies_CompanyId",
+                table: "Company_Events");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_CompanyFilings_Companies_CompanyId",
-                table: "CompanyFilings");
+                name: "FK_Company_Filings_Companies_CompanyId",
+                table: "Company_Filings");
 
             migrationBuilder.DropTable(
-                name: "CompanyWorldNews");
+                name: "Company_World_News");
 
             migrationBuilder.DropPrimaryKey(
-                name: "PK_CompanyFilings",
-                table: "CompanyFilings");
+                name: "PK_Company_Filings",
+                table: "Company_Filings");
 
             migrationBuilder.DropPrimaryKey(
-                name: "PK_CompanyEvents",
-                table: "CompanyEvents");
+                name: "PK_Company_Events",
+                table: "Company_Events");
 
             migrationBuilder.RenameTable(
-                name: "CompanyFilings",
+                name: "Company_Filings",
                 newName: "Company_Filings");
 
             migrationBuilder.RenameTable(
-                name: "CompanyEvents",
+                name: "Company_Events",
                 newName: "Company_Events");
 
             migrationBuilder.RenameIndex(
-                name: "IX_CompanyFilings_CompanyId",
+                name: "IX_Company_Filings_CompanyId",
                 table: "Company_Filings",
                 newName: "IX_Company_Filings_CompanyId");
 
             migrationBuilder.RenameIndex(
-                name: "IX_CompanyEvents_CompanyId",
+                name: "IX_Company_Events_CompanyId",
                 table: "Company_Events",
                 newName: "IX_Company_Events_CompanyId");
 

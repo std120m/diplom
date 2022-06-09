@@ -59,6 +59,10 @@ namespace diplom.Migrations
                         .HasColumnType("double")
                         .HasColumnName("Close");
 
+                    b.Property<string>("Date")
+                        .HasColumnType("longtext")
+                        .HasColumnName("Date");
+
                     b.Property<double?>("High")
                         .HasColumnType("double")
                         .HasColumnName("High");
@@ -71,9 +75,9 @@ namespace diplom.Migrations
                         .HasColumnType("double")
                         .HasColumnName("Open");
 
-                    b.Property<DateTime>("Time")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("Time");
+                    b.Property<long?>("ShareId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("ShareId");
 
                     b.Property<long?>("Volume")
                         .HasColumnType("bigint")
@@ -388,6 +392,10 @@ namespace diplom.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("longtext");
 

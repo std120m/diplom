@@ -49,31 +49,43 @@
         let news = json[0];
         let data = new google.visualization.DataTable();
         
+        let startDate = new Date(shares[0][1][0].Date);
+        let finishDate = new Date(shares[0][1][0].Date);
+        data.addColumn('date', 'Date');
         for (let i = 0; i < shares.length; i++) {
-            data.addColumn('date', 'Date');
-            data.addColumn('number', 'open_' + shares[i][0]);
-            data.addColumn('string', shares[i][0]);
+            data.addColumn('number', shares[i][0]);
+            if (startDate > new Date(shares[i][1][0].Date))
+                startDate = new Date(shares[i][1][0].Date);
+            if (finishDate < new Date(shares[i][1][shares[i][1].length - 1].Date))
+                finishDate = new Date(shares[i][1][shares[i][1].length - 1].Date);
         }
         let rows = [];
-        for (let i = 0; i < shares.length; i++) {
-            let shareName = shares[i][0];
-            let candles = shares[i][1];
+        for (let currentData = startDate; currentData < finishDate; currentData = addDays(currentData, 1)) {
             let row = [];
-            for (let j = 0; j < candles.length; j++) {
-                row.push(new Date(candles[j].Date));
-                row.push(candles[j].Low);
-                row.push(shareName);
-                
+            let skip = true;
+            row.push(currentData);
+            for (let i = 0; i < shares.length; i++) {
+                let shareName = shares[i][0];
+                let candles = shares[i][1];
+                let candle = candles.filter(currentCandle => new Date(currentCandle.Date).toDateString() == currentData.toDateString())[0];
+                let previousCandle = null;
+                if (rows.length && rows[rows.length - 1][i + 1]) {
+                    previousCandle = rows[rows.length - 1][i + 1];
+                }
+                row.push(candle ? candle.Low : previousCandle);
+                if (candle)
+                    skip = false;
             }
+            if (skip)
+                continue;
+            rows.push(row);
         }
-        console.log(row);
-        rows.push(row);
-        console.log(rows);
         data.addRows(rows);
 
         let chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
         let options = {
-            displayAnnotations: false
+            displayAnnotations: false,
+            displayAnnotationsFilter: true
         };
         google.visualization.events.addListener(chart, 'ready', onReady);
         google.visualization.events.addListener(chart, 'select', onSelectDate);
@@ -90,8 +102,7 @@
         function onSelectDate() {
             let selection = chart.getSelection();
             let i = selection[0].row;
-            let date = candles[i].Date;
-            console.log(new Date(news[0].DateTime).toDateString());
+            let date = rows[i][0];
             const result = news.filter(currentNews => new Date(currentNews.DateTime).toDateString() == new Date(date).toDateString());
             console.log(result);
             let newsContainer = document.getElementById('news_container');
@@ -99,6 +110,12 @@
                  let newsElement = '<p>'+result[i].Text+'</p>';
                  $("#news_container").append(newsElement);
             }
+        }
+
+        function addDays(date, days) {
+            var result = new Date(date);
+            result.setDate(result.getDate() + days);
+            return result;
         }
     }
 </script>

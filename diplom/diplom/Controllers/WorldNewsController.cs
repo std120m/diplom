@@ -205,7 +205,7 @@ namespace diplom.Controllers
                         newsText = textMatch.Groups[1].Value;
                     }
 
-                    WorldNews news = new WorldNews(newsPublicationDate, newsUrl, newsText);
+                    WorldNews news = new WorldNews(newsPublicationDate, newsUrl, newsText, title);
                     _context.WorldNews.Add(news);
                 }
                 catch (Exception e) { Console.WriteLine("Error: " + e.Message); }
