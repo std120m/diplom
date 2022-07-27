@@ -31,17 +31,19 @@ namespace diplom.Controllers
 
         public IActionResult Index()
         {
-            List<Models.Share> shares = _context.Shares.ToList();
-            //if (share == null)
-            //    return NotFound();
-            //ViewData["share"] = share.Name;
-            //JsonSerializerOptions options = new()
-            //{
-            //    ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            //    WriteIndented = true
-            //};
-            ViewData["shares"] = shares;
-            return View();
+            try
+            {
+                ViewData["shares"] = new SharesController(_context).GetShares();
+                ViewData["candles"] = new CandlesController(_context).GetCandles();
+                ViewData["counties"] = new CountriesController(_context).GetCounties();
+                ViewData["exchanges"] = new ExchangesController(_context).GetExchanges();
+
+
+                return View();
+            } catch (Exception e)
+            {
+                return View("~/Views/Errors/500.cshtml");
+            }
         }
 
         //[HttpGet("share/{id?}")]
@@ -50,12 +52,6 @@ namespace diplom.Controllers
             Models.Share? share = _context.Shares.Find(3);
             if (share == null)
                 return NotFound();
-            //ViewData["share"] = share.Name;
-            //JsonSerializerOptions options = new()
-            //{
-            //    ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            //    WriteIndented = true
-            //};
             ViewData["share"] = share;
             return View(share);
         }
@@ -88,7 +84,6 @@ namespace diplom.Controllers
             result[0] = news;
             result[1] = candles;
             return Json(result, options);
-            //return Json(share.GetCandlesByDay(_context), options);
         }
 
         public IActionResult Privacy()

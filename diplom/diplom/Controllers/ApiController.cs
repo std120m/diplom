@@ -36,25 +36,6 @@ namespace diplom.Controllers
             _context = context;
             _investApi = investApi;
             _configuration = configuration;
-
-            MLContext mlContext = new MLContext();
-            ITransformer mlModel = mlContext.Model.Load("MLModel.zip", out var modelInputSchema);
-            var predEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(mlModel);
-
-            Console.WriteLine("Write 0 to exit");
-
-            var inputStr = string.Empty;
-
-            //while (inputStr != "0")
-            //{
-            //    inputStr = Console.ReadLine();
-            //    var input = new ModelInput();
-            //    input.Message = inputStr;
-            //    ModelOutput result = predEngine.Predict(input);
-
-            //    Console.WriteLine(result.Prediction ? "This is spam" : "Normal message");
-            //    Console.WriteLine("---");
-            //}
         }
 
         // GET: api/share/candles
@@ -159,6 +140,13 @@ namespace diplom.Controllers
                     company = new Company();
                 await new CompaniesController(_context).UpdateCompany(share, company);
             }
+        }
+
+        // GET: api/candles/prediction
+        [HttpGet("candles/prediction")]
+        public JsonResult GetCandlesPrediction([Bind("Ticker")] Share share)
+        {
+            return Json(TechnicalAnalysis.GetPrediction(share));
         }
 
         // GET: api/company/{id}/events

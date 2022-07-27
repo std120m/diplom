@@ -150,5 +150,10 @@ namespace diplom.Controllers
         {
             return _context.Countries.Any(e => e.Id == id);
         }
+
+        public List<Country> GetCounties()
+        {
+            return _context.Countries.ToList();
+        }
     }
 }

@@ -24,6 +24,11 @@ namespace diplom.Controllers
         private readonly InvestApiClient _investApi;
         private readonly IConfiguration _configuration;
 
+        public CandlesController(diplomContext context)
+        {
+            _context = context;
+        }
+
         public CandlesController(diplomContext context, InvestApiClient investApi, IConfiguration configuration)
         {
             _context = context;
@@ -193,6 +198,11 @@ namespace diplom.Controllers
             }
 
             await _context.SaveChangesAsync();
+        }
+
+        public List<Candle> GetCandles()
+        {
+            return _context.Candles.ToList();
         }
     }
 }

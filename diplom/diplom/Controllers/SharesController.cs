@@ -24,6 +24,11 @@ namespace diplom.Controllers
         private readonly InvestApiClient _investApi;
         private readonly IConfiguration _configuration;
 
+        public SharesController(diplomContext context)
+        {
+            _context = context;
+        }
+
         public SharesController(diplomContext context, InvestApiClient investApi, IConfiguration configuration)
         {
             _context = context;
@@ -160,6 +165,11 @@ namespace diplom.Controllers
         private bool ShareExists(int id)
         {
             return _context.Shares.Any(e => e.Id == id);
+        }
+
+        public List<Share> GetShares() 
+        {
+            return _context.Shares.ToList();
         }
     }
 }

@@ -5,6 +5,8 @@ using System;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using diplom.Models;
+
 namespace Diplom
 {
     public partial class MLModel
@@ -768,6 +770,10 @@ namespace Diplom
             [ColumnName(@"Open51")]
             public float Open51 { get; set; }
 
+            public ModelInput(Share share)
+            {
+                List<Candle> candles = share.Candles.TakeLast(50).ToList();
+            }
         }
 
         #endregion

@@ -150,5 +150,10 @@ namespace diplom.Controllers
         {
             return _context.Exchanges.Any(e => e.Id == id);
         }
+
+        public List<Exchange> GetExchanges()
+        {
+            return _context.Exchanges.ToList();
+        }
     }
 }
