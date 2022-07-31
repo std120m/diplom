@@ -143,10 +143,17 @@ namespace diplom.Controllers
         }
 
         // GET: api/candles/prediction
-        [HttpGet("candles/prediction")]
-        public JsonResult GetCandlesPrediction([Bind("Ticker")] Share share)
+        //[HttpGet("candles/prediction")]
+        //public JsonResult GetCandlesPrediction([Bind("Ticker")] Share share)
+        //{
+        //    return Json(TechnicalAnalysis.GetPrediction(share));
+        //}
+
+        // GET: api/candles/forecast
+        [HttpGet("candles/forecast")]
+        public void GetForecasting()
         {
-            return Json(TechnicalAnalysis.GetPrediction(share));
+            new ForecastingModel().GetForecast(_configuration, _context);
         }
 
         // GET: api/company/{id}/events
