@@ -152,6 +152,15 @@ namespace diplom.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public List<WorldNews> GetWorldNews(DateTime? date = null)
+        {
+            var query =  _context.WorldNews;
+            if (date != null)
+                return query.Where(news => news.DateTime.Date == date.Value.Date).ToList();
+            else
+                return query.ToList();
+        }
+
         private bool WorldNewsExists(int id)
         {
             return _context.WorldNews.Any(e => e.Id == id);
@@ -162,19 +171,24 @@ namespace diplom.Controllers
             IQueryable<WorldNews> worldNews = _context.WorldNews;
             WorldNews lastWorldNews = worldNews.Any() ? worldNews.OrderBy(news => news.DateTime).Last() : null;
 
-            int startYear = int.Parse(_configuration["ParsingPeriod:Start:year"]);
-            int startMonth = int.Parse(_configuration["ParsingPeriod:Start:month"]);
-            int startDay = int.Parse(_configuration["ParsingPeriod:Start:day"]);
-            DateTime parsingDate = new DateTime(startYear, startMonth, startDay);
-
-            if (lastWorldNews != null)
-                parsingDate = lastWorldNews.DateTime;
-
-            while (parsingDate != DateTime.Now)
+            DateTime parsingDate = new DateTime();
+            if (lastWorldNews == null)
             {
-                string formatDate = parsingDate.ToString("dd");
-                string formatMonth = parsingDate.ToString("MM");
-                string url = $"/news/{startYear}/{formatMonth}/{formatDate}";
+                int startYear = int.Parse(_configuration["ParsingPeriod:Start:year"]);
+                int startMonth = int.Parse(_configuration["ParsingPeriod:Start:month"]);
+                int startDay = int.Parse(_configuration["ParsingPeriod:Start:day"]);
+                parsingDate = new DateTime(startYear, startMonth, startDay);
+            }
+            else
+            {
+                parsingDate = lastWorldNews.DateTime;
+            }
+            parsingDate = parsingDate.AddDays(1);
+
+            while (parsingDate.Date <= DateTime.Now.Date)
+            {
+                string formatDate = parsingDate.ToString(@"yyyy\/MM\/dd");
+                string url = $"/news/{formatDate}";
 
                 ParseWorldNews(url, parsingDate);
                 parsingDate = parsingDate.AddDays(1);
@@ -205,22 +219,25 @@ namespace diplom.Controllers
                         newsText = textMatch.Groups[1].Value;
                     }
 
-                    WorldNews news = new WorldNews(newsPublicationDate, newsUrl, newsText, title);
-                    _context.WorldNews.Add(news);
+                    if (_context.WorldNews.Where(news => news.Url == newsUrl).First() == null)
+                    {
+                        WorldNews news = new WorldNews(newsPublicationDate, newsUrl, newsText, title);
+                        _context.WorldNews.Add(news);
+                    }
                 }
                 catch (Exception e) { Console.WriteLine("Error: " + e.Message); }
             }
 
-            string moreNewsPattern = "<a class=\"button-more-news__link\" data-path=\"(.*?)\"";
-            foreach (Match match in Regex.Matches(text, moreNewsPattern))
-            {
-                try
-                {
-                    string moreNewsUrl = match.Groups[1].Value;
-                    ParseWorldNews(moreNewsUrl, parsingDate);
-                }
-                catch (Exception e) { Console.WriteLine("Error: " + e.Message); }
-            }
+            //string moreNewsPattern = "<a class=\"button-more-news__link\" data-path=\"(.*?)\"";
+            //foreach (Match match in Regex.Matches(text, moreNewsPattern))
+            //{
+            //    try
+            //    {
+            //        string moreNewsUrl = match.Groups[1].Value;
+            //        ParseWorldNews(moreNewsUrl, parsingDate);
+            //    }
+            //    catch (Exception e) { Console.WriteLine("Error: " + e.Message); }
+            //}
         }
     }
 }

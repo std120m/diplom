@@ -61,11 +61,31 @@ namespace diplom.Controllers
             return Json(share.GetCandlesByDay(_context), options);
         }
 
-        // GET: api/news
-        [HttpGet("news")]
+        // GET: api/news/update
+        [HttpGet("news/update")]
         public async Task UpdateWorldNews()
         {
             await new WorldNewsController(_context, _configuration).UpdateWorldNews();
+        }
+
+        // GET: api/news/
+        [HttpGet("news")]
+        public JsonResult GetWorldNews()
+        {
+            string date = HttpContext.Request.Query["date"].ToString();
+            DateTime? dateTime = null;
+            if (date != null)
+            {
+                string[] dateParts = date.Split('-');
+                dateTime = new DateTime(int.Parse(dateParts[0]), int.Parse(dateParts[1]), int.Parse(dateParts[2]));
+            }
+            List<WorldNews> worldNews = new WorldNewsController(_context, _configuration).GetWorldNews(dateTime);
+            JsonSerializerOptions options = new()
+            {
+                ReferenceHandler = ReferenceHandler.IgnoreCycles,
+                WriteIndented = true
+            };
+            return Json(worldNews.ToArray(), options);
         }
 
         // GET: api/shares/update

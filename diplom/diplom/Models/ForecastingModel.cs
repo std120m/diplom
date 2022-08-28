@@ -14,7 +14,6 @@ namespace diplom.Models
         public void GetForecast(IConfiguration configuration, diplomContext context)
         {
             string rootDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../"));
-            string dbFilePath = Path.Combine(rootDir, "Data", "DailyDemand.mdf");
             string modelPath = Path.Combine(rootDir, "MLModel.zip");
             string connectionString = "server=localhost;database=test;user=root;password=1234";
 
@@ -23,7 +22,7 @@ namespace diplom.Models
             IDataView data = null;
             SsaForecastingTransformer forecaster = null;
             TimeSeriesPredictionEngine<ModelInput, ModelOutput> forecastEngine = null;
-            foreach (Share share in context.Shares.ToList())
+            foreach (Share share in context.Shares.Where(share => share.Id == 3).ToList())
             {
                 DatabaseLoader loader = mlContext.Data.CreateDatabaseLoader<ModelInput>();
 
@@ -42,10 +41,11 @@ namespace diplom.Models
                         order by
                           day
                         ) as closeByDay;";
+                query = $@"SELECT close, time FROM candles where shareId = {share.Id};";
                 DatabaseSource source = new DatabaseSource(MySqlConnectorFactory.Instance, connectionString, query);
                 MLContext ctx = new MLContext();
                 DatabaseLoader.Options options = new DatabaseLoader.Options();
-                options.Columns = new[] { new DatabaseLoader.Column("Close", DbType.Single, 0) };
+                options.Columns = new[] { new DatabaseLoader.Column("Close", DbType.Single, 0), new DatabaseLoader.Column("Time", DbType.DateTime, 1) };
                 loader = ctx.Data.CreateDatabaseLoader(options);
 
                 data = loader.Load(source);
@@ -53,10 +53,10 @@ namespace diplom.Models
                 var forecastingPipeline = mlContext.Forecasting.ForecastBySsa(
                     outputColumnName: "ForecastedClose",
                     inputColumnName: "Close",
-                    windowSize: 30,
-                    seriesLength: 180,
-                    trainSize: 300,
-                    horizon: 30,
+                    windowSize: 24,
+                    seriesLength: 30*24,
+                    trainSize: 6917,
+                    horizon: 24,
                     confidenceLevel: 0.95f,
                     confidenceLowerBoundColumn: "LowerBoundClose",
                     confidenceUpperBoundColumn: "UpperBoundClose");
@@ -70,7 +70,7 @@ namespace diplom.Models
             if (data != null && forecastEngine != null && forecaster != null)
             {
                 forecastEngine.CheckPoint(mlContext, modelPath);
-                Forecast(data, 30, forecastEngine, mlContext);
+                Forecast(data, 7, forecastEngine, mlContext);
             }
         }
 
@@ -88,12 +88,12 @@ namespace diplom.Models
 
             var metrics = actual.Zip(forecast, (actualValue, forecastValue) => actualValue - forecastValue);
 
-            //var MAE = metrics.Average(error => Math.Abs(error));
-            //var RMSE = Math.Sqrt(metrics.Average(error => Math.Pow(error, 2)));
-            //Console.WriteLine("Evaluation Metrics");
-            //Console.WriteLine("---------------------");
-            //Console.WriteLine($"Mean Absolute Error: {MAE:F3}");
-            //Console.WriteLine($"Root Mean Squared Error: {RMSE:F3}\n");
+            var MAE = metrics.Average(error => Math.Abs(error));
+            var RMSE = Math.Sqrt(metrics.Average(error => Math.Pow(error, 2)));
+            Console.WriteLine("Evaluation Metrics");
+            Console.WriteLine("---------------------");
+            Console.WriteLine($"Mean Absolute Error: {MAE:F3}");
+            Console.WriteLine($"Root Mean Squared Error: {RMSE:F3}\n");
         }
 
         private void Forecast(IDataView testData, int horizon, TimeSeriesPredictionEngine<ModelInput, ModelOutput> forecaster, MLContext mlContext)
@@ -109,7 +109,8 @@ namespace diplom.Models
                         float lowerEstimate = Math.Max(0, forecast.LowerBoundClose[index]);
                         float estimate = forecast.ForecastedClose[index];
                         float upperEstimate = forecast.UpperBoundClose[index];
-                        return $"Actual Rentals: {actualClose}\n" +
+                        return $"Date: {input.Time}\n" +
+                            $"Actual Rentals: {actualClose}\n" +
                             $"Lower Estimate: {lowerEstimate}\n" +
                             $"Forecast: {estimate}\n" +
                             $"Upper Estimate: {upperEstimate}\n";
@@ -127,6 +128,7 @@ namespace diplom.Models
     public class ModelInput
     {
         public float Close { get; set; }
+        public DateTime Time { get; set; }
     }
 
     public class ModelOutput

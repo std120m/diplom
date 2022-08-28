@@ -103,13 +103,24 @@
             let selection = chart.getSelection();
             let i = selection[0].row;
             let date = rows[i][0];
-            const result = news.filter(currentNews => new Date(currentNews.DateTime).toDateString() == new Date(date).toDateString());
-            console.log(result);
-            let newsContainer = document.getElementById('news_container');
-             for (let i = 0; i < result.length; i++) {
-                 let newsElement = '<p>'+result[i].Text+'</p>';
-                 $("#news_container").append(newsElement);
-            }
+            $.ajax({
+                type: "GET",
+                url: 'api/news/',
+                data: {
+                    date: new Date(date).getFullYear() + '-' + (new Date(date).getMonth()+1) + '-' + new Date(date).getDate()
+                },
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    let newsContainer = document.getElementById('news_container');
+                    newsContainer.innerHTML = null;
+                    for (let i = 0; i < response.length; i++) {
+                         let newsElement = '<p>'+response[i].Text+'</p>';
+                         $("#news_container").append(newsElement);
+                    }
+                },
+            });
+
         }
 
         function addDays(date, days) {

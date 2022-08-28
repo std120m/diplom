@@ -71,7 +71,8 @@ namespace diplom.Controllers
                 ReferenceHandler = ReferenceHandler.IgnoreCycles,
                 WriteIndented = true
             };
-            List<WorldNews> news = _context.WorldNews.ToList();
+            //List<WorldNews> news = _context.WorldNews.ToList();
+            List<WorldNews> news = null;
             List<object[]> candles = new List<object[]>();
             foreach (Models.Share share in shares)
             {
