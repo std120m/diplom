@@ -11,6 +11,65 @@ namespace diplom.Models
 {
     public class ForecastingModel
     {
+        const string connectionString = "server=localhost;database=test;user=root;password=1234";
+
+        private string getModelPath()
+        {
+            string rootDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../"));
+            return Path.Combine(rootDir, "MLModel.zip");
+        }
+
+        private SsaForecastingEstimator GetForecastingPipline(MLContext mlContext)
+        {
+            SsaForecastingEstimator forecastingPipeline = mlContext.Forecasting.ForecastBySsa(
+                outputColumnName: "ForecastedClose",
+                inputColumnName: "Close",
+                windowSize: 24,
+                seriesLength: 30 * 24,
+                trainSize: 6917,
+                horizon: 24,
+                confidenceLevel: 0.95f,
+                confidenceLowerBoundColumn: "LowerBoundClose",
+                confidenceUpperBoundColumn: "UpperBoundClose"
+            );
+
+            return forecastingPipeline;
+        }
+
+        private SsaForecastingTransformer getForecaster(out MLContext mlContext, out IDataView data, out DatabaseLoader loader)
+        {
+            string modelPath = this.getModelPath();
+            long shareId = 10;
+            string query = $@"SELECT close, time FROM candles where shareId = {shareId};";
+            SsaForecastingTransformer forecaster = null;
+
+            DatabaseSource source = new DatabaseSource(MySqlConnectorFactory.Instance, ForecastingModel.connectionString, query);
+            mlContext = new MLContext();
+            MLContext ctx = new MLContext();
+
+            loader = mlContext.Data.CreateDatabaseLoader<ModelInput>();
+            DatabaseLoader.Options options = new DatabaseLoader.Options();
+            options.Columns = new[] { new DatabaseLoader.Column("Close", DbType.Single, 0), new DatabaseLoader.Column("Time", DbType.DateTime, 1) };
+            loader = ctx.Data.CreateDatabaseLoader(options);
+
+            data = loader.Load(source);
+
+            if (File.Exists(modelPath))
+            {
+                using (var file = File.OpenRead(modelPath))
+                {
+                    forecaster = (SsaForecastingTransformer)mlContext.Model.Load(file, out DataViewSchema schema);
+                }
+            }
+            else
+            {
+                forecaster = this.GetForecastingPipline(mlContext).Fit(data);
+                mlContext.Model.Save(forecaster, loader, "MLModel.zip");
+            }
+
+            return forecaster;
+        }
+
         public void GetForecast(IConfiguration configuration, diplomContext context)
         {
             string rootDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../"));
@@ -21,8 +80,9 @@ namespace diplom.Models
 
             IDataView data = null;
             SsaForecastingTransformer forecaster = null;
+            ITransformer model = null;
             TimeSeriesPredictionEngine<ModelInput, ModelOutput> forecastEngine = null;
-            foreach (Share share in context.Shares.Where(share => share.Id == 3).ToList())
+            foreach (Share share in context.Shares.Where(share => share.Id == 10).ToList())
             {
                 DatabaseLoader loader = mlContext.Data.CreateDatabaseLoader<ModelInput>();
 
@@ -50,7 +110,13 @@ namespace diplom.Models
 
                 data = loader.Load(source);
 
-                var forecastingPipeline = mlContext.Forecasting.ForecastBySsa(
+                using (var file = File.OpenRead(modelPath))
+                {
+                    forecaster = (SsaForecastingTransformer)mlContext.Model.Load(file, out DataViewSchema schema);
+                    forecastEngine = forecaster.CreateTimeSeriesEngine<ModelInput, ModelOutput>(mlContext);
+                }
+
+                SsaForecastingEstimator forecastingPipeline = mlContext.Forecasting.ForecastBySsa(
                     outputColumnName: "ForecastedClose",
                     inputColumnName: "Close",
                     windowSize: 24,
@@ -65,11 +131,34 @@ namespace diplom.Models
 
                 Evaluate(data, forecaster, mlContext);
                 forecastEngine = forecaster.CreateTimeSeriesEngine<ModelInput, ModelOutput>(mlContext);
+
+                mlContext.Model.Save(forecaster, loader, "MLModel.zip");
             }
 
             if (data != null && forecastEngine != null && forecaster != null)
             {
                 forecastEngine.CheckPoint(mlContext, modelPath);
+                Forecast(data, 7, forecastEngine, mlContext);
+            }
+        }
+
+        public void Fit()
+        {
+            SsaForecastingTransformer forecaster = this.getForecaster(out MLContext mlContext, out IDataView data, out DatabaseLoader loader);
+
+            forecaster = this.GetForecastingPipline(mlContext).Fit(data);
+            Evaluate(data, forecaster, mlContext);
+            mlContext.Model.Save(forecaster, loader, "MLModel.zip");
+        }
+
+        public void GetForecast()
+        {
+            SsaForecastingTransformer forecaster = this.getForecaster(out MLContext mlContext, out IDataView data, out DatabaseLoader loader);
+
+            TimeSeriesPredictionEngine<ModelInput, ModelOutput> forecastEngine = forecaster.CreateTimeSeriesEngine<ModelInput, ModelOutput>(mlContext);
+            if (data != null && forecastEngine != null && forecaster != null)
+            {
+                forecastEngine.CheckPoint(mlContext, this.getModelPath());
                 Forecast(data, 7, forecastEngine, mlContext);
             }
         }
@@ -102,7 +191,7 @@ namespace diplom.Models
 
             IEnumerable<string> forecastOutput =
                 mlContext.Data.CreateEnumerable<ModelInput>(testData, reuseRowObject: false)
-                    .Take(horizon)
+                    .TakeLast(horizon)
                     .Select((ModelInput input, int index) =>
                     {
                         float actualClose = input.Close;
