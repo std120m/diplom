@@ -72,6 +72,10 @@ namespace diplom.Controllers
         [HttpGet("news")]
         public JsonResult GetWorldNews()
         {
+            HttpContext.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            HttpContext.Response.Headers.Add("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+            HttpContext.Response.Headers.Add("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+
             string date = HttpContext.Request.Query["date"].ToString();
             DateTime? dateTime = null;
             if (date != null)

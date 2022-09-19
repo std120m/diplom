@@ -74,6 +74,27 @@ namespace diplom.Models
             this.Update(apiShare);
         }
 
+        public object[] GetCandlesArray()
+        {
+            List<Dictionary<string, object>> candles = new List<Dictionary<string, object>>();
+
+            foreach (Candle candle in this.Candles)
+            {
+                Dictionary<string, object> candleDetail = new Dictionary<string, object>();
+                candleDetail.Add("low", candle.Low);
+                candleDetail.Add("high", candle.High);
+                candleDetail.Add("volume", candle.Volume);
+                candleDetail.Add("date", candle.Time.ToString("yyyy-MM-dd HH:mm:ss"));
+                candleDetail.Add("open", candle.Open);
+                candleDetail.Add("close", candle.Close);
+                candleDetail.Add("share_id", candle.Share.Id);
+
+                candles.Add(candleDetail);
+            }
+
+            return candles.ToArray();
+        }
+
         public List<CandlesByDay> GetCandlesByDay(diplomContext context)
         {
             context.Database.ExecuteSqlRaw(@"

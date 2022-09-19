@@ -58,6 +58,10 @@ namespace diplom.Controllers
 
         public Microsoft.AspNetCore.Mvc.JsonResult GetCandles()
         {
+            this.ControllerContext.HttpContext.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            this.ControllerContext.HttpContext.Response.Headers.Add("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+            this.ControllerContext.HttpContext.Response.Headers.Add("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+
             Microsoft.Extensions.Primitives.StringValues period;
             if (!Request.Query.TryGetValue("period", out period))
                 return Json(null);
@@ -79,6 +83,7 @@ namespace diplom.Controllers
                 object[] shareInfo = new object[2];
                 shareInfo[0] = share.Name ?? "";
                 shareInfo[1] = share.GetCandlesByDay(_context);
+                //shareInfo[1] = share.GetCandlesArray();
                 candles.Add(shareInfo);
             }
             object[] result = new object[2];
