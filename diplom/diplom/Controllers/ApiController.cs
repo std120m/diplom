@@ -18,6 +18,7 @@ using System.Text.RegularExpressions;
 using diplom.Helpers;
 using Microsoft.ML;
 using static Diplom.MLModel;
+using diplom.Models.SentimentPrediction;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -178,6 +179,13 @@ namespace diplom.Controllers
         public void GetForecasting()
         {
             new ForecastingModel().GetForecast(_configuration, _context);
+        }
+
+        // GET: api/news/sentiment
+        [HttpGet("news/sentiment")]
+        public void GetSentimentPrediction()
+        {
+            new SentimentPrediction();
         }
 
         // GET: api/company/{id}/events
