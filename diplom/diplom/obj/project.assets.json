@@ -3880,6 +3880,16 @@
         "runtime": {
           "lib/net6.0/Tinkoff.InvestApi.dll": {}
         }
+      },
+      "Pullenti.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v2.0",
+        "compile": {
+          "bin/placeholder/Pullenti.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Pullenti.Core.dll": {}
+        }
       }
     }
   },
@@ -11398,6 +11408,11 @@
         "tinkoff.investapi.0.1.6.nupkg.sha512",
         "tinkoff.investapi.nuspec"
       ]
+    },
+    "Pullenti.Core/1.0.0": {
+      "type": "project",
+      "path": "../PullentiCSharp/Pullenti/Pullenti.Core.csproj",
+      "msbuildProject": "../PullentiCSharp/Pullenti/Pullenti.Core.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -11416,6 +11431,7 @@
       "Microsoft.ML.TimeSeries >= 1.7.1",
       "Microsoft.VisualStudio.Web.CodeGeneration.Design >= 6.0.9",
       "Pomelo.EntityFrameworkCore.MySql >= 6.0.2",
+      "Pullenti.Core >= 1.0.0",
       "SciSharp.TensorFlow.Redist >= 2.7.0",
       "System.Data.Odbc >= 6.0.1",
       "Tinkoff.InvestApi >= 0.1.6"
@@ -11447,7 +11463,11 @@
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "X:\\diplom\\diplom\\PullentiCSharp\\Pullenti\\Pullenti.Core.csproj": {
+              "projectPath": "X:\\diplom\\diplom\\PullentiCSharp\\Pullenti\\Pullenti.Core.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

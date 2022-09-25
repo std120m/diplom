@@ -1,0 +1,10 @@
+X:\diplom\diplom\PullentiCSharp\Pullenti\bin\Debug\netcoreapp2.0\Pullenti.Core.deps.json
+X:\diplom\diplom\PullentiCSharp\Pullenti\bin\Debug\netcoreapp2.0\Pullenti.Core.dll
+X:\diplom\diplom\PullentiCSharp\Pullenti\bin\Debug\netcoreapp2.0\Pullenti.Core.pdb
+X:\diplom\diplom\PullentiCSharp\Pullenti\obj\Debug\netcoreapp2.0\Pullenti.Core.csproj.AssemblyReference.cache
+X:\diplom\diplom\PullentiCSharp\Pullenti\obj\Debug\netcoreapp2.0\Pullenti.Core.GeneratedMSBuildEditorConfig.editorconfig
+X:\diplom\diplom\PullentiCSharp\Pullenti\obj\Debug\netcoreapp2.0\Pullenti.Core.AssemblyInfoInputs.cache
+X:\diplom\diplom\PullentiCSharp\Pullenti\obj\Debug\netcoreapp2.0\Pullenti.Core.AssemblyInfo.cs
+X:\diplom\diplom\PullentiCSharp\Pullenti\obj\Debug\netcoreapp2.0\Pullenti.Core.csproj.CoreCompileInputs.cache
+X:\diplom\diplom\PullentiCSharp\Pullenti\obj\Debug\netcoreapp2.0\Pullenti.Core.dll
+X:\diplom\diplom\PullentiCSharp\Pullenti\obj\Debug\netcoreapp2.0\Pullenti.Core.pdb

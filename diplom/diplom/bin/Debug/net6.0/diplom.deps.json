@@ -22,6 +22,7 @@
           "Microsoft.ML.TimeSeries": "1.7.1",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "6.0.9",
           "Pomelo.EntityFrameworkCore.MySql": "6.0.2",
+          "Pullenti.Core": "1.0.0",
           "SciSharp.TensorFlow.Redist": "2.7.0",
           "System.Data.Odbc": "6.0.1",
           "Tinkoff.InvestApi": "0.1.6"
@@ -2940,6 +2941,11 @@
             "fileVersion": "1.0.0.0"
           }
         }
+      },
+      "Pullenti.Core/1.0.0": {
+        "runtime": {
+          "Pullenti.Core.dll": {}
+        }
       }
     }
   },
@@ -4453,6 +4459,11 @@
       "sha512": "sha512-O91dcq2yKkyACwl31E7hg2rXof26/+50XmEyfIRs6FJYMIcAOwWzIDPNXwntB5akAx+H01c3VTY5YOThY5YT+g==",
       "path": "tinkoff.investapi/0.1.6",
       "hashPath": "tinkoff.investapi.0.1.6.nupkg.sha512"
+    },
+    "Pullenti.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
     }
   }
 }

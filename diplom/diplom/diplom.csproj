@@ -46,6 +46,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PullentiCSharp\Pullenti\Pullenti.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="Models\SentimentPrediction\Model\imdb_word_index.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
