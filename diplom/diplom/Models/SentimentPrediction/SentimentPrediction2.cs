@@ -10,6 +10,7 @@ using Microsoft.ML.Trainers;
 using Microsoft.ML.Transforms.Text;
 using Pullenti.Ner;
 using Pullenti.Morph;
+using Pullenti.Ner.Metadata;
 // </SnippetAddUsings>
 
 namespace diplom.Models.SentimentPrediction
@@ -36,6 +37,13 @@ namespace diplom.Models.SentimentPrediction
     }
     // </SnippetDeclareTypes>
 
+    public class EntityFrequency
+    {
+        public Referent Entity { get; set; }
+        public List<int> SentenseIds { get; set; }
+        public int MentionsCount { get; set; }
+    }
+
     class SentimentPrediction2
     {
         // <SnippetDeclareGlobalVariables>
@@ -49,14 +57,47 @@ namespace diplom.Models.SentimentPrediction
                 билет на концерт американской рок-группы Nirvana и выпустили одежду с принтом из 
                 его пепла. Об этом сообщается в пресс-релизе, поступившем в редакцию «Ленты.ру».";
 
+            string[] sentenses = text.Split(". ", StringSplitOptions.RemoveEmptyEntries);
+            List<EntityFrequency> entitiesFrequency = new List<EntityFrequency>();
+
             Pullenti.Sdk.InitializeAll();
-            // создаём экземпляр процессора со стандартными анализаторами
-            Processor processor = ProcessorService.CreateProcessor();
-            // запускаем на тексте text
-            AnalysisResult result = processor.Process(new SourceOfAnalysis(text));
-            // получили выделенные сущности
-            foreach (Referent entity in result.Entities)
-                Console.WriteLine(entity.ToString());
+            for (int i = 0; i < sentenses.Length; i++)
+            {
+                // создаём экземпляр процессора со стандартными анализаторами
+                Processor processor = ProcessorService.CreateProcessor();
+                // запускаем на тексте text
+                AnalysisResult result = processor.Process(new SourceOfAnalysis(sentenses[i]));
+                // получили выделенные сущности
+                foreach (Referent entity in result.Entities)
+                {
+                    if (entity.InstanceOf.Name != "ORGANIZATION")
+                        continue;
+
+                    bool needToCreateNewEntityFrequency = true;
+                    foreach (EntityFrequency entityFrequency in entitiesFrequency)
+                    {
+                        if (entity.CanBeEquals(entityFrequency.Entity))
+                        {
+                            entityFrequency.MentionsCount++;
+                            entityFrequency.SentenseIds.Add(i);
+                            needToCreateNewEntityFrequency = false;
+                            continue;
+                        }
+                    }
+                    if (needToCreateNewEntityFrequency)
+                    {
+                        entitiesFrequency.Add(new EntityFrequency
+                        {
+                            Entity = entity,
+                            MentionsCount = 1,
+                            SentenseIds = new List<int>() { i }
+                        });
+                    }
+
+                    Console.WriteLine(entity.ToString());
+                }
+            }
+            Console.WriteLine(entitiesFrequency);
 
 
 
@@ -211,13 +252,23 @@ namespace diplom.Models.SentimentPrediction
             // <SnippetCreateTestIssues>
             IEnumerable<SentimentData> sentiments = new[]
             {
+                //new SentimentData
+                //{
+                //    SentimentText = "This was a horrible meal"
+                //},
+                //new SentimentData
+                //{
+                //    SentimentText = "I love this spaghetti."
+                //},
                 new SentimentData
                 {
-                    SentimentText = "This was a horrible meal"
+                    SentimentText = @"Создатели российского бренда уличной одежды Don't Care сожгли последний 
+                        билет на концерт американской рок-группы Nirvana и выпустили одежду с принтом из
+                        его пепла."
                 },
                 new SentimentData
                 {
-                    SentimentText = "I love this spaghetti."
+                    SentimentText = @"Об этом сообщается в пресс-релизе, поступившем в редакцию «Ленты.ру»."
                 }
             };
             // </SnippetCreateTestIssues>
