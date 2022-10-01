@@ -185,8 +185,8 @@ namespace diplom.Controllers
         [HttpGet("news/sentiment")]
         public void GetSentimentPrediction()
         {
-            //new SentimentPrediction();
-            new SentimentPrediction2();
+            new SentimentPredictionModel();
+            //new SentimentPrediction2();
         }
 
         // GET: api/company/{id}/events

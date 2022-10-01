@@ -33,18 +33,6 @@
     <Folder Include="Migrations\" />
     <Folder Include="Models\SentimentPrediction\Model\" />
   </ItemGroup>
-  <ItemGroup Label="MLModel">
-    <None Include="MLModel.consumption.cs">
-      <DependentUpon>MLModel.mbconfig</DependentUpon>
-    </None>
-    <None Include="MLModel.training.cs">
-      <DependentUpon>MLModel.mbconfig</DependentUpon>
-    </None>
-    <None Include="MLModel.zip">
-      <DependentUpon>MLModel.mbconfig</DependentUpon>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PullentiCSharp\Pullenti\Pullenti.Core.csproj" />
   </ItemGroup>
@@ -59,6 +47,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Models\SentimentPrediction\Model\variables\variables.index">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup Label="MLModel">
+    <None Include="MLModel.consumption.cs">
+      <DependentUpon>MLModel.mbconfig</DependentUpon>
+    </None>
+    <None Include="MLModel.training.cs">
+      <DependentUpon>MLModel.mbconfig</DependentUpon>
+    </None>
+    <None Include="MLModel.zip">
+      <DependentUpon>MLModel.mbconfig</DependentUpon>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
