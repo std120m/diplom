@@ -11,27 +11,17 @@ namespace diplom.Models.SentimentPrediction
         {
             var newSample = new SentimentData
             {
-                SentimentText = @"В офисах Сбера начали тестировать технологию помощи посетителям в экстренных ситуациях. «Зеленая кнопка» будет
-                    в зонах круглосуточного обслуживания офисов банка в Воронеже, Санкт-Петербурге, Подольске, Пскове, Орле и Ярославле.
-                    В них находятся стенды с сенсорными кнопками, обеспечивающие связь с операторами центра мониторинга службы безопасности
-                    банка. Получив сигнал о помощи, оператор центра может подключиться к объекту по голосовой связи. С помощью камер
-                    видеонаблюдения он оценит обстановку и при необходимости вызовет полицию или скорую помощь. «Зеленой кнопкой» можно
-                    воспользоваться в нерабочее для отделения время, если возникла угроза жизни или здоровью. В остальных случаях помочь
-                    клиентам готовы сотрудники отделения банка. «Одно из направлений нашей работы в области ESG и устойчивого развития
-                    — это забота об обществе. И здоровье людей как высшая ценность является его основой. Поэтому задача банка в области
-                    безопасности гораздо масштабнее, чем обеспечение только финансовой безопасности клиентов. Этот пилотный проект
-                    приурочен к 180-летию Сбербанка: мы хотим, чтобы, приходя в банк, клиент чувствовал, что его жизнь и безопасность
-                    — наша ценность», — отметил заместитель председателя правления Сбербанка Станислав Кузнецов."
+                SentimentText = @"Руководство страны начало военную операцию."
             };
 
 
             var trainers = new List<ITrainerBase>
             {
-                new LbfgsMaximumEntropyTrainer(),
-                new NaiveBayesTrainer(),
+                //new LbfgsMaximumEntropyTrainer(),
+                //new NaiveBayesTrainer(),
                 new OneVersusAllTrainer(),
-                new SdcaMaximumEntropyTrainer(),
-                new SdcaNonCalibratedTrainer()
+                //new SdcaMaximumEntropyTrainer(),
+                //new SdcaNonCalibratedTrainer()
             };
 
             trainers.ForEach(t => TrainEvaluatePredict(t, newSample));
@@ -43,17 +33,19 @@ namespace diplom.Models.SentimentPrediction
             Console.WriteLine($"{trainer.Name}");
             Console.WriteLine("*******************************");
 
-            //trainer.Fit(Path.Combine(Environment.CurrentDirectory, "Models\\SentimentPrediction\\Model", "doc_comment_summary.txt"));
-            trainer.Fit(Path.Combine(Environment.CurrentDirectory, "Models\\SentimentPrediction\\Model", "doc.txt"));
+            trainer.Load();
 
-            var modelMetrics = trainer.Evaluate();
+            //trainer.Fit(Path.Combine(Environment.CurrentDirectory, "Models\\SentimentPrediction\\Model", "train.txt"));
+            //trainer.Fit(Path.Combine(Environment.CurrentDirectory, "Models\\SentimentPrediction\\Model", "doc.txt"));
 
-            Console.WriteLine($"Macro Accuracy: {modelMetrics.MacroAccuracy:#.##}{Environment.NewLine}" +
-                              $"Micro Accuracy: {modelMetrics.MicroAccuracy:#.##}{Environment.NewLine}" +
-                              $"Log Loss: {modelMetrics.LogLoss:#.##}{Environment.NewLine}" +
-                              $"Log Loss Reduction: {modelMetrics.LogLossReduction:#.##}{Environment.NewLine}");
+            //var modelMetrics = trainer.Evaluate();
 
-            trainer.Save();
+            //Console.WriteLine($"Macro Accuracy: {modelMetrics.MacroAccuracy:#.##}{Environment.NewLine}" +
+            //                  $"Micro Accuracy: {modelMetrics.MicroAccuracy:#.##}{Environment.NewLine}" +
+            //                  $"Log Loss: {modelMetrics.LogLoss:#.##}{Environment.NewLine}" +
+            //                  $"Log Loss Reduction: {modelMetrics.LogLossReduction:#.##}{Environment.NewLine}");
+
+            //trainer.Save();
 
             var predictor = new Predictor();
             var prediction = predictor.Predict(newSample);
@@ -90,6 +82,7 @@ namespace diplom.Models.SentimentPrediction
         void Fit(string trainingFileName);
         MulticlassClassificationMetrics Evaluate();
         void Save();
+        void Load();
     }
 
     /// <summary>
@@ -152,6 +145,15 @@ namespace diplom.Models.SentimentPrediction
         public void Save()
         {
             MlContext.Model.Save(_trainedModel, _dataSplit.TrainSet.Schema, ModelPath);
+        }
+
+        /// <summary>
+        /// Load Model from the file.
+        /// </summary>
+        public void Load()
+        {
+            DataViewSchema schema;
+            _trainedModel = MlContext.Model.Load(ModelPath, out schema);
         }
 
         /// <summary>
