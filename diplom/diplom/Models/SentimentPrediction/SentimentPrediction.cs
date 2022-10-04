@@ -2,32 +2,141 @@
 using Microsoft.ML.Data;
 using Microsoft.ML.Trainers;
 using Microsoft.ML.Transforms;
+using Pullenti.Ner;
 
 namespace diplom.Models.SentimentPrediction
 {
+    public class EntityFrequency
+    {
+        public Referent Entity { get; set; }
+        public List<int> SentenseIds { get; set; }
+        public int MentionsCount { get; set; }
+    }
+
     public class SentimentPredictionModel
     {
+        public static string DatasetPath = Path.Combine(Environment.CurrentDirectory, "Models\\SentimentPrediction\\Model", "train.txt");
+        public string Text { get; set; }
+        public string[] Sentenses { get; set; }
+        public List<EntityFrequency> EntitiesFrequency { get; set; }
+        protected ITrainerBase trainer;
         public SentimentPredictionModel()
         {
-            var newSample = new SentimentData
-            {
-                SentimentText = @"Руководство страны начало военную операцию."
-            };
+            //var newSample = new SentimentData
+            //{
+            //    SentimentText = @"Руководство страны начало военную операцию."
+            //};
 
-
-            var trainers = new List<ITrainerBase>
-            {
-                //new LbfgsMaximumEntropyTrainer(),
-                //new NaiveBayesTrainer(),
-                new OneVersusAllTrainer(),
-                //new SdcaMaximumEntropyTrainer(),
-                //new SdcaNonCalibratedTrainer()
-            };
-
-            trainers.ForEach(t => TrainEvaluatePredict(t, newSample));
+            this.trainer = new OneVersusAllTrainer();
         }
 
-        static void TrainEvaluatePredict(ITrainerBase trainer, SentimentData newSample)
+        public void Train()
+        {
+            Console.WriteLine("*******************************");
+            Console.WriteLine($"{trainer.Name}");
+            Console.WriteLine("*******************************");
+
+            trainer.Load();
+            trainer.Fit(SentimentPredictionModel.DatasetPath);
+            var modelMetrics = trainer.Evaluate();
+
+            Console.WriteLine($"Macro Accuracy: {modelMetrics.MacroAccuracy:#.##}{Environment.NewLine}" +
+                                $"Micro Accuracy: {modelMetrics.MicroAccuracy:#.##}{Environment.NewLine}" +
+                                $"Log Loss: {modelMetrics.LogLoss:#.##}{Environment.NewLine}" +
+                                $"Log Loss Reduction: {modelMetrics.LogLossReduction:#.##}{Environment.NewLine}");
+            trainer.Save();
+        }
+
+        public List<EntitySentimentPrediction> Predict(string text)
+        {
+            Console.WriteLine("*******************************");
+            Console.WriteLine($"{trainer.Name}");
+            Console.WriteLine("*******************************");
+
+            List<SentimentData> sentimentData = new List<SentimentData>();
+            string[] sentenses = text.Split(". ", StringSplitOptions.RemoveEmptyEntries);
+            List<EntityFrequency> entities = GetTextEntities(sentenses);
+
+            trainer.Load();
+            var predictor = new Predictor();
+            List<EntitySentimentPrediction> predictions = new List<EntitySentimentPrediction>();
+
+            foreach (EntityFrequency entity in entities)
+            {
+                SentimentData data = new SentimentData(GetTextWithReplaceEntity(entity, sentenses));
+
+                var prediction = predictor.Predict(data);
+                EntitySentimentPrediction entityPrediction = new EntitySentimentPrediction(entity, prediction);
+                predictions.Add(entityPrediction);
+                Console.WriteLine("------------------------------");
+                Console.WriteLine($"Text: {data.SentimentText}");
+                Console.WriteLine($"Prediction: {prediction.PredictedLabel:#.##}");
+                Console.WriteLine("------------------------------");
+            }
+
+            return predictions;
+        }
+
+        protected List<EntityFrequency> GetTextEntities(string[] sentenses)
+        {
+            List<EntityFrequency> entitiesFrequency = new List<EntityFrequency>();
+
+            Pullenti.Sdk.InitializeAll();
+            for (int i = 0; i < sentenses.Length; i++)
+            {
+                // создаём экземпляр процессора со стандартными анализаторами
+                Processor processor = ProcessorService.CreateProcessor();
+                // запускаем на тексте text
+                AnalysisResult result = processor.Process(new SourceOfAnalysis(sentenses[i]));
+                // получили выделенные сущности
+                foreach (Referent entity in result.Entities)
+                {
+                    if (entity.InstanceOf.Name != "ORGANIZATION")
+                        continue;
+
+                    bool needToCreateNewEntityFrequency = true;
+                    foreach (EntityFrequency entityFrequency in entitiesFrequency)
+                    {
+                        if (entity.CanBeEquals(entityFrequency.Entity))
+                        {
+                            entityFrequency.MentionsCount++;
+                            entityFrequency.SentenseIds.Add(i);
+                            needToCreateNewEntityFrequency = false;
+                            continue;
+                        }
+                    }
+                    if (needToCreateNewEntityFrequency)
+                    {
+                        entitiesFrequency.Add(new EntityFrequency
+                        {
+                            Entity = entity,
+                            MentionsCount = 1,
+                            SentenseIds = new List<int>() { i }
+                        });
+                    }
+
+                    Console.WriteLine(entity.ToString());
+                }
+            }
+            Console.WriteLine(entitiesFrequency);
+            return entitiesFrequency;
+        }
+
+        protected string GetTextWithReplaceEntity(EntityFrequency entityFrequency, string[] sentenses, string replacer = "X")
+        {
+            string text = String.Empty;
+            foreach (int sentenseIndex in entityFrequency.SentenseIds)
+            {
+                text += sentenses[sentenseIndex];
+            }
+            foreach (TextAnnotation annotation in entityFrequency.Entity.Occurrence)
+            {
+                text = text.Replace(annotation.ToString(), replacer);
+            }
+            return text;
+        }
+
+        public void TrainEvaluatePredict(ITrainerBase trainer, SentimentData newSample, bool needToFit = false)
         {
             Console.WriteLine("*******************************");
             Console.WriteLine($"{trainer.Name}");
@@ -35,17 +144,17 @@ namespace diplom.Models.SentimentPrediction
 
             trainer.Load();
 
-            //trainer.Fit(Path.Combine(Environment.CurrentDirectory, "Models\\SentimentPrediction\\Model", "train.txt"));
-            //trainer.Fit(Path.Combine(Environment.CurrentDirectory, "Models\\SentimentPrediction\\Model", "doc.txt"));
+            if (needToFit)
+            {
+                trainer.Fit(SentimentPredictionModel.DatasetPath);
+                var modelMetrics = trainer.Evaluate();
 
-            //var modelMetrics = trainer.Evaluate();
-
-            //Console.WriteLine($"Macro Accuracy: {modelMetrics.MacroAccuracy:#.##}{Environment.NewLine}" +
-            //                  $"Micro Accuracy: {modelMetrics.MicroAccuracy:#.##}{Environment.NewLine}" +
-            //                  $"Log Loss: {modelMetrics.LogLoss:#.##}{Environment.NewLine}" +
-            //                  $"Log Loss Reduction: {modelMetrics.LogLossReduction:#.##}{Environment.NewLine}");
-
-            //trainer.Save();
+                Console.WriteLine($"Macro Accuracy: {modelMetrics.MacroAccuracy:#.##}{Environment.NewLine}" +
+                                  $"Micro Accuracy: {modelMetrics.MicroAccuracy:#.##}{Environment.NewLine}" +
+                                  $"Log Loss: {modelMetrics.LogLoss:#.##}{Environment.NewLine}" +
+                                  $"Log Loss Reduction: {modelMetrics.LogLossReduction:#.##}{Environment.NewLine}");
+                trainer.Save();
+            }
 
             var predictor = new Predictor();
             var prediction = predictor.Predict(newSample);
@@ -55,9 +164,6 @@ namespace diplom.Models.SentimentPrediction
         }
     }
 
-    /// <summary>
-    /// Models Palmer Penguins Binary Data.
-    /// </summary>
     public class SentimentData
     {
         [LoadColumn(0)]
@@ -65,15 +171,30 @@ namespace diplom.Models.SentimentPrediction
 
         [LoadColumn(1)]
         public string Sentiment;
+
+        public SentimentData(string text)
+        {
+            SentimentText = text;
+        }
     }
 
-    /// <summary>
-    /// Models Palmer Penguins Binary Prediction.
-    /// </summary>
     public class SentimentPrediction
     {
         [ColumnName("PredictedLabel")]
         public string PredictedLabel { get; set; }
+    }
+
+    public class EntitySentimentPrediction
+    {
+        public SentimentPrediction Prediction;
+
+        public EntityFrequency Entity;
+
+        public EntitySentimentPrediction(EntityFrequency entity, SentimentPrediction prediction)
+        {
+            Prediction = prediction;
+            Entity = entity;
+        }
     }
 
     public interface ITrainerBase
