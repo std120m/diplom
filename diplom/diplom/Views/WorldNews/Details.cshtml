@@ -3,22 +3,122 @@
 @{
     ViewData["Title"] = "Details";
 }
-
-<h1>Details</h1>
-
-<div>
-    <h4>WorldNews</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DateTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DateTime)
-        </dd>
-    </dl>
+<div class="card-body">
+    <h3 class="mt-30">@Html.DisplayFor(model => model.Title)</h3>
+    <hr>
+    <p class="mt-20 h5">@Html.DisplayFor(model => model.Text)</p>
+    <small class="float-right text-muted">@Html.DisplayFor(model => model.DateTime)</small>
+    <h4 class="mt-30">Влияние на котировки</h4>
+    <hr>
+    <div class="row">
+        <div class="col-md-12 mb-4 pl-0 pr-0">
+            <div class="owl-container">
+                <div class="owl-carousel basic">
+                    <div class="card sos-st-card twitter" style="width:400px">
+                        <div class="card-block">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h3 class="mb-0"><i class="fab fa-twitter"></i><small>Twitter</small></h3>
+                                </div>
+                                <div class="col-auto">
+                                    <h5 class="mb-0 text-green">12,4%</h5>
+                                    <h5 class="mb-0"><small>+123.12</small></h5>
+                                </div>
+                                <div class="col-auto"><i class="fas fa-arrow-up text-green"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card sos-st-card twitter" style="width:400px">
+                        <div class="card-block">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h3 class="mb-0"><i class="fab fa-linkedin-in"></i><small>Linkedin-in</small></h3>
+                                </div>
+                                <div class="col-auto">
+                                    <h5 class="mb-0 text-green">38,4%</h5>
+                                    <h5 class="mb-0"><small>+374.12</small></h5>
+                                </div>
+                                <div class="col-auto"><i class="fas fa-arrow-up text-green"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card sos-st-card twitter" style="width:400px">
+                        <div class="card-block">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h3 class="mb-0"><i class="fab fa-facebook-f"></i><small>Facebook</small></h3>
+                                </div>
+                                <div class="col-auto">
+                                    <h5 class="mb-0">0%</h5>
+                                    <h5 class="mb-0"><small>0</small></h5>
+                                </div>
+                                <div class="col-auto"><i class="fas fa-arrow-right text-yellow"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card sos-st-card twitter" style="width:400px">
+                        <div class="card-block">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h3 class="mb-0"><i class="fab fa-google"></i><small>Google</small></h3>
+                                </div>
+                                <div class="col-auto">
+                                    <h5 class="mb-0 text-red">3,04%</h5>
+                                    <h5 class="mb-0"><small>-8.12</small></h5>
+                                </div>
+                                <div class="col-auto"><i class="fas fa-arrow-down text-red"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card sos-st-card twitter" style="width:400px">
+                        <div class="card-block">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h3 class="mb-0"><i class="fab fa-google"></i><small>Google</small></h3>
+                                </div>
+                                <div class="col-auto">
+                                    <h5 class="mb-0 text-red">3,04%</h5>
+                                    <h5 class="mb-0"><small>-8.12</small></h5>
+                                </div>
+                                <div class="col-auto"><i class="fas fa-arrow-down text-red"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card sos-st-card twitter" style="width:400px">
+                        <div class="card-block">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h3 class="mb-0"><i class="fab fa-google"></i><small>Google</small></h3>
+                                </div>
+                                <div class="col-auto">
+                                    <h5 class="mb-0 text-red">3,04%</h5>
+                                    <h5 class="mb-0"><small>-8.12</small></h5>
+                                </div>
+                                <div class="col-auto"><i class="fas fa-arrow-down text-red"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slider-nav text-center">
+                    <a href="#" class="left-arrow owl-prev">
+                        <i class="ik ik-chevron-left"></i>
+                    </a>
+                    <div class="slider-dot-container"></div>
+                    <a href="#" class="right-arrow owl-next">
+                        <i class="ik ik-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<script>
+    $(document).ready(function() {
+        $('.owl-carousel').owlCarousel({
+            margin:10,
+            autoWidth:true,
+            items:4
+        })
+    });
+</script>
