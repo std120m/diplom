@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "qkm6PEykxGzPxkAcTAEqAhCR57xGvQaHfqYzGipjNJ8ujP2C5URlhkgavJAzfiuTWvcPXtef9xZ2Ye+MLMXpvg==",
+  "dgSpecHash": "rEYbx2WkIlvlncb3L4UDqrec5FkiBMjr5PGntOi/7JWjAAoW5DwfOUbX6bJABMyvuV9Ve0qp5nOpB2Q6dw05OQ==",
   "success": true,
   "projectFilePath": "X:\\diplom\\diplom\\diplom\\diplom.csproj",
   "expectedPackageFiles": [
@@ -218,7 +218,7 @@
     "C:\\Users\\sdt1\\.nuget\\packages\\system.xml.xdocument\\4.3.0\\system.xml.xdocument.4.3.0.nupkg.sha512",
     "C:\\Users\\sdt1\\.nuget\\packages\\system.xml.xmldocument\\4.3.0\\system.xml.xmldocument.4.3.0.nupkg.sha512",
     "C:\\Users\\sdt1\\.nuget\\packages\\tensorflow.net\\0.20.1\\tensorflow.net.0.20.1.nupkg.sha512",
-    "C:\\Users\\sdt1\\.nuget\\packages\\tinkoff.investapi\\0.1.6\\tinkoff.investapi.0.1.6.nupkg.sha512"
+    "C:\\Users\\sdt1\\.nuget\\packages\\tinkoff.investapi\\0.1.8\\tinkoff.investapi.0.1.8.nupkg.sha512"
   ],
   "logs": [
     {

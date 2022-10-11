@@ -25,7 +25,7 @@
           "Pullenti.Core": "1.0.0",
           "SciSharp.TensorFlow.Redist": "2.7.0",
           "System.Data.Odbc": "6.0.1",
-          "Tinkoff.InvestApi": "0.1.6"
+          "Tinkoff.InvestApi": "0.1.8"
         },
         "runtime": {
           "diplom.dll": {}
@@ -2928,7 +2928,7 @@
           }
         }
       },
-      "Tinkoff.InvestApi/0.1.6": {
+      "Tinkoff.InvestApi/0.1.8": {
         "dependencies": {
           "Google.Protobuf": "3.19.4",
           "Grpc.Net.Client": "2.41.0",
@@ -4453,12 +4453,12 @@
       "path": "tensorflow.net/0.20.1",
       "hashPath": "tensorflow.net.0.20.1.nupkg.sha512"
     },
-    "Tinkoff.InvestApi/0.1.6": {
+    "Tinkoff.InvestApi/0.1.8": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-O91dcq2yKkyACwl31E7hg2rXof26/+50XmEyfIRs6FJYMIcAOwWzIDPNXwntB5akAx+H01c3VTY5YOThY5YT+g==",
-      "path": "tinkoff.investapi/0.1.6",
-      "hashPath": "tinkoff.investapi.0.1.6.nupkg.sha512"
+      "sha512": "sha512-a/T5vrqhU+7bYM945eiGHIv4Ip/s3qm+DLTqm4g1tEyFo19YAMyKbgDHvALw6+K6E39r7zdUFmFbuP95uwD74g==",
+      "path": "tinkoff.investapi/0.1.8",
+      "hashPath": "tinkoff.investapi.0.1.8.nupkg.sha512"
     },
     "Pullenti.Core/1.0.0": {
       "type": "project",

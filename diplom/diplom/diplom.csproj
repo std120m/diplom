@@ -27,7 +27,7 @@
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />
     <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.7.0" />
     <PackageReference Include="System.Data.Odbc" Version="6.0.1" />
-    <PackageReference Include="Tinkoff.InvestApi" Version="0.1.6" />
+    <PackageReference Include="Tinkoff.InvestApi" Version="0.1.8" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Migrations\" />

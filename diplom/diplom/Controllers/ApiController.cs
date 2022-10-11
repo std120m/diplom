@@ -93,6 +93,53 @@ namespace diplom.Controllers
             return Json(worldNews.ToArray(), options);
         }
 
+        // GET: api/shares/{id}
+        [HttpGet("shares/{id}")]
+        public void UpdateShares(int id)
+        {
+            //UpdateShares(id);
+            IQueryable<Share> shares = _context.Shares.Include(share => share.Candles);
+            Share? share = shares.Any() ? shares.FirstOrDefault(shares => shares.Id == id) : null;
+            if (share == null)
+                return;
+            InstrumentRequest request = new InstrumentRequest();
+            request.IdType = InstrumentIdType.Figi;
+            request.Id = share.Figi;
+            ShareResponse shareResponse = _investApi.Instruments.ShareBy(request);
+            ApiShare apiShare = shareResponse.Instrument;
+
+            GetCandlesRequest candlesRequest = new GetCandlesRequest();
+            candlesRequest.Figi = share.Figi;
+            candlesRequest.Interval = CandleInterval.Day;
+            int startYear = int.Parse(_configuration["ParsingPeriod:Start:year"]);
+            int startMonth = int.Parse(_configuration["ParsingPeriod:Start:month"]);
+            int startDay = int.Parse(_configuration["ParsingPeriod:Start:day"]);
+            DateTime startParsingDate = new DateTime(startYear, startMonth, startDay);
+            if (share.Candles.Count() > 0)
+                startParsingDate = share.Candles.Last().Time;
+            DateTime tillParsingDate = DateTime.Now;
+            //DateTime tillParsingDate = startParsingDate.AddDays(1);
+            candlesRequest.From = Timestamp.FromDateTime(startParsingDate.ToUniversalTime());
+            candlesRequest.To = Timestamp.FromDateTime(tillParsingDate.ToUniversalTime());
+            GetCandlesResponse candlesResponse = _investApi.MarketData.GetCandles(candlesRequest);
+            List<Candle> candles = new List<Candle>();
+            foreach (ApiCandle apiCandle in candlesResponse.Candles)
+            {
+                candles.Add(new Candle(apiCandle));
+            }
+            List<Candle> peaks = new List<Candle>();
+            for (int index = 1; index < candles.Count - 1; index++)
+            {
+                if (candles[index + 1].Close > (candles[index].Close + candles[index].Close * 0.015) || candles[index + 1].Close < (candles[index].Close - candles[index].Close * 0.015))
+                {
+                    peaks.Add(candles[index + 1]);
+                }
+            }
+
+            new ForecastingModel().GetForecast(_configuration, _context, id);
+        }
+
+
         // GET: api/shares/update
         [HttpGet("shares/update/{id?}")]
         public async Task UpdateShares(int? id = null)
@@ -174,11 +221,11 @@ namespace diplom.Controllers
         //    return Json(TechnicalAnalysis.GetPrediction(share));
         //}
 
-        // GET: api/candles/forecast
-        [HttpGet("candles/forecast")]
-        public void GetForecasting()
+        // GET: api/candles/forecast/{id}
+        [HttpGet("candles/forecast/{id}")]
+        public void GetForecasting(int id)
         {
-            new ForecastingModel().GetForecast(_configuration, _context);
+            new ForecastingModel().GetForecast(_configuration, _context, id);
         }
 
         // GET: api/news/sentiment

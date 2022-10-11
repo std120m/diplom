@@ -47,6 +47,7 @@ namespace diplom.Models
         public virtual ICollection<CompanyFilings> Filings { get; set; }
         public virtual ICollection<NewsQuotesImpact> NewsQuotesImpacts { get; set; }
         //public virtual ICollection<WorldNews> WorldNews { get; set; }
+        public string? Logo{ get; set; }
 
         public static string[] ApiModulesParams = new string[]
         {

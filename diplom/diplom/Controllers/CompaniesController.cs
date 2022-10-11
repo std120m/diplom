@@ -280,6 +280,7 @@ namespace diplom.Controllers
                         if (ticker.ToString() == share.Ticker)
                         {
                             company.BrandInfo = brand["brandInfo"].ToString();
+                            company.Logo = "https://invest-brands.cdn-tinkoff.ru/"+brand["logoName"].ToString().Split('.')[0]+ "x640.png";
                             break;
                         }
                     }

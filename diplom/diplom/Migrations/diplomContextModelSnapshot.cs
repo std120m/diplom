@@ -16,7 +16,7 @@ namespace diplom.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.3")
+                .HasAnnotation("ProductVersion", "6.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("diplom.Models.Candle", b =>
@@ -133,6 +133,9 @@ namespace diplom.Migrations
 
                     b.Property<long?>("GrossProfits")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Logo")
+                        .HasColumnType("longtext");
 
                     b.Property<long?>("NetIncomeToCommon")
                         .HasColumnType("bigint");

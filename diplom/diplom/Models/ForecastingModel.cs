@@ -70,7 +70,7 @@ namespace diplom.Models
             return forecaster;
         }
 
-        public void GetForecast(IConfiguration configuration, diplomContext context)
+        public void GetForecast(IConfiguration configuration, diplomContext context, int shareId)
         {
             string rootDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../"));
             string modelPath = Path.Combine(rootDir, "MLModel.zip");
@@ -82,7 +82,7 @@ namespace diplom.Models
             SsaForecastingTransformer forecaster = null;
             ITransformer model = null;
             TimeSeriesPredictionEngine<ModelInput, ModelOutput> forecastEngine = null;
-            foreach (Share share in context.Shares.Where(share => share.Id == 10).ToList())
+            foreach (Share share in context.Shares.Where(share => share.Id == shareId).ToList())
             {
                 DatabaseLoader loader = mlContext.Data.CreateDatabaseLoader<ModelInput>();
 

@@ -3866,7 +3866,7 @@
           "lib/netstandard2.0/TensorFlow.NET.dll": {}
         }
       },
-      "Tinkoff.InvestApi/0.1.6": {
+      "Tinkoff.InvestApi/0.1.8": {
         "type": "package",
         "dependencies": {
           "Google.Protobuf": "3.19.1",
@@ -11396,16 +11396,16 @@
         "tensorflow.net.nuspec"
       ]
     },
-    "Tinkoff.InvestApi/0.1.6": {
-      "sha512": "O91dcq2yKkyACwl31E7hg2rXof26/+50XmEyfIRs6FJYMIcAOwWzIDPNXwntB5akAx+H01c3VTY5YOThY5YT+g==",
+    "Tinkoff.InvestApi/0.1.8": {
+      "sha512": "a/T5vrqhU+7bYM945eiGHIv4Ip/s3qm+DLTqm4g1tEyFo19YAMyKbgDHvALw6+K6E39r7zdUFmFbuP95uwD74g==",
       "type": "package",
-      "path": "tinkoff.investapi/0.1.6",
+      "path": "tinkoff.investapi/0.1.8",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/net6.0/Tinkoff.InvestApi.dll",
         "lib/netstandard2.0/Tinkoff.InvestApi.dll",
-        "tinkoff.investapi.0.1.6.nupkg.sha512",
+        "tinkoff.investapi.0.1.8.nupkg.sha512",
         "tinkoff.investapi.nuspec"
       ]
     },
@@ -11434,7 +11434,7 @@
       "Pullenti.Core >= 1.0.0",
       "SciSharp.TensorFlow.Redist >= 2.7.0",
       "System.Data.Odbc >= 6.0.1",
-      "Tinkoff.InvestApi >= 0.1.6"
+      "Tinkoff.InvestApi >= 0.1.8"
     ]
   },
   "packageFolders": {
@@ -11550,7 +11550,7 @@
           },
           "Tinkoff.InvestApi": {
             "target": "Package",
-            "version": "[0.1.6, )"
+            "version": "[0.1.8, )"
           }
         },
         "imports": [
