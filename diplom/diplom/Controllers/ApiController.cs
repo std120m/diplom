@@ -95,7 +95,7 @@ namespace diplom.Controllers
 
         // GET: api/shares/{id}
         [HttpGet("shares/{id}")]
-        public void UpdateShares(int id)
+        public void GetShares(int id)
         {
             //UpdateShares(id);
             IQueryable<Share> shares = _context.Shares.Include(share => share.Candles);
@@ -128,11 +128,30 @@ namespace diplom.Controllers
                 candles.Add(new Candle(apiCandle));
             }
             List<Candle> peaks = new List<Candle>();
+            List<WorldNews> news = new List<WorldNews>();
             for (int index = 1; index < candles.Count - 1; index++)
             {
                 if (candles[index + 1].Close > (candles[index].Close + candles[index].Close * 0.015) || candles[index + 1].Close < (candles[index].Close - candles[index].Close * 0.015))
                 {
                     peaks.Add(candles[index + 1]);
+                    news.AddRange(new WorldNewsController(_context, _configuration).GetWorldNews(candles[index + 1].Time));
+                }
+            }
+            foreach (WorldNews currentNews in news)
+            {
+                SentimentPredictionModel model = new SentimentPredictionModel();
+                var predictions = model.Predict(currentNews.Text);
+                if (predictions.Count > 0)
+                {
+                    foreach (var prediction in predictions)
+                    {
+                        var text = String.Empty;
+                        foreach (var sentenseId in prediction.Entity.SentenseIds)
+                        {
+                            text += currentNews.Text.Split('.')[sentenseId];
+                        }
+                        var test = prediction;
+                    }
                 }
             }
 

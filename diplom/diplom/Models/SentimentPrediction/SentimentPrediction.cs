@@ -15,6 +15,10 @@ namespace diplom.Models.SentimentPrediction
 
     public class SentimentPredictionModel
     {
+        public static string NEGATIVE = "negative";
+        public static string POSITIVE = "positive";
+        public static string NEUTRAL = "neutral";
+
         public static string DatasetPath = Path.Combine(Environment.CurrentDirectory, "Models\\SentimentPrediction\\Model", "train.txt");
         public string Text { get; set; }
         public string[] Sentenses { get; set; }
@@ -66,8 +70,11 @@ namespace diplom.Models.SentimentPrediction
                 SentimentData data = new SentimentData(GetTextWithReplaceEntity(entity, sentenses));
 
                 var prediction = predictor.Predict(data);
-                EntitySentimentPrediction entityPrediction = new EntitySentimentPrediction(entity, prediction);
-                predictions.Add(entityPrediction);
+                if (prediction.PredictedLabel != SentimentPredictionModel.NEUTRAL)
+                {
+                    EntitySentimentPrediction entityPrediction = new EntitySentimentPrediction(entity, prediction);
+                    predictions.Add(entityPrediction);
+                }
                 Console.WriteLine("------------------------------");
                 Console.WriteLine($"Text: {data.SentimentText}");
                 Console.WriteLine($"Prediction: {prediction.PredictedLabel:#.##}");
@@ -100,7 +107,18 @@ namespace diplom.Models.SentimentPrediction
                         if (entity.CanBeEquals(entityFrequency.Entity))
                         {
                             entityFrequency.MentionsCount++;
-                            entityFrequency.SentenseIds.Add(i);
+                            if (!entityFrequency.SentenseIds.Contains(i))
+                            {
+                                entityFrequency.SentenseIds.Add(i);
+                            }
+                            if (i > 0 && !entityFrequency.SentenseIds.Contains(i - 1))
+                            {
+                                entityFrequency.SentenseIds.Add(i - 1);
+                            }
+                            if (i < sentenses.Length - 1 && !entityFrequency.SentenseIds.Contains(i + 1))
+                            {
+                                entityFrequency.SentenseIds.Add(i + 1);
+                            }
                             needToCreateNewEntityFrequency = false;
                             continue;
                         }
@@ -113,6 +131,14 @@ namespace diplom.Models.SentimentPrediction
                             MentionsCount = 1,
                             SentenseIds = new List<int>() { i }
                         });
+                        if (i > 0 && !entitiesFrequency.Last().SentenseIds.Contains(i - 1))
+                        {
+                            entitiesFrequency.Last().SentenseIds.Add(i - 1);
+                        }
+                        if (i < sentenses.Length - 1 && !entitiesFrequency.Last().SentenseIds.Contains(i + 1))
+                        {
+                            entitiesFrequency.Last().SentenseIds.Add(i + 1);
+                        }
                     }
 
                     Console.WriteLine(entity.ToString());
@@ -122,7 +148,7 @@ namespace diplom.Models.SentimentPrediction
             return entitiesFrequency;
         }
 
-        protected string GetTextWithReplaceEntity(EntityFrequency entityFrequency, string[] sentenses, string replacer = "X")
+        protected string GetTextWithReplaceEntity(EntityFrequency entityFrequency, string[] sentenses, string replacer = "XxX")
         {
             string text = String.Empty;
             foreach (int sentenseIndex in entityFrequency.SentenseIds)
