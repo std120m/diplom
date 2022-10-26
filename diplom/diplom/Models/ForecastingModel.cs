@@ -9,6 +9,19 @@ using System.Data.Odbc;
 
 namespace diplom.Models
 {
+    public class ModelInput
+    {
+        public float Close { get; set; }
+        public DateTime Time { get; set; }
+    }
+
+    public class ModelOutput
+    {
+        public float[] ForecastedClose { get; set; }
+        public float[] LowerBoundClose { get; set; }
+        public float[] UpperBoundClose { get; set; }
+    }
+
     public class ForecastingModel
     {
         const string connectionString = "server=localhost;database=test;user=root;password=1234";
@@ -78,9 +91,9 @@ namespace diplom.Models
 
             MLContext mlContext = new MLContext();
 
-            IDataView data = null;
-            SsaForecastingTransformer forecaster = null;
-            ITransformer model = null;
+            IDataView data = null, evaluateDate = null;
+            //SsaForecastingTransformer forecaster = null;
+            ITransformer forecaster = null;
             TimeSeriesPredictionEngine<ModelInput, ModelOutput> forecastEngine = null;
             foreach (Share share in context.Shares.Where(share => share.Id == shareId).ToList())
             {
@@ -89,10 +102,11 @@ namespace diplom.Models
                 long candlesCount = context.Candles.Where(candle => candle.Share.Id == share.Id).Count();
                 if (candlesCount < 30)
                     continue;
-                string query = @$"select closeByDay.close from (
+                
+                string query = @$"select closeByDay.day as Time, closeByDay.close from (
                         select
                           DATE_FORMAT(Time, '%Y-%m-%d') as day,
-                          CAST(substring_index(group_concat(cast(close as CHAR) order by Time desc), ',', 1 ) AS DECIMAL( 9, 2 )) as close
+                          CAST(substring_index(group_concat(cast(close as CHAR) order by Time desc), ',', 1 ) AS REAL) as close
                         from
                           candles
                           where shareId = {share.Id}
@@ -112,17 +126,17 @@ namespace diplom.Models
 
                 using (var file = File.OpenRead(modelPath))
                 {
-                    forecaster = (SsaForecastingTransformer)mlContext.Model.Load(file, out DataViewSchema schema);
-                    forecastEngine = forecaster.CreateTimeSeriesEngine<ModelInput, ModelOutput>(mlContext);
+                    forecaster = mlContext.Model.Load(file, out DataViewSchema schema);
+                    //forecastEngine = forecaster.CreateTimeSeriesEngine<ModelInput, ModelOutput>(mlContext);
                 }
 
                 SsaForecastingEstimator forecastingPipeline = mlContext.Forecasting.ForecastBySsa(
                     outputColumnName: "ForecastedClose",
                     inputColumnName: "Close",
-                    windowSize: 24,
+                    windowSize: 7*24,
                     seriesLength: 30*24,
                     trainSize: 6917,
-                    horizon: 24,
+                    horizon: 7*24,
                     confidenceLevel: 0.95f,
                     confidenceLowerBoundColumn: "LowerBoundClose",
                     confidenceUpperBoundColumn: "UpperBoundClose");
@@ -138,7 +152,7 @@ namespace diplom.Models
             if (data != null && forecastEngine != null && forecaster != null)
             {
                 forecastEngine.CheckPoint(mlContext, modelPath);
-                Forecast(data, 7, forecastEngine, mlContext);
+                Forecast(data, 7*24, forecastEngine, mlContext);
             }
         }
 
@@ -185,7 +199,7 @@ namespace diplom.Models
             Console.WriteLine($"Root Mean Squared Error: {RMSE:F3}\n");
         }
 
-        private void Forecast(IDataView testData, int horizon, TimeSeriesPredictionEngine<ModelInput, ModelOutput> forecaster, MLContext mlContext)
+        private float[] Forecast(IDataView testData, int horizon, TimeSeriesPredictionEngine<ModelInput, ModelOutput> forecaster, MLContext mlContext)
         {
             ModelOutput forecast = forecaster.Predict();
 
@@ -211,19 +225,7 @@ namespace diplom.Models
             {
                 Console.WriteLine(prediction);
             }
+            return forecast.ForecastedClose;
         }
-    }
-
-    public class ModelInput
-    {
-        public float Close { get; set; }
-        public DateTime Time { get; set; }
-    }
-
-    public class ModelOutput
-    {
-        public float[] ForecastedClose { get; set; }
-        public float[] LowerBoundClose { get; set; }
-        public float[] UpperBoundClose { get; set; }
     }
 }

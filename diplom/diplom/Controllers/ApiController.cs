@@ -247,6 +247,13 @@ namespace diplom.Controllers
             new ForecastingModel().GetForecast(_configuration, _context, id);
         }
 
+        // GET: api/news/{id}/impact
+        [HttpGet("news/{id}/impact")]
+        public void GetWorldNewsImpact(int id)
+        {
+            new WorldNewsController(_context, _configuration).GetWorldnewsImpact(id);
+        }
+
         // GET: api/news/sentiment
         [HttpGet("news/sentiment")]
         public void GetSentimentPrediction()

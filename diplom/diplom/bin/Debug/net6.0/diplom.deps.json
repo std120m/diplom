@@ -8,6 +8,7 @@
     ".NETCoreApp,Version=v6.0": {
       "diplom/1.0.0": {
         "dependencies": {
+          "DeepMorphy": "2.0.3",
           "Microsoft.AspNet.Mvc": "5.2.9",
           "Microsoft.AspNet.WebApi.Cors": "5.2.9",
           "Microsoft.EntityFrameworkCore": "6.0.9",
@@ -48,6 +49,17 @@
           "lib/netstandard1.5/Castle.Core.dll": {
             "assemblyVersion": "4.0.0.0",
             "fileVersion": "4.4.1.0"
+          }
+        }
+      },
+      "DeepMorphy/2.0.3": {
+        "dependencies": {
+          "TensorFlowSharp": "1.12.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/DeepMorphy.dll": {
+            "assemblyVersion": "2.0.3.0",
+            "fileVersion": "2.0.3.0"
           }
         }
       },
@@ -2847,6 +2859,7 @@
           "System.Runtime": "4.3.0"
         }
       },
+      "System.ValueTuple/4.5.0": {},
       "System.Windows.Extensions/6.0.0": {
         "dependencies": {
           "System.Drawing.Common": "6.0.0"
@@ -2928,6 +2941,44 @@
           }
         }
       },
+      "TensorFlowSharp/1.12.0": {
+        "dependencies": {
+          "System.ValueTuple": "4.5.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/TensorFlowSharp.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/linux/native/libtensorflow.so": {
+            "rid": "linux",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux/native/libtensorflow_framework.so": {
+            "rid": "linux",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/osx/native/libtensorflow.dylib": {
+            "rid": "osx",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/osx/native/libtensorflow_framework.dylib": {
+            "rid": "osx",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win7-x64/native/libtensorflow.dll": {
+            "rid": "win7-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
       "Tinkoff.InvestApi/0.1.8": {
         "dependencies": {
           "Google.Protobuf": "3.19.4",
@@ -2961,6 +3012,13 @@
       "sha512": "sha512-zanbjWC0Y05gbx4eGXkzVycOQqVOFVeCjVsDSyuao9P4mtN1w3WxxTo193NGC7j3o2u3AJRswaoC6hEbnGACnQ==",
       "path": "castle.core/4.4.1",
       "hashPath": "castle.core.4.4.1.nupkg.sha512"
+    },
+    "DeepMorphy/2.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-QAvoP80zmcQ7DGipXGcW5PY8Q9hv4Rnfw7xyEzTKT71unkz+ZbdbD5cGVcCeBtzwk+Fc7rFXYSS1OwkAle8aFA==",
+      "path": "deepmorphy/2.0.3",
+      "hashPath": "deepmorphy.2.0.3.nupkg.sha512"
     },
     "Google.Protobuf/3.19.4": {
       "type": "package",
@@ -4418,6 +4476,13 @@
       "path": "system.threading.timer/4.3.0",
       "hashPath": "system.threading.timer.4.3.0.nupkg.sha512"
     },
+    "System.ValueTuple/4.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-okurQJO6NRE/apDIP23ajJ0hpiNmJ+f0BwOlB/cSqTLQlw5upkf+5+96+iG2Jw40G1fCVCyPz/FhIABUjMR+RQ==",
+      "path": "system.valuetuple/4.5.0",
+      "hashPath": "system.valuetuple.4.5.0.nupkg.sha512"
+    },
     "System.Windows.Extensions/6.0.0": {
       "type": "package",
       "serviceable": true,
@@ -4452,6 +4517,13 @@
       "sha512": "sha512-8svOVEjS1CV5JDnUUuFKwvbM2q8KSaqUR7rFo3Ht/duACtY58lZS4Q6hwu2GeWm8gRvhJIrNngIrDbsWMbDvyg==",
       "path": "tensorflow.net/0.20.1",
       "hashPath": "tensorflow.net.0.20.1.nupkg.sha512"
+    },
+    "TensorFlowSharp/1.12.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-jTB+4nIfp8fVxm+59mO19nBN+p7Xxt8RrENuSAITb1+yw1IZghPLywMKVLcZ4jNV3Ile4ezPHHNKhWZ5Ozv7nQ==",
+      "path": "tensorflowsharp/1.12.0",
+      "hashPath": "tensorflowsharp.1.12.0.nupkg.sha512"
     },
     "Tinkoff.InvestApi/0.1.8": {
       "type": "package",

@@ -3,6 +3,7 @@ using Microsoft.ML.Data;
 using Microsoft.ML.Trainers;
 using Microsoft.ML.Transforms;
 using Pullenti.Ner;
+using Pullenti.Ner.Geo;
 
 namespace diplom.Models.SentimentPrediction
 {
@@ -26,11 +27,6 @@ namespace diplom.Models.SentimentPrediction
         protected ITrainerBase trainer;
         public SentimentPredictionModel()
         {
-            //var newSample = new SentimentData
-            //{
-            //    SentimentText = @"Руководство страны начало военную операцию."
-            //};
-
             this.trainer = new OneVersusAllTrainer();
         }
 
@@ -98,7 +94,7 @@ namespace diplom.Models.SentimentPrediction
                 // получили выделенные сущности
                 foreach (Referent entity in result.Entities)
                 {
-                    if (entity.InstanceOf.Name != "ORGANIZATION")
+                    if (entity.InstanceOf.Name != "ORGANIZATION" && !(entity.InstanceOf.Name == "GEO" && ((GeoReferent)entity).IsState))
                         continue;
 
                     bool needToCreateNewEntityFrequency = true;
