@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
   $().owlCarousel && ($(".owl-carousel.basic").length > 0 && $(".owl-carousel.basic").owlCarousel({
       margin: 30,
       stagePadding: 15,

@@ -52,6 +52,12 @@ namespace diplom.Controllers
                 return NotFound();
             }
 
+            var newsQuotesImpacts = from impact in worldNews.NewsQuotesImpacts.DistinctBy(_impact => _impact.CompanyId)
+                                    orderby Math.Abs(impact.Influence) descending
+                                    orderby impact.Influence descending
+                                    select impact;
+            ViewBag.ImpactCompanies = newsQuotesImpacts.Take(10).ToArray();
+
             return View(worldNews);
         }
 
@@ -212,14 +218,25 @@ namespace diplom.Controllers
             {
                 try
                 {
+                    bool isEconomyNews = true;
                     string title = match.Groups[3].Value;
                     string[] time = match.Groups[1].Value.Split(',')[0].Split(':');
                     DateTime newsPublicationDate = parsingDate.AddHours(int.Parse(time[0]));
                     newsPublicationDate = newsPublicationDate.AddMinutes(int.Parse(time[1]));
                     string newsUrl = _configuration["WorldNewsDomain"] + match.Groups[2].Value;
                     Thread.Sleep(400);
-                    string newsText = Helper.GetStringFromHtml(newsUrl, Encoding.GetEncoding(65001));
-                    string newsTextPattern = "\"articleBody\":\"(.*?)\",\"alternativeHeadline\"";
+                    string? newsText = Helper.GetStringFromHtml(newsUrl, Encoding.GetEncoding(65001));
+                    if (newsText == null)
+                        continue;
+                    string newsRubricPattern = "<a class=\"topic-header__item topic-header__rubric\".*?>(.*?)<";
+                    foreach (Match rubric in Regex.Matches(newsText, newsRubricPattern))
+                    {
+                        if (rubric.Groups[1].Value != "Экономика")
+                            isEconomyNews = false;
+                    }
+                    if (! isEconomyNews)
+                        continue;
+                    string newsTextPattern = "\"articleBody\":\"(.*?)\"";
                     foreach (Match textMatch in Regex.Matches(newsText, newsTextPattern))
                     {
                         newsText = textMatch.Groups[1].Value;
@@ -251,11 +268,22 @@ namespace diplom.Controllers
             //WorldNews news = _context.WorldNews.Where(news => news.Id == newsId).ToList().First();
             //if (news == null)
             //    return;
-            List<WorldNews> allNews = _context.WorldNews.ToList();
+            List<WorldNews> allNews = _context.WorldNews.Where(news => news.Id > 29985).ToList();
+            List<EntitySentimentPrediction> predictions = new List<EntitySentimentPrediction>();
             foreach (var news in allNews)
             {
+                if (news.Text.Contains("articleBody"))
+                {
+                    string newsTextPattern = "\"articleBody\":\"(.*?)\"";
+                    foreach (Match textMatch in Regex.Matches(news.Text, newsTextPattern))
+                    {
+                        news.Text = textMatch.Groups[1].Value;
+                        _context.WorldNews.Update(news);
+                    }
+                }
+
                 SentimentPredictionModel model = new SentimentPredictionModel();
-                var predictions = model.Predict(news.Text);
+                predictions = model.Predict(news.Text);
                 if (predictions.Count > 0)
                 {
                     MorphAnalyzer morph;
@@ -275,49 +303,111 @@ namespace diplom.Controllers
                         if (keywords.Count >= 5)
                             continue;
                         var tag = morphInfo.BestTag;
-                        if (morphInfo.BestTag.Has("сущ", "ед") && tag.Power > 0.98)
+                        if (tag.HasLemma && tag.Power > 0.98)
                         {
                             Console.WriteLine($"{morphInfo.Text}:");
                             Console.WriteLine($"    {tag} : {tag.Power}");
                             keywords.Add(tag.Lemma);
                         }
                     }
+                    List<NewsQuotesImpact> impacts = new List<NewsQuotesImpact>();
                     foreach (var prediction in predictions)
                     {
-                        bool isGeo = false;
-                        List<Share> shares = new List<Share>();
-                        List<Country> countries = new List<Country>();
-                        var entity = prediction.Entity.Entity;
-                        if (entity is OrganizationReferent)
-                        {
-                            List<String> names = (entity as OrganizationReferent).Names;
-                            if (names.Count > 0)
-                            {
-                                shares = _context.Shares.Where(share => share.Name == (entity as OrganizationReferent).Names[0]).ToList();
-                            }
-                        }
-                        if (entity is GeoReferent)
-                        {
-                            countries = _context.Countries.Where(country => country.Code == (entity as GeoReferent).Alpha2).ToList();
-                            if (countries.Count > 0)
-                            {
-                                Country country = countries.First();
-                                shares = country.Shares.ToList();
-                                isGeo = true;
-                            }
-                        }
+                        //bool isGeo = false;
+                        List<Share> shares = _context.Shares.ToList();
+                        //List<Country> countries = new List<Country>();
+                        //var entity = prediction.Entity.Entity;
+                        List<Candle> candles = new List<Candle>();// _context.Candles.Where(candle => candle.Time > news.DateTime.AddDays(-1).Date && candle.Time < news.DateTime.AddDays(5).Date).ToList();
                         foreach (var share in shares)
                         {
-                            List<Candle> candles = share.Candles.Where(candle => candle.Time > news.DateTime.Date && candle.Time < news.DateTime.AddDays(1).Date).ToList();
+                            if (share.Company == null || share.Company.BrandInfo == null)
+                                continue;
+
+                            candles = share.Candles.Where(candle => candle.Time > news.DateTime.AddDays(-1).Date && candle.Time < news.DateTime.AddDays(5).Date).ToList();
                             if (candles.Count > 0)
                             {
                                 Candle firstCandle = candles.First();
                                 Candle lastCandle = candles.Last();
                                 double? influence = ((firstCandle.Close - lastCandle.Close) * 100) / (firstCandle.Close);
-                                if (influence != null && Math.Abs((double)influence) > (isGeo ? 3 : 1.5))
-                                    new NewsQuotesImpact(share.Company, news, (double)influence);
+                                if (influence != null && Math.Abs((double)influence) > 5)
+                                {
+                                    var companyMorphInfo = morph.Parse(share.Company.BrandInfo.Split(' ')).ToList();
+                                    var companyKeywords = new List<string>();
+                                    foreach (var morphInfo in companyMorphInfo)
+                                    {
+                                        if (companyKeywords.Count >= 5)
+                                            continue;
+                                        var tag = morphInfo.BestTag;
+                                        if (tag.HasLemma && tag.Power > 0.5 && tag.Power < 0.7)
+                                        {
+                                            Console.WriteLine($"{morphInfo.Text}:");
+                                            Console.WriteLine($"    {tag} : {tag.Power}");
+                                            companyKeywords.Add(tag.Lemma);
+                                        }
+                                    }
+                                    impacts.Add(new NewsQuotesImpact(share.Company, news, (double)influence));
+                                }
                             }
                         }
+                        //if (candles.Count > 0)
+                        //{
+                        //    Candle firstCandle = candles.First();
+                        //    Candle lastCandle = candles.Last();
+                        //    double? influence = ((firstCandle.Close - lastCandle.Close) * 100) / (firstCandle.Close);
+                        //    if (influence != null && Math.Abs((double)influence) > (isGeo ? 3 : 1.5))
+                        //        new NewsQuotesImpact(firstCandle.Share.Company, news, (double)influence);
+                        //}
+                        //if (entity is OrganizationReferent)
+                        //{
+                        //    List<String> names = (entity as OrganizationReferent).Names;
+                        //    if (names.Count > 0)
+                        //    {
+                        //        shares = _context.Shares.Where(share => share.Name == (entity as OrganizationReferent).Names[0]).ToList();
+                        //    }
+                        //}
+                        //if (entity is GeoReferent)
+                        //{
+                        //    countries = _context.Countries.Where(country => country.Code == (entity as GeoReferent).Alpha2).ToList();
+                        //    if (countries.Count > 0)
+                        //    {
+                        //        Country country = countries.First();
+                        //        shares = country.Shares.ToList();
+                        //        isGeo = true;
+                        //    }
+                        //}
+                        //foreach (var share in shares)
+                        //{
+                        //    candles = share.Candles.Where(candle => candle.Time > news.DateTime.Date && candle.Time < news.DateTime.AddDays(1).Date).ToList();
+                        //    if (candles.Count > 0)
+                        //    {
+                        //        Candle firstCandle = candles.First();
+                        //        Candle lastCandle = candles.Last();
+                        //        double? influence = ((firstCandle.Close - lastCandle.Close) * 100) / (firstCandle.Close);
+                        //        if (influence != null && Math.Abs((double)influence) > (isGeo ? 3 : 1.5))
+                        //            new NewsQuotesImpact(share.Company, news, (double)influence);
+                        //    }
+                        //}
+                    }
+                    if (impacts.Count > 0)
+                    {
+                        foreach (var keyword in keywords)
+                        {
+                            Keyword dbKeyword = null;
+                            if (_context.Keywords.Where(k => k.Value == keyword).Count() > 0)
+                            {
+                                dbKeyword = _context.Keywords.Where(k => k.Value == keyword).First();
+                            }
+                            else
+                            {
+                                dbKeyword = new Keyword(keyword);
+                                _context.Keywords.Add(dbKeyword);
+                                _context.SaveChanges();
+                            }
+                            _context.WorldNewsKeywords.Add(new WorldNewsKeyword(news, dbKeyword));
+                            _context.SaveChanges();
+                        }
+                        _context.NewsQuotesImpacts.AddRange(impacts);
+                        _context.SaveChanges();
                     }
                 }
             }

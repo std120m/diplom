@@ -29,12 +29,12 @@ namespace diplom.Controllers
             _context = context;
         }
 
-        public SharesController(diplomContext context, InvestApiClient investApi, IConfiguration configuration)
-        {
-            _context = context;
-            _investApi = investApi;
-            _configuration = configuration;
-        }
+        //public SharesController(diplomContext context, InvestApiClient investApi, IConfiguration configuration)
+        //{
+        //    _context = context;
+        //    _investApi = investApi;
+        //    _configuration = configuration;
+        //}
 
         // GET: Shares
         public async Task<IActionResult> Index()

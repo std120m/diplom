@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace diplom.Models
 {
@@ -45,6 +46,7 @@ namespace diplom.Models
         public virtual ICollection<Share> Shares { get; set; }
         public virtual ICollection<CompanyEvents> Events { get; set; }
         public virtual ICollection<CompanyFilings> Filings { get; set; }
+        [JsonIgnore]
         public virtual ICollection<NewsQuotesImpact> NewsQuotesImpacts { get; set; }
         //public virtual ICollection<WorldNews> WorldNews { get; set; }
         public string? Logo{ get; set; }

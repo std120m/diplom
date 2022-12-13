@@ -66,11 +66,11 @@ namespace diplom.Models.SentimentPrediction
                 SentimentData data = new SentimentData(GetTextWithReplaceEntity(entity, sentenses));
 
                 var prediction = predictor.Predict(data);
-                if (prediction.PredictedLabel != SentimentPredictionModel.NEUTRAL)
-                {
+                //if (prediction.PredictedLabel != SentimentPredictionModel.NEUTRAL)
+                //{
                     EntitySentimentPrediction entityPrediction = new EntitySentimentPrediction(entity, prediction);
                     predictions.Add(entityPrediction);
-                }
+                //}
                 Console.WriteLine("------------------------------");
                 Console.WriteLine($"Text: {data.SentimentText}");
                 Console.WriteLine($"Prediction: {prediction.PredictedLabel:#.##}");
@@ -87,10 +87,18 @@ namespace diplom.Models.SentimentPrediction
             Pullenti.Sdk.InitializeAll();
             for (int i = 0; i < sentenses.Length; i++)
             {
-                // создаём экземпляр процессора со стандартными анализаторами
-                Processor processor = ProcessorService.CreateProcessor();
-                // запускаем на тексте text
-                AnalysisResult result = processor.Process(new SourceOfAnalysis(sentenses[i]));
+                AnalysisResult result = null;
+                try
+                {
+                    // создаём экземпляр процессора со стандартными анализаторами
+                    Processor processor = ProcessorService.CreateProcessor();
+                    // запускаем на тексте text
+                    result = processor.Process(new SourceOfAnalysis(sentenses[i]));
+                }
+                catch (Exception e)
+                {
+                    continue;
+                }
                 // получили выделенные сущности
                 foreach (Referent entity in result.Entities)
                 {

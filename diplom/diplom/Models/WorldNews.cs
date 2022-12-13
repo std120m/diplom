@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace diplom.Models
 {
@@ -10,6 +11,7 @@ namespace diplom.Models
         public String Url { get; set; }
         public String Text { get; set; }
         public String Title { get; set; }
+        [JsonIgnore]
         public virtual ICollection<NewsQuotesImpact> NewsQuotesImpacts { get; set; } = new List<NewsQuotesImpact>();
         //public virtual ICollection<Company> Companies { get; set; } = new List<Company>();
 

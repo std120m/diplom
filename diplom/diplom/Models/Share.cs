@@ -1,6 +1,7 @@
 ﻿using diplom.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Text.Json.Serialization;
 using Tinkoff.InvestApi.V1;
 using ApiShare = Tinkoff.InvestApi.V1.Share;
 
@@ -19,10 +20,12 @@ namespace diplom.Models
         public long? IssueSize { get; set; }
         public long? IssuePlanSize { get; set; }
         public virtual Country? Country { get; set; }
+        [JsonIgnore]
         public virtual Company? Company { get; set; }
         public int? CompanyId { get; set; }
         public virtual Sector? Sector { get; set; }
         public virtual ShareType? ShareType { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Candle> Candles { get; set; } = new List<Candle>();
 
         public Share() 

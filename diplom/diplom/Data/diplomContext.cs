@@ -34,6 +34,9 @@ namespace diplom.Data
         public DbSet<diplom.Models.CompanyFilings> CompanyFilings { get; set; }
 
         public DbSet<diplom.Models.WorldNews> WorldNews { get; set; }
+        public DbSet<diplom.Models.NewsQuotesImpact> NewsQuotesImpacts { get; set; }
+        public DbSet<diplom.Models.Keyword> Keywords { get; set; }
+        public DbSet<diplom.Models.WorldNewsKeyword> WorldNewsKeywords { get; set; }
 
 
         public DbSet<CandlesByDay> CandlesByDay { get; set; }

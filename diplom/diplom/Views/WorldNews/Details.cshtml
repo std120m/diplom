@@ -13,91 +13,38 @@
     <div class="row">
         <div class="col-md-12 mb-4 pl-0 pr-0">
             <div class="owl-container">
-                <div class="owl-carousel basic">
-                    <div class="card sos-st-card twitter" style="width:400px">
-                        <div class="card-block">
-                            <div class="row align-items-center">
-                                <div class="col">
-                                    <h3 class="mb-0"><i class="fab fa-twitter"></i><small>Twitter</small></h3>
+                <div id="impact-container" class="owl-carousel basic">
+                    @foreach(var impact in ViewBag.ImpactCompanies)
+                    {
+                        <div class="card sos-st-card twitter" style="width:400px;">
+                            <div class="card-block">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <h3 class="mb-0"><i class="fab fa-twitter"></i><small>@impact.Company.Shares[0].Name</small></h3>
+                                    </div>
+                                    <div class="col-auto">
+                                        @if (@impact.Influence < 0)
+                                        {
+                                            <h5 class="mb-0 text-red">@(Math.Round(impact.Influence, 2))%</h5>
+                                        }
+                                        else
+                                        {
+                                            <h5 class="mb-0 text-green">@(Math.Round(impact.Influence, 2))%</h5>
+                                        }
+                                        @*<h5 class="mb-0"><small>+123.12</small></h5>*@
+                                    </div>
+                                    @if (@impact.Influence < 0)
+                                    {
+                                        <div class="col-auto"><i class="fas fa-arrow-down text-red"></i></div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-auto"><i class="fas fa-arrow-up text-green"></i></div>
+                                    }
                                 </div>
-                                <div class="col-auto">
-                                    <h5 class="mb-0 text-green">12,4%</h5>
-                                    <h5 class="mb-0"><small>+123.12</small></h5>
-                                </div>
-                                <div class="col-auto"><i class="fas fa-arrow-up text-green"></i></div>
                             </div>
                         </div>
-                    </div>
-                    <div class="card sos-st-card twitter" style="width:400px">
-                        <div class="card-block">
-                            <div class="row align-items-center">
-                                <div class="col">
-                                    <h3 class="mb-0"><i class="fab fa-linkedin-in"></i><small>Linkedin-in</small></h3>
-                                </div>
-                                <div class="col-auto">
-                                    <h5 class="mb-0 text-green">38,4%</h5>
-                                    <h5 class="mb-0"><small>+374.12</small></h5>
-                                </div>
-                                <div class="col-auto"><i class="fas fa-arrow-up text-green"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card sos-st-card twitter" style="width:400px">
-                        <div class="card-block">
-                            <div class="row align-items-center">
-                                <div class="col">
-                                    <h3 class="mb-0"><i class="fab fa-facebook-f"></i><small>Facebook</small></h3>
-                                </div>
-                                <div class="col-auto">
-                                    <h5 class="mb-0">0%</h5>
-                                    <h5 class="mb-0"><small>0</small></h5>
-                                </div>
-                                <div class="col-auto"><i class="fas fa-arrow-right text-yellow"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card sos-st-card twitter" style="width:400px">
-                        <div class="card-block">
-                            <div class="row align-items-center">
-                                <div class="col">
-                                    <h3 class="mb-0"><i class="fab fa-google"></i><small>Google</small></h3>
-                                </div>
-                                <div class="col-auto">
-                                    <h5 class="mb-0 text-red">3,04%</h5>
-                                    <h5 class="mb-0"><small>-8.12</small></h5>
-                                </div>
-                                <div class="col-auto"><i class="fas fa-arrow-down text-red"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card sos-st-card twitter" style="width:400px">
-                        <div class="card-block">
-                            <div class="row align-items-center">
-                                <div class="col">
-                                    <h3 class="mb-0"><i class="fab fa-google"></i><small>Google</small></h3>
-                                </div>
-                                <div class="col-auto">
-                                    <h5 class="mb-0 text-red">3,04%</h5>
-                                    <h5 class="mb-0"><small>-8.12</small></h5>
-                                </div>
-                                <div class="col-auto"><i class="fas fa-arrow-down text-red"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card sos-st-card twitter" style="width:400px">
-                        <div class="card-block">
-                            <div class="row align-items-center">
-                                <div class="col">
-                                    <h3 class="mb-0"><i class="fab fa-google"></i><small>Google</small></h3>
-                                </div>
-                                <div class="col-auto">
-                                    <h5 class="mb-0 text-red">3,04%</h5>
-                                    <h5 class="mb-0"><small>-8.12</small></h5>
-                                </div>
-                                <div class="col-auto"><i class="fas fa-arrow-down text-red"></i></div>
-                            </div>
-                        </div>
-                    </div>
+                    }
                 </div>
                 <div class="slider-nav text-center">
                     <a href="#" class="left-arrow owl-prev">
@@ -114,11 +61,11 @@
 </div>
 
 <script>
-    $(document).ready(function() {
+    $(document).ready(function() {        
         $('.owl-carousel').owlCarousel({
             margin:10,
             autoWidth:true,
-            items:4
+            items:6
         })
     });
 </script>

@@ -62,6 +62,27 @@ namespace diplom.Controllers
             return Json(share.GetCandlesByDay(_context), options);
         }
 
+        // GET: api/shares-for-news/6
+        [HttpGet("shares-for-news/{id}")]
+        public JsonResult GetSharesForNews(int? id)
+        {
+            WorldNews? news = _context.WorldNews.Find(id);
+            if (news == null)
+                return Json("News not found");
+
+            JsonSerializerOptions options = new()
+            {
+                //MaxDepth = 3,
+                ReferenceHandler = ReferenceHandler.Preserve,
+                WriteIndented = true
+            };
+            var newsQuotesImpacts = from impact in news.NewsQuotesImpacts.DistinctBy(_impact => _impact.CompanyId)
+                                    orderby Math.Abs(impact.Influence) descending
+                                    orderby impact.Influence descending
+                                    select impact;
+            return Json(newsQuotesImpacts.Take(2).ToArray(), options);
+        }
+
         // GET: api/news/update
         [HttpGet("news/update")]
         public async Task UpdateWorldNews()

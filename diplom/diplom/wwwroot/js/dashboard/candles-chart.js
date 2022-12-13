@@ -4,6 +4,8 @@ let currentChartType = ChartTypes.TREND;
 let shareIds = [5];
 let currentChartPeriod = Periods.DAY;
 
+console.log(google);
+
 google.charts.load('current', { 'packages': ['annotationchart'], 'language': 'ru' });
 google.charts.setOnLoadCallback(function() { drawTrend(Periods.DAY, shareIds) });
 

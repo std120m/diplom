@@ -289,6 +289,20 @@ namespace diplom.Migrations
                     b.ToTable("Exchanges");
                 });
 
+            modelBuilder.Entity("diplom.Models.Keyword", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Keywords");
+                });
+
             modelBuilder.Entity("diplom.Models.NewsQuotesImpact", b =>
                 {
                     b.Property<long>("Id")
@@ -411,6 +425,27 @@ namespace diplom.Migrations
                     b.ToTable("World_News");
                 });
 
+            modelBuilder.Entity("diplom.Models.WorldNewsKeyword", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("KeywordId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("WorldNewsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KeywordId");
+
+                    b.HasIndex("WorldNewsId");
+
+                    b.ToTable("World_News_Keyword");
+                });
+
             modelBuilder.Entity("diplom.Models.Candle", b =>
                 {
                     b.HasOne("diplom.Models.Share", "Share")
@@ -478,6 +513,25 @@ namespace diplom.Migrations
                     b.Navigation("Exchange");
 
                     b.Navigation("Sector");
+                });
+
+            modelBuilder.Entity("diplom.Models.WorldNewsKeyword", b =>
+                {
+                    b.HasOne("diplom.Models.Keyword", "Keyword")
+                        .WithMany()
+                        .HasForeignKey("KeywordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("diplom.Models.WorldNews", "WorldNews")
+                        .WithMany()
+                        .HasForeignKey("WorldNewsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Keyword");
+
+                    b.Navigation("WorldNews");
                 });
 
             modelBuilder.Entity("diplom.Models.Company", b =>

@@ -59,7 +59,7 @@ namespace diplom.Helpers
             return date.Year == DateTime.Now.Year;
         }
 
-        public static string GetStringFromHtml(string url, Encoding encoding)
+        public static string? GetStringFromHtml(string url, Encoding encoding)
         {
             byte[] htmlData = new byte[0];
             using (WebClient client = new WebClient())
@@ -75,9 +75,10 @@ namespace diplom.Helpers
                 catch (Exception e)
                 {
                     Console.WriteLine($"Error --- {e}");
+                    return null;
 
-                    Thread.Sleep(15000);
-                    GetStringFromHtml(url, encoding);
+                    //Thread.Sleep(15000);
+                    //GetStringFromHtml(url, encoding);
                 }
                 return encoding.GetString(htmlData);
             }
