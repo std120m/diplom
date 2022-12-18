@@ -84,13 +84,13 @@ namespace diplom.Models
             foreach (Candle candle in this.Candles)
             {
                 Dictionary<string, object> candleDetail = new Dictionary<string, object>();
-                candleDetail.Add("low", candle.Low);
-                candleDetail.Add("high", candle.High);
-                candleDetail.Add("volume", candle.Volume);
-                candleDetail.Add("date", candle.Time.ToString("yyyy-MM-dd HH:mm:ss"));
-                candleDetail.Add("open", candle.Open);
-                candleDetail.Add("close", candle.Close);
-                candleDetail.Add("share_id", candle.Share.Id);
+                candleDetail.Add("Low", candle.Low);
+                candleDetail.Add("High", candle.High);
+                candleDetail.Add("Volume", candle.Volume);
+                candleDetail.Add("Date", candle.Time.ToString("yyyy-MM-dd HH:mm:ss"));
+                candleDetail.Add("Open", candle.Open);
+                candleDetail.Add("Close", candle.Close);
+                candleDetail.Add("Share_id", candle.Share.Id);
 
                 candles.Add(candleDetail);
             }
@@ -104,13 +104,13 @@ namespace diplom.Models
                 DROP VIEW if exists View_CandlesByDay;
                 CREATE VIEW View_CandlesByDay AS
                 select
-                    min(low) as low,
-                    max(high) as high,
-                    avg(volume) as volume,
-                    DATE_FORMAT(Time, '%Y-%m-%d') as date,
+                    min(low) as Low,
+                    max(high) as High,
+                    avg(volume) as Volume,
+                    DATE_FORMAT(Time, '%Y-%m-%d') as Date,
                     ShareId,
-                    CAST(substring_index(group_concat(cast(open as CHAR) order by Time asc), ',', 1) AS DECIMAL(9, 2)) as open,
-                    CAST(substring_index(group_concat(cast(close as CHAR) order by Time desc), ',', 1) AS DECIMAL(9, 2)) as close
+                    CAST(substring_index(group_concat(cast(open as CHAR) order by Time asc), ',', 1) AS DECIMAL(9, 2)) as Open,
+                    CAST(substring_index(group_concat(cast(close as CHAR) order by Time desc), ',', 1) AS DECIMAL(9, 2)) as Close
                 from
                     candles
                 group by

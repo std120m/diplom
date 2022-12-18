@@ -271,6 +271,7 @@ namespace diplom.Controllers
 
                 JObject brandInfo = (JObject)JsonConvert.DeserializeObject(result);
                 JToken brands = brandInfo.First.Next.First.First.First;
+                company.BrandInfo = null;
 
                 foreach (JToken brand in brands)
                 {

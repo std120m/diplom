@@ -1,20 +1,20 @@
+//const { log } = require("fullcalendar/src/main");
+
 const Periods = { DAY: 'day', HOUR: 'hour' };
 const ChartTypes = { CANDLES: 'candles', TREND: 'trend' };
 let currentChartType = ChartTypes.TREND;
-let shareIds = [5];
+let shareIds = [5, 10];
 let currentChartPeriod = Periods.DAY;
 
-console.log(google);
-
 google.charts.load('current', { 'packages': ['annotationchart'], 'language': 'ru' });
-google.charts.setOnLoadCallback(function() { drawTrend(Periods.DAY, shareIds) });
+google.charts.setOnLoadCallback(function () { drawTrend(currentChartType) });
 
-function drawTrend(period, share) {
+function drawTrend(currentChartType) {
     $.ajax({
         type: "GET",
         url: 'https://localhost:7170/home/getCandles',  
         data: {
-            period: period,
+            currentChartType: currentChartType,
             shareIds: shareIds
         },
         contentType: "application/json; charset=utf-8",
@@ -71,6 +71,10 @@ function drawChart(json) {
     google.visualization.events.addListener(chart, 'ready', onReady);
     google.visualization.events.addListener(chart, 'select', onSelectDate);
     chart.draw(data, options);
+    document.getElementById("chart_div_AnnotationChart_zoomControlContainer_1-hour").remove();
+    document.getElementById("chart_div_AnnotationChart_zoomControlContainer_1-day").remove();
+    document.getElementById("chart_div_AnnotationChart_zoomControlContainer_5-days").remove();
+    document.getElementById("chart_div_AnnotationChart_zoomControlContainer_3-months").remove();
     function onReady() {
         let x = document.getElementById('chart_div_AnnotationChart_zoomControlContainer').getElementsByTagName('button');
         document.getElementById('chart_div_AnnotationChart_zoomControlContainer').style.fontSize = '14px';
@@ -79,6 +83,11 @@ function drawChart(json) {
             x[i].style.width = '40px';
             x[i].style.fontSize = '14px';
         }
+        //document.getElementById("chart_div_AnnotationChart_zoomControlContainer").innerHTML = document.getElementById("chart_div_AnnotationChart_zoomControlContainer").innerHTML.replace("Zoom:", "Масштаб:");
+        document.getElementById("chart_div_AnnotationChart_zoomControlContainer_1-week").innerHTML = "&#1085;&#1077;&#1076;";
+        document.getElementById("chart_div_AnnotationChart_zoomControlContainer_1-month").innerHTML = "&#1084;&#1077;&#1089;";
+        document.getElementById("chart_div_AnnotationChart_zoomControlContainer_6-months").innerHTML = "6&#1084;&#1077;&#1089;";
+        document.getElementById("chart_div_AnnotationChart_zoomControlContainer_1-year").innerHTML = "&#1075;&#1086;&#1076;";
     }
     function onSelectDate() {
         let selection = chart.getSelection();
@@ -98,7 +107,7 @@ function drawChart(json) {
                 for (let i = 0; i < response.length; i++) {
                     let newsElement =
                         "<div class=\"feed-item\">" +
-                            "<a href=\"" + response[i].Url + "\">" +
+                            "<a href=\"/WorldNews/Details/" + response[i].Id + "\">" +
                                 "<div class=\"feeds-body\">" +
                                     "<h4 class=\"title text-primary\">" +
                                         response[i].Title +

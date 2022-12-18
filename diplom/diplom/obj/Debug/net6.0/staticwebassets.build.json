@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "ad90eKt19HXXDeYyPWrSxMJmoXE7ciPWI5+D6gL2bHM=",
+  "Hash": "e/c5cLiefPFeOcXyZrZ3ZRMjJWfQdZVy3jdSrIJZgRM=",
   "Source": "diplom",
   "BasePath": "_content/diplom",
   "Mode": "Default",
@@ -1428,6 +1428,23 @@
       "OriginalItemSpec": "wwwroot\\js\\rating.js"
     },
     {
+      "Identity": "X:\\diplom\\diplom\\diplom\\wwwroot\\js\\select_2.js",
+      "SourceId": "diplom",
+      "SourceType": "Discovered",
+      "ContentRoot": "X:\\diplom\\diplom\\diplom\\wwwroot\\",
+      "BasePath": "_content/diplom",
+      "RelativePath": "js/select_2.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\select_2.js"
+    },
+    {
       "Identity": "X:\\diplom\\diplom\\diplom\\wwwroot\\js\\session-time-out.js",
       "SourceId": "diplom",
       "SourceType": "Discovered",
@@ -2701,6 +2718,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\pages\\form-addon.html"
+    },
+    {
+      "Identity": "X:\\diplom\\diplom\\diplom\\wwwroot\\pages\\form-advance — копия.html",
+      "SourceId": "diplom",
+      "SourceType": "Discovered",
+      "ContentRoot": "X:\\diplom\\diplom\\diplom\\wwwroot\\",
+      "BasePath": "_content/diplom",
+      "RelativePath": "pages/form-advance — копия.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\pages\\form-advance — копия.html"
     },
     {
       "Identity": "X:\\diplom\\diplom\\diplom\\wwwroot\\pages\\form-advance.html",

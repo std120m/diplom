@@ -4,125 +4,88 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
-<div id="dashboard">
+<h1>@Html.DisplayFor(model => model.Name)</h1>
+<div class="row">
     <button id="changeChartType_b">Change chart type</button>
-    <div id="chart_div" style="width: 1500px; height: 1000px;"></div>
-    <div id="control" style='width: 915px; height: 50px;'></div>
+    <div class="card sale-card">
+        <div class="card-block">
+            <div id="chart_div" style="height:300px; margin-bottom: 20px; display: inline-block; min-width: 1570px;"></div>
+        </div>
+    </div>
 </div>
 
 <script type="text/javascript">
-    const Periods = { DAY: 'day', HOUR: 'hour' };
-    const ChartTypes = { CANDLES: 'candles', TREND: 'trend' };
-    const changeChartTypeButton = document.getElementById('changeChartType_b')
-    var currentChartType = ChartTypes.TREND;
-    var currentShareId = window.location.href.split('/')[5];
-    var currentChartPeriod = Periods.DAY;
-
+    const changeChartTypeButton = document.getElementById('changeChartType_b');
+    currentChartType = ChartTypes.TREND;
     changeChartTypeButton.addEventListener("click", () => {
 	    switch(currentChartType) {
             case ChartTypes.CANDLES:
-                drawTrend(currentChartPeriod, currentShareId);
                 currentChartType = ChartTypes.TREND;
+                google.charts.load('current', {'packages':['corechart'], 'language': 'ru'});
+                google.charts.setOnLoadCallback(drawChart(currentChartType));
                 break;
             case ChartTypes.TREND:
-                drawCandles(currentChartPeriod, currentShareId);
                 currentChartType = ChartTypes.CANDLES;
+                google.charts.load('current', {'packages':['corechart'], 'language': 'ru'});
+                google.charts.setOnLoadCallback(drawChart(currentChartType));
                 break;
             default:
-                drawCandles(currentChartPeriod, currentShareId);
                 currentChartType = ChartTypes.CANDLES;
+                google.charts.load('current', {'packages':['corechart'], 'language': 'ru'});
+                google.charts.setOnLoadCallback(drawChart(currentChartType));
                 break;
         }
     });
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawTrend(Periods.DAY, currentShareId));
-        
-    function drawCandles(period, share) {
+    var currentShareId = window.location.href.split('/')[5];
+    google.charts.load('current', {'packages':['corechart'], 'language': 'ru'});
+    google.charts.setOnLoadCallback(drawChart(currentChartType));
+
+    function drawChart(currentChartType) {
         $.ajax({
             type: "GET",
             url: '/api/share/candles',  
             data: {
-                period: period,
-                share: share
+                currentChartType: currentChartType,
+                share: currentShareId
             },
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            success: function (response) {
-                drawCandlesChart(response);
+            success: function (json) {
+                var data = [];
+                var candles = json[0][0][1];
+                console.log(json[0][0][1][0]);
+                for (var i = 0; i < candles.length; i++) {
+                    let row = [];
+                    row.push(new Date(candles[i].Date));
+                    row.push(candles[i].Close);
+                    if (currentChartType == ChartTypes.CANDLES) {
+                        row.push(candles[i].Open);
+                        row.push(candles[i].Low);
+                        row.push(candles[i].High);
+                    }
+
+                    data.push(row);
+                }
+                var chart_data = google.visualization.arrayToDataTable(data, true);
+
+                var options = {
+                    legend: 'none',
+                    explorer: {
+                        axis: 'horizontal',
+                        keepInBounds: true,
+                        maxZoomIn: .005,
+                        maxZoomOut: 1.1
+                    }
+                };
+                    
+                if (currentChartType == ChartTypes.CANDLES) {
+                    var chart = new google.visualization.CandlestickChart(document.getElementById('chart_div'));
+                } else {
+                    var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+                }
+                chart.draw(chart_data, options);
             },
         });
-    }
-
-    function drawTrend(period, share) {
-        $.ajax({
-            type: "GET",
-            url: '/api/share/candles',  
-            data: {
-                period: period,
-                share: share
-            },
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: function (response) {
-                drawTrendChart(response);
-            },
-        });
-    }
-
-    function drawTrendChart(json) {
-        var data = [];
-        for (var i = 0; i < json.length; i++) {
-            let row = [];
-            row.push(new Date(json[i].Day));
-            row.push(json[i].Open);
-
-            data.push(row);
-        }
-        var data = google.visualization.arrayToDataTable(data, true);
-
-        var options = {
-            legend:'none',
-            explorer: {
-                axis: 'horizontal',
-                keepInBounds: true,
-                maxZoomIn: .005,
-                maxZoomOut: 1.1
-            }
-        };
-
-        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-
-        chart.draw(data, options);
-    }
-
-    function drawCandlesChart(json) {
-        var data = [];
-        for (var i = 0; i < json.length; i++) {
-            let row = [];
-            row.push(new Date(json[i].Day));
-            row.push(json[i].Low);
-            row.push(json[i].Open);
-            row.push(json[i].Close);
-            row.push(json[i].High);
-
-            data.push(row);
-        }
-        var data = google.visualization.arrayToDataTable(data, true);
-
-        var options = {
-            legend:'none',
-            explorer: {
-                axis: 'horizontal',
-                keepInBounds: true,
-                maxZoomIn: .005,
-                maxZoomOut: 1.1
-            }
-        };
-
-        var chart = new google.visualization.CandlestickChart(document.getElementById('chart_div'));
-
-        chart.draw(data, options);
     }
 </script>
 

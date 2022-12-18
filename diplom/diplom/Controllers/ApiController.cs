@@ -43,8 +43,9 @@ namespace diplom.Controllers
         [HttpGet("share/candles")]
         public JsonResult GetCandles()
         {
-            Microsoft.Extensions.Primitives.StringValues period, shareId;
-            if (!Request.Query.TryGetValue("period", out period))
+            Microsoft.Extensions.Primitives.StringValues shareId;
+            Microsoft.Extensions.Primitives.StringValues currentChartType;
+            if (!Request.Query.TryGetValue("currentChartType", out currentChartType))
                 return Json(null);
             if (!Request.Query.TryGetValue("share", out shareId))
                 return Json("Share not found");
@@ -53,13 +54,25 @@ namespace diplom.Controllers
             if (share == null)
                 return Json("Share not found");
 
+            List<object[]> candles = new List<object[]>();
+            object[] shareInfo = new object[2];
+            shareInfo[0] = share.Name ?? "";
+            if (currentChartType[0] == "trend")
+                shareInfo[1] = share.GetCandlesByDay(_context);
+            else
+                shareInfo[1] = share.GetCandlesArray();
+            candles.Add(shareInfo);
+
+            object[] result = new object[2];
+            result[0] = candles;
+
             StockRecommendation recommendation = FundamentalAnalysis.GetSummaryRecommendation(share);
             JsonSerializerOptions options = new()
             {
                 ReferenceHandler = ReferenceHandler.IgnoreCycles,
                 WriteIndented = true
             };
-            return Json(share.GetCandlesByDay(_context), options);
+            return Json(result, options);
         }
 
         // GET: api/shares-for-news/6

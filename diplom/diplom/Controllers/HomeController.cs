@@ -33,7 +33,7 @@ namespace diplom.Controllers
         {
             try
             {
-                ViewData["shares"] = new SharesController(_context).GetShares();
+                ViewBag.Shares = new SharesController(_context).GetShares();
                 ViewData["candles"] = new CandlesController(_context).GetCandles();
                 ViewData["counties"] = new CountriesController(_context).GetCounties();
                 ViewData["exchanges"] = new ExchangesController(_context).GetExchanges();
@@ -62,8 +62,8 @@ namespace diplom.Controllers
             this.ControllerContext.HttpContext.Response.Headers.Add("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
             this.ControllerContext.HttpContext.Response.Headers.Add("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
 
-            Microsoft.Extensions.Primitives.StringValues period;
-            if (!Request.Query.TryGetValue("period", out period))
+            Microsoft.Extensions.Primitives.StringValues currentChartType;
+            if (!Request.Query.TryGetValue("currentChartType", out currentChartType))
                 return Json(null);
             string[] shareIds = Request.Query.ToList()[1].Value.ToArray();
 
@@ -82,8 +82,10 @@ namespace diplom.Controllers
             {
                 object[] shareInfo = new object[2];
                 shareInfo[0] = share.Name ?? "";
-                shareInfo[1] = share.GetCandlesByDay(_context);
-                //shareInfo[1] = share.GetCandlesArray();
+                if (currentChartType[0] == "trend")
+                    shareInfo[1] = share.GetCandlesByDay(_context);
+                else
+                    shareInfo[1] = share.GetCandlesArray();
                 candles.Add(shareInfo);
             }
             object[] result = new object[2];
