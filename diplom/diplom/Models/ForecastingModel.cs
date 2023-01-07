@@ -133,8 +133,8 @@ namespace diplom.Models
                 SsaForecastingEstimator forecastingPipeline = mlContext.Forecasting.ForecastBySsa(
                     outputColumnName: "ForecastedClose",
                     inputColumnName: "Close",
-                    windowSize: 7*24,
-                    seriesLength: 30*24,
+                    windowSize: 120*24,
+                    seriesLength: 180*24,
                     trainSize: 6917,
                     horizon: 7*24,
                     confidenceLevel: 0.95f,

@@ -37,8 +37,10 @@
         }
     });
     var currentShareId = window.location.href.split('/')[5];
-    google.charts.load('current', {'packages':['corechart'], 'language': 'ru'});
-    google.charts.setOnLoadCallback(drawChart(currentChartType));
+    $(document).ready(function() {
+        google.charts.load('current', {'packages':['corechart'], 'language': 'ru'});
+        google.charts.setOnLoadCallback(drawChart(currentChartType));
+    });
 
     function drawChart(currentChartType) {
         $.ajax({

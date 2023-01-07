@@ -3,7 +3,7 @@
 const Periods = { DAY: 'day', HOUR: 'hour' };
 const ChartTypes = { CANDLES: 'candles', TREND: 'trend' };
 let currentChartType = ChartTypes.TREND;
-let shareIds = [5, 10];
+let shareIds = [5];
 let currentChartPeriod = Periods.DAY;
 
 google.charts.load('current', { 'packages': ['annotationchart'], 'language': 'ru' });

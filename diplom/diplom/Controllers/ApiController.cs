@@ -19,6 +19,11 @@ using diplom.Helpers;
 using Microsoft.ML;
 using static Diplom.MLModel;
 using diplom.Models.SentimentPrediction;
+using Microsoft.ML.Data;
+using MySqlConnector;
+using Microsoft.Data.SqlClient;
+using System.Collections;
+using System.Data;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -73,6 +78,36 @@ namespace diplom.Controllers
                 WriteIndented = true
             };
             return Json(result, options);
+        }
+
+        // GET: api/sectors/stats
+        [HttpGet("sectors/stats")]
+        public JsonResult GetSectorsStats()
+        {
+            _context.Database.ExecuteSqlRaw(@"
+                DROP VIEW if exists View_SectorsStats;
+                CREATE VIEW View_SectorsStats AS
+                select DATE_FORMAT(candles2.Time, '%Y-%m-%d') as Date, close2 as it, close3 as consumer, close4 as HealthCare, close5 as financial, close6 as industrials, close7 as energy, close8 as telecom, close9 as other, close10 as materials from 
+                (SELECT avg(close) as close2, DATE_FORMAT(Time, '%Y-%m-%d') as Time, sectorId FROM test.candles left join shares on shares.id = shareId where sectorId = 2 group by DATE_FORMAT(Time, '%Y-%m-%d')) candles2
+                left join (SELECT avg(close) as close3, DATE_FORMAT(Time, '%Y-%m-%d') as Time, sectorId FROM test.candles left join shares on shares.id = shareId where sectorId = 3 group by DATE_FORMAT(Time, '%Y-%m-%d')) candles3 on candles3.Time = candles2.Time
+                left join (SELECT avg(close) as close4, DATE_FORMAT(Time, '%Y-%m-%d') as Time, sectorId FROM test.candles left join shares on shares.id = shareId where sectorId = 4 group by DATE_FORMAT(Time, '%Y-%m-%d')) candles4 on candles4.Time = candles2.Time
+                left join (SELECT avg(close) as close5, DATE_FORMAT(Time, '%Y-%m-%d') as Time, sectorId FROM test.candles left join shares on shares.id = shareId where sectorId = 5 group by DATE_FORMAT(Time, '%Y-%m-%d')) candles5 on candles5.Time = candles2.Time
+                left join (SELECT avg(close) as close6, DATE_FORMAT(Time, '%Y-%m-%d') as Time, sectorId FROM test.candles left join shares on shares.id = shareId where sectorId = 6 group by DATE_FORMAT(Time, '%Y-%m-%d')) candles6 on candles6.Time = candles2.Time
+                left join (SELECT avg(close) as close7, DATE_FORMAT(Time, '%Y-%m-%d') as Time, sectorId FROM test.candles left join shares on shares.id = shareId where sectorId = 7 group by DATE_FORMAT(Time, '%Y-%m-%d')) candles7 on candles7.Time = candles2.Time
+                left join (SELECT avg(close) as close8, DATE_FORMAT(Time, '%Y-%m-%d') as Time, sectorId FROM test.candles left join shares on shares.id = shareId where sectorId = 8 group by DATE_FORMAT(Time, '%Y-%m-%d')) candles8 on candles8.Time = candles2.Time
+                left join (SELECT avg(close) as close9, DATE_FORMAT(Time, '%Y-%m-%d') as Time, sectorId FROM test.candles left join shares on shares.id = shareId where sectorId = 9 group by DATE_FORMAT(Time, '%Y-%m-%d')) candles9 on candles9.Time = candles2.Time
+                left join (SELECT avg(close) as close10, DATE_FORMAT(Time, '%Y-%m-%d') as Time, sectorId FROM test.candles left join shares on shares.id = shareId where sectorId = 10 group by DATE_FORMAT(Time, '%Y-%m-%d')) candles10 on candles10.Time = candles2.Time
+                order by Date;"
+            );
+
+            JsonSerializerOptions options = new()
+            {
+                //MaxDepth = 3,
+                ReferenceHandler = ReferenceHandler.Preserve,
+                WriteIndented = true
+            };
+
+            return Json(_context.SectorsStats.ToList(), options);
         }
 
         // GET: api/shares-for-news/6

@@ -5,7 +5,14 @@
             <select class="form-control select2" multiple="multiple">
                 @foreach(var share in ViewBag.Shares)
                 {
-                    <option value="@share.Id">@share.Name (@share.Ticker)</option>
+                    if (@share.Id == 5)
+                    {
+                        <option value="@share.Id" selected>@share.Name (@share.Ticker)</option>
+                    }
+                    else
+                    {
+                        <option value="@share.Id">@share.Name (@share.Ticker)</option>
+                    }
                 }
             </select>
         </div>

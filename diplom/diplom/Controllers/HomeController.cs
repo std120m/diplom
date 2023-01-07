@@ -65,6 +65,8 @@ namespace diplom.Controllers
             Microsoft.Extensions.Primitives.StringValues currentChartType;
             if (!Request.Query.TryGetValue("currentChartType", out currentChartType))
                 return Json(null);
+            if (Request.Query.ToList().Count < 2)
+                return Json(null);
             string[] shareIds = Request.Query.ToList()[1].Value.ToArray();
 
             List<Models.Share> shares = _context.Shares.Where(s => shareIds.Contains(s.Id.ToString())).ToList();
