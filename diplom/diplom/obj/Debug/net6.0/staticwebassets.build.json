@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "e/c5cLiefPFeOcXyZrZ3ZRMjJWfQdZVy3jdSrIJZgRM=",
+  "Hash": "BSmnSSgL9wuhTt8EsdzGZYjLMlwdoFq2qBvqUkGfMbk=",
   "Source": "diplom",
   "BasePath": "_content/diplom",
   "Mode": "Default",
@@ -1324,6 +1324,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\dashboard\\widget-chart.js"
+    },
+    {
+      "Identity": "X:\\diplom\\diplom\\diplom\\wwwroot\\js\\dashboard\\widget-chart.js.bak",
+      "SourceId": "diplom",
+      "SourceType": "Discovered",
+      "ContentRoot": "X:\\diplom\\diplom\\diplom\\wwwroot\\",
+      "BasePath": "_content/diplom",
+      "RelativePath": "js/dashboard/widget-chart.js.bak",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\dashboard\\widget-chart.js.bak"
     },
     {
       "Identity": "X:\\diplom\\diplom\\diplom\\wwwroot\\js\\datatables.js",

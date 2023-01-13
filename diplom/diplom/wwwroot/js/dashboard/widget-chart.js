@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 $(document).ready(function () {
     function getData() {
         $.ajax({
@@ -15,75 +15,45 @@ $(document).ready(function () {
     getData();
 
     function drawChart(data) {
-        // deal-analytic-chart
-        var chart = AmCharts.makeChart("deal-analytic-chart", {
-            "type": "serial",
-            "theme": "light",
-            "dataDateFormat": "YYYY-MM-DD",
-            "precision": 2,
-            "valueAxes": [{
-                "id": "v1",
-                "position": "left",
-                "autoGridCount": false,
-                "labelFunction": function (value) {
-                    return "$" + Math.round(value) + "M";
-                }
-            }, {
-                "id": "v2",
-                "gridAlpha": 0,
-                "autoGridCount": false
-            }],
-            "graphs": [{
-                "id": "g1",
-                "valueAxis": "v2",
-                "bullet": "round",
-                "bulletBorderAlpha": 1,
-                "bulletColor": "#FFFFFF",
-                "bulletSize": 8,
-                "hideBulletsCount": 50,
-                "lineThickness": 3,
-                "lineColor": "#2ed8b6",
-                "title": "Market Days",
-                "useLineColorForBulletBorder": true,
-                "valueField": "Consumer",
-                "balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
-            }, {
-                "id": "g2",
-                "valueAxis": "v2",
-                "bullet": "round",
-                "bulletBorderAlpha": 1,
-                "bulletColor": "#FFFFFF",
-                "bulletSize": 8,
-                "hideBulletsCount": 50,
-                "lineThickness": 3,
-                "lineColor": "#e95753",
-                "title": "Market Days ALL",
-                "useLineColorForBulletBorder": true,
-                "valueField": "It",
-                "balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
-            }],
-            "chartCursor": {
-                "pan": true,
-                "valueLineEnabled": true,
-                "valueLineBalloonEnabled": true,
-                "cursorAlpha": 0,
-                "valueLineAlpha": 0.2
-            },
-            "categoryField": "date",
-            "categoryAxis": {
-                "parseDates": true,
-                "dashLength": 1,
-                "minorGridEnabled": true
-            },
-            "legend": {
-                "useGraphSettings": true,
-                "position": "top"
-            },
-            "balloon": {
-                "borderThickness": 1,
-                "shadowAlpha": 0
-            },
-            "dataProvider": data
+        am4core.useTheme(am4themes_animated);
+
+        var chart = am4core.create("deal-analytic-chart", am4charts.XYChart);
+        chart.language.locale = am4lang_ru_RU;
+        chart.data = data;
+
+        chart.dateFormatter.inputDateFormat = "MM/dd/yyyy";
+
+        var categoryAxis = chart.xAxes.push(new am4charts.DateAxis());
+        categoryAxis.renderer.grid.template.location = 0;
+        var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+
+        var sectorsNamesReadable = {};
+        sectorsNamesReadable["Consumer"] = "Потребительские товары и услуги";
+        sectorsNamesReadable["It"] = "Информационные технологии";
+        sectorsNamesReadable["Health_care"] = "Здравоохранение";
+        sectorsNamesReadable["Green_energy"] = "Зеленая энергетика";
+        sectorsNamesReadable["Ecomaterials"] = "Материалы для эко-технологи";
+        sectorsNamesReadable["Real_estate"] = "Недвижимость";
+        sectorsNamesReadable["Materials"] = "Сырьевая промышленность";
+        sectorsNamesReadable["Telecom"] = "Телекоммуникации";
+        sectorsNamesReadable["Financial"] = "Финансовый сектор";
+        sectorsNamesReadable["Electrocars"] = "Электротранспорт и комплектующие";
+        sectorsNamesReadable["Utilities"] = "Электроэнергетика";
+        sectorsNamesReadable["Energy"] = "Энергетика";
+        sectorsNamesReadable["Green_buildings"] = "Энергоэффективные здания";
+
+        Object.keys(data[0]).forEach(element => {
+            if (Object.keys(sectorsNamesReadable).includes(element)) {
+                var series = chart.series.push(new am4charts.LineSeries());
+                series.dataFields.valueY = element;
+                series.dataFields.dateX = "date";
+                series.name = sectorsNamesReadable[element];
+                series.tooltipText = "{name}: [b]{valueY}[/]";
+                series.strokeWidth = 2;
+            }
         });
+
+        chart.cursor = new am4charts.XYCursor();
+        chart.legend = new am4charts.Legend();
     }
 });

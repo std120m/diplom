@@ -1,0 +1,259 @@
+﻿'use strict';
+$(document).ready(function () {
+    function getData() {
+        $.ajax({
+            type: "GET",
+            url: 'https://localhost:7170/api/sectors/stats',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                console.log(response["$values"]);
+                drawChart(response["$values"]);
+            },
+        });
+    }
+    getData();
+
+    function drawChart(data) {
+        //var options = {
+        //    title: 'Company Performance',
+        //    curveType: 'function',
+        //    legend: { position: 'bottom' }
+        //};
+
+        //var chart = new google.visualization.LineChart(document.getElementById('deal-analytic-chart'));
+
+        //chart.draw(data, options);
+
+
+        // deal-analytic-chart
+        var chart = AmCharts.makeChart("deal-analytic-chart", {
+            "type": "serial",
+            "theme": "light",
+            "dataDateFormat": "YYYY-MM-DD",
+            "precision": 2,
+            "language": {
+                "locale": "ru"
+            },
+            "valueAxes": [{
+                "id": "v1",
+                "position": "left",
+                "autoGridCount": false,
+                "labelFunction": function (value) {
+                    return "$" + Math.round(value) + "M";
+                }
+            }, {
+                "id": "v2",
+                "gridAlpha": 0,
+                "autoGridCount": false
+            }],
+            "graphs": [
+                {
+                "id": "g1",
+                "valueAxis": "v2",
+                "bullet": "round",
+                "bulletBorderAlpha": 1,
+                "bulletColor": "#FFFFFF",
+                "bulletSize": 8,
+                "hideBulletsCount": 50,
+                "lineThickness": 3,
+                "lineColor": "#2ed8b6",
+                    "title": "Потребительские товары и услуги",
+                "useLineColorForBulletBorder": true,
+                "valueField": "Consumer",
+                "balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+                },
+                {
+                "id": "g2",
+                "valueAxis": "v2",
+                "bullet": "round",
+                "bulletBorderAlpha": 1,
+                "bulletColor": "#FFFFFF",
+                "bulletSize": 8,
+                "hideBulletsCount": 50,
+                "lineThickness": 3,
+                "lineColor": "#e95753",
+                "title": "»нформационные технологии",
+                "useLineColorForBulletBorder": true,
+                "valueField": "It",
+                "balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+            }, {
+                "id": "g3",
+                "valueAxis": "v2",
+                "bullet": "round",
+                "bulletBorderAlpha": 1,
+                "bulletColor": "#FFFFFF",
+                "bulletSize": 8,
+                "hideBulletsCount": 50,
+                "lineThickness": 3,
+                "lineColor": "#e95753",
+                "title": "«дравоохранение",
+                "useLineColorForBulletBorder": true,
+                "valueField": "Health_care",
+                "balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+            }, {
+                "id": "g5",
+                "valueAxis": "v2",
+                "bullet": "round",
+                "bulletBorderAlpha": 1,
+                "bulletColor": "#FFFFFF",
+                "bulletSize": 8,
+                "hideBulletsCount": 50,
+                "lineThickness": 3,
+                "lineColor": "#e95753",
+                "title": "«елена¤ энергетика",
+                "useLineColorForBulletBorder": true,
+                "valueField": "Green_energy",
+                "balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+                }, {
+                    "id": "g6",
+                    "valueAxis": "v2",
+                    "bullet": "round",
+                    "bulletBorderAlpha": 1,
+                    "bulletColor": "#FFFFFF",
+                    "bulletSize": 8,
+                    "hideBulletsCount": 50,
+                    "lineThickness": 3,
+                    "lineColor": "#e95753",
+                    "title": "ћатериалы дл¤ эко-технологий",
+                    "useLineColorForBulletBorder": true,
+                    "valueField": "Ecomaterials",
+                    "balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+                }, {
+                    "id": "g7",
+                    "valueAxis": "v2",
+                    "bullet": "round",
+                    "bulletBorderAlpha": 1,
+                    "bulletColor": "#FFFFFF",
+                    "bulletSize": 8,
+                    "hideBulletsCount": 50,
+                    "lineThickness": 3,
+                    "lineColor": "#e95753",
+                    "title": "Ќедвижимость",
+                    "useLineColorForBulletBorder": true,
+                    "valueField": "Real_estate",
+                    "balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+                }, {
+                    "id": "g8",
+                    "valueAxis": "v2",
+                    "bullet": "round",
+                    "bulletBorderAlpha": 1,
+                    "bulletColor": "#FFFFFF",
+                    "bulletSize": 8,
+                    "hideBulletsCount": 50,
+                    "lineThickness": 3,
+                    "lineColor": "#e95753",
+                    "title": "—ырьева¤ промышленность",
+                    "useLineColorForBulletBorder": true,
+                    "valueField": "Materials",
+                    "balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+                }, {
+                    "id": "g9",
+                    "valueAxis": "v2",
+                    "bullet": "round",
+                    "bulletBorderAlpha": 1,
+                    "bulletColor": "#FFFFFF",
+                    "bulletSize": 8,
+                    "hideBulletsCount": 50,
+                    "lineThickness": 3,
+                    "lineColor": "#e95753",
+                    "title": "“елекоммуникации",
+                    "useLineColorForBulletBorder": true,
+                    "valueField": "Telecom",
+                    "balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+                }, {
+                    "id": "g10",
+                    "valueAxis": "v2",
+                    "bullet": "round",
+                    "bulletBorderAlpha": 1,
+                    "bulletColor": "#FFFFFF",
+                    "bulletSize": 8,
+                    "hideBulletsCount": 50,
+                    "lineThickness": 3,
+                    "lineColor": "#e95753",
+                    "title": "‘инансовый сектор",
+                    "useLineColorForBulletBorder": true,
+                    "valueField": "Financial",
+                    "balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+                }, {
+                    "id": "g11",
+                    "valueAxis": "v2",
+                    "bullet": "round",
+                    "bulletBorderAlpha": 1,
+                    "bulletColor": "#FFFFFF",
+                    "bulletSize": 8,
+                    "hideBulletsCount": 50,
+                    "lineThickness": 3,
+                    "lineColor": "#e95753",
+                    "title": "Ёлектротранспорт и комплектующие",
+                    "useLineColorForBulletBorder": true,
+                    "valueField": "Electrocars",
+                    "balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+                }, {
+                    "id": "g12",
+                    "valueAxis": "v2",
+                    "bullet": "round",
+                    "bulletBorderAlpha": 1,
+                    "bulletColor": "#FFFFFF",
+                    "bulletSize": 8,
+                    "hideBulletsCount": 50,
+                    "lineThickness": 3,
+                    "lineColor": "#e95753",
+                    "title": "Ёлектроэнергетика",
+                    "useLineColorForBulletBorder": true,
+                    "valueField": "Utilities",
+                    "balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+                }, {
+                    "id": "g13",
+                    "valueAxis": "v2",
+                    "bullet": "round",
+                    "bulletBorderAlpha": 1,
+                    "bulletColor": "#FFFFFF",
+                    "bulletSize": 8,
+                    "hideBulletsCount": 50,
+                    "lineThickness": 3,
+                    "lineColor": "#e95753",
+                    "title": "Ёнергетика",
+                    "useLineColorForBulletBorder": true,
+                    "valueField": "Energy",
+                    "balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+                }, {
+                    "id": "g14",
+                    "valueAxis": "v2",
+                    "bullet": "round",
+                    "bulletBorderAlpha": 1,
+                    "bulletColor": "#FFFFFF",
+                    "bulletSize": 8,
+                    "hideBulletsCount": 50,
+                    "lineThickness": 3,
+                    "lineColor": "#e95753",
+                    "title": "Ёнергоэффективные здани¤",
+                    "useLineColorForBulletBorder": true,
+                    "valueField": "Green_buildings",
+                    "balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+                }],
+            "chartCursor": {
+                "pan": true,
+                "valueLineEnabled": true,
+                "valueLineBalloonEnabled": true,
+                "cursorAlpha": 0,
+                "valueLineAlpha": 0.2
+            },
+            "categoryField": "date",
+            "categoryAxis": {
+                "parseDates": true,
+                "dashLength": 1,
+                "minorGridEnabled": true
+            },
+            "legend": {
+                "useGraphSettings": true,
+                "position": "top"
+            },
+            "balloon": {
+                "borderThickness": 1,
+                "shadowAlpha": 0
+            },
+            "dataProvider": data
+        });
+    }
+});
