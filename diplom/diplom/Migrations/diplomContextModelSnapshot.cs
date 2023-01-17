@@ -336,9 +336,57 @@ namespace diplom.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("NameRu")
+                        .HasColumnType("longtext");
+
                     b.HasKey("Id");
 
                     b.ToTable("Sectors");
+                });
+
+            modelBuilder.Entity("diplom.Models.SectorsStats", b =>
+                {
+                    b.Property<double?>("Consumer")
+                        .HasColumnType("double")
+                        .HasColumnName("Consumer");
+
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("Date");
+
+                    b.Property<double?>("Energy")
+                        .HasColumnType("double")
+                        .HasColumnName("Energy");
+
+                    b.Property<double?>("Financial")
+                        .HasColumnType("double")
+                        .HasColumnName("Financial");
+
+                    b.Property<double?>("HealthCare")
+                        .HasColumnType("double")
+                        .HasColumnName("HealthCare");
+
+                    b.Property<double?>("Industrials")
+                        .HasColumnType("double")
+                        .HasColumnName("Industrials");
+
+                    b.Property<double?>("It")
+                        .HasColumnType("double")
+                        .HasColumnName("It");
+
+                    b.Property<double?>("Materials")
+                        .HasColumnType("double")
+                        .HasColumnName("Materials");
+
+                    b.Property<double?>("Other")
+                        .HasColumnType("double")
+                        .HasColumnName("Other");
+
+                    b.Property<double?>("Telecom")
+                        .HasColumnType("double")
+                        .HasColumnName("Telecom");
+
+                    b.ToView("View_SectorsStats");
                 });
 
             modelBuilder.Entity("diplom.Models.Share", b =>

@@ -32,7 +32,7 @@ $(document).ready(function () {
         sectorsNamesReadable["It"] = "Информационные технологии";
         sectorsNamesReadable["Health_care"] = "Здравоохранение";
         sectorsNamesReadable["Green_energy"] = "Зеленая энергетика";
-        sectorsNamesReadable["Ecomaterials"] = "Материалы для эко-технологи";
+        sectorsNamesReadable["Ecomaterials"] = "Материалы для эко-технологии";
         sectorsNamesReadable["Real_estate"] = "Недвижимость";
         sectorsNamesReadable["Materials"] = "Сырьевая промышленность";
         sectorsNamesReadable["Telecom"] = "Телекоммуникации";
@@ -41,6 +41,8 @@ $(document).ready(function () {
         sectorsNamesReadable["Utilities"] = "Электроэнергетика";
         sectorsNamesReadable["Energy"] = "Энергетика";
         sectorsNamesReadable["Green_buildings"] = "Энергоэффективные здания";
+        sectorsNamesReadable["industrials"] = "Машиностроение и транспорт";
+        sectorsNamesReadable["Other"] = "Другое";
 
         Object.keys(data[0]).forEach(element => {
             if (Object.keys(sectorsNamesReadable).includes(element)) {

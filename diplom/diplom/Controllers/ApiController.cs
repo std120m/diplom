@@ -110,6 +110,29 @@ namespace diplom.Controllers
             return Json(_context.SectorsStats.ToList(), options);
         }
 
+        // GET: api/sectors/count
+        [HttpGet("sectors/count")]
+        public JsonResult GetSectorsCount()
+        {
+            var queryResult = _context.Shares.GroupBy(
+                share => share.Sector.NameRu,
+                share => share.Id,
+                (sector, shares) => new
+                {
+                    Sector = sector,
+                    Count = shares.Count()
+                }).ToList();
+
+            JsonSerializerOptions options = new()
+            {
+                //MaxDepth = 3,
+                ReferenceHandler = ReferenceHandler.Preserve,
+                WriteIndented = true
+            };
+
+            return Json(queryResult, options);
+        }
+
         // GET: api/shares-for-news/6
         [HttpGet("shares-for-news/{id}")]
         public JsonResult GetSharesForNews(int? id)
