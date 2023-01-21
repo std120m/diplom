@@ -39,6 +39,7 @@ namespace diplom.Controllers
         // GET: Shares
         public async Task<IActionResult> Index()
         {
+            ViewBag.Sectors = new SectorsController(_context).GetSectors();
             return View(await _context.Shares.ToListAsync());
         }
 

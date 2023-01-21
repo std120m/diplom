@@ -4,35 +4,231 @@
     ViewData["Title"] = "Index";
 }
 
-<div class="col-lg-12 col-md-12">
-    <div class="card">
-        <div class="card-header">
-            <h3>Список компаний</h3>
-        </div>
-        <div class="card-body feeds-widget">
-@foreach (var item in Model) {
-            <div class="feed-item">
-                <a href="/shares/details/@item.Id">
-                    @{
-                        string logoPath = (item.Company != null && item.Company.Logo != null ? item.Company.Logo : ""); 
-                    }
-                    @if (item.Company != null && item.Company.Logo != null)
-                    {
-                        <div class="feeds-left"><img style="height: 45px;" src="@logoPath"/></div>
-                    }
-                    <div class="feeds-body">
-                        <h4 class="title text-success">@Html.DisplayFor(modelItem => item.Name)</h4>
-                            @{
-                                string shortDescription = (item.Company != null && item.Company.BrandInfo != null) ? (item.Company.BrandInfo.Length > 200 ? item.Company.BrandInfo.Substring(0, 200) + "..." : item.Company.BrandInfo) : ""; 
-                            }
-                            @if (item.Company != null && item.Company.BrandInfo != null && item.Company.BrandInfo.Length > 0)
-                            {
-                                <small>@shortDescription</small>
-                            }
-                    </div>
-                </a>
-            </div>
+<style>
+table {
+  border-spacing: 0;
+  width: 100%;
+  border: 1px solid #ddd;
 }
-        </div>
-    </div>
+
+th {
+  cursor: pointer;
+}
+
+th, td {
+  text-align: left;
+  padding: 16px;
+}
+p {
+    font-size: 20px;
+}
+.big {
+    font-size: 20px;
+}
+</style>
+
+<script>
+const Search = () => {
+  const searchFilter = document.querySelector('#myInput').value
+  const trs = document.querySelectorAll('#myTable tr:not(.header)')
+  const regex = new RegExp(searchFilter, 'i')
+  const isFoundInTds = td => regex.test(td.innerHTML)
+  const isFound = childrenArr => childrenArr.some(isFoundInTds)
+  const setTrStyleDisplay = ({ style, children }) => {
+    style.display = isFound([
+      ...children // <-- All columns
+    ]) ? '' : 'none' 
+  }
+  
+  trs.forEach(setTrStyleDisplay)
+}
+const FilterSector = () => {
+  let string = "";
+    for (let i = 0; i < sectorIds.length; i++) {
+        if (string == "") {
+            string += sectorIds[i]
+        } else {
+            string += "|" + sectorIds[i]
+        }
+    }
+  const sectorFilter = string
+  const trs = document.querySelectorAll('#myTable tr:not(.header)')
+  const regex = new RegExp(sectorFilter, 'i')
+  const isFoundInTds = td => regex.test(td.innerHTML)
+  const isFound = childrenArr => childrenArr.some(isFoundInTds)
+  const setTrStyleDisplay = ({ style, children }) => {
+    style.display = isFound([
+      ...children // <-- All columns
+    ]) ? '' : 'none' 
+  }
+  
+  trs.forEach(setTrStyleDisplay)
+}
+</script>
+  
+<div class="form-group">
+    <label for="">Начните вводить сектор экономики</label>
+    <select class="form-control select2" multiple="multiple">
+        @foreach(var sector in ViewBag.Sectors)
+        {
+            <option value="@sector.Id">@sector.NameRu</option>
+        }
+    </select>
 </div>
+
+<div class="form-group">
+    <label for="myInput">Поиск компаний</label>
+    <input type="text" onkeyup="Search()" class="form-control" id="myInput" placeholder="Начните вводить название компании">
+</div>
+
+<table id="myTable">
+  <tr class="header"> 
+    <th style="width:15px"></th>
+    <th onclick="sortTable(1)">Компания</th>
+    <th onclick="sortTable(2)">Описание</th>
+    <th onclick="sortTable(3)">Отрасль</th>
+    <th onclick="sortTable(4)">Изменения за месяц</th>
+    <th style="width: 8%;" onclick="sortTable(5)">Стоимость</th>
+  </tr>
+  @foreach (var item in Model) {
+    if (item.Company == null || item.Candles.ToList().Count() == 0)
+        continue;
+        <tr><td><a href="/shares/details/@item.Id">
+    @{
+        string logoPath = (item.Company != null && item.Company.Logo != null ? item.Company.Logo : ""); 
+    }
+    @if (item.Company != null && item.Company.Logo != null)
+    {
+        <img style="height: 45px;" src="@logoPath"/>
+    }</a></td>
+    <td><p>@Html.DisplayFor(modelItem => item.Name)</p></td>
+    @{
+        string shortDescription = (item.Company != null && item.Company.BrandInfo != null) ? (item.Company.BrandInfo.Length > 300 ? item.Company.BrandInfo.Substring(0, 300) + "..." : item.Company.BrandInfo) : ""; 
+    }
+    <td>@if (item.Company != null && item.Company.BrandInfo != null && item.Company.BrandInfo.Length > 0)
+    {
+        @shortDescription
+    }</td>
+ @{
+    double delta = double.NaN;
+    if (item.Candles.ToList().Count() > 0)
+    {
+        var lastCandle = item.Candles.Last();
+        var lastMonth = lastCandle.Time.Month;
+        var preLastMonth = lastCandle.Time.Month == 1 ? 12 : (lastCandle.Time.Month - 1);
+        var preLastYear = lastCandle.Time.Month == 1 ? lastCandle.Time.Year - 1 : lastCandle.Time.Year;
+        if (item.Candles.Where(candle => candle.Time > new DateTime(preLastYear, preLastMonth, 1) && candle.Time < lastCandle.Time).ToList().Count > 0)
+        {
+            var preLastCandle = item.Candles.Where(candle => candle.Time > new DateTime(preLastYear, preLastMonth, 1) && candle.Time < lastCandle.Time).First();
+            delta = Math.Round(((double)preLastCandle.Close - (double)lastCandle.Close) / (double)lastCandle.Close * 100, 2);
+        }
+    }
+}
+<td>@Html.DisplayFor(modelItem => item.Sector.NameRu)</td>
+@if (delta != double.NaN) {
+    if (delta >= 0)
+    {
+        <td class="text-green big">@delta %</td>
+    } else
+    {
+        <td class="text-red big">@delta %</td>
+    }
+}
+@if (item.Candles.ToList().Count() > 0)
+{
+    switch (item.Currency)
+    {
+        case "rub":
+            <td class="big">@item.Candles.Last().Close ₽</td>
+            break;
+        case "eur":
+            <td class="big">@item.Candles.Last().Close €</td>
+            break;
+        default:
+            <td class="big">@item.Candles.Last().Close $</td>
+            break;
+    }
+} else
+{
+   <td></td>         
+}
+</tr>
+}
+</table>
+
+<script>
+function sortTable(n) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("myTable");
+  switching = true;
+  //Set the sorting direction to ascending:
+  dir = "asc"; 
+  /*Make a loop that will continue until
+  no switching has been done:*/
+  while (switching) {
+    //start by saying: no switching is done:
+    switching = false;
+    rows = table.rows;
+    /*Loop through all table rows (except the
+    first, which contains table headers):*/
+    for (i = 1; i < (rows.length - 1); i++) {
+      //start by saying there should be no switching:
+      shouldSwitch = false;
+      /*Get the two elements you want to compare,
+      one from current row and one from the next:*/
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      /*check if the two rows should switch place,
+      based on the direction, asc or desc:*/
+        console.log(x.innerHTML.replace(',', '.').substring(0, x.innerHTML.length - 2));
+        if (n == 4 || n == 5) {
+          if (dir == "asc") {
+            if (Number(x.innerHTML.replace(',', '.').substring(0, x.innerHTML.length - 2)) > Number(y.innerHTML.replace(',', '.').substring(0, y.innerHTML.length - 2))) {
+              //if so, mark as a switch and break the loop:
+              shouldSwitch= true;
+              break;
+            }
+          } else if (dir == "desc") {
+            if (Number(x.innerHTML.replace(',', '.').substring(0, x.innerHTML.length - 2)) < Number(y.innerHTML.replace(',', '.').substring(0, y.innerHTML.length - 2))) {
+              //if so, mark as a switch and break the loop:
+              shouldSwitch = true;
+              break;
+            }
+          }
+        } else {
+          if (dir == "asc") {
+            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+              //if so, mark as a switch and break the loop:
+              shouldSwitch= true;
+              break;
+            }
+          } else if (dir == "desc") {
+            if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+              //if so, mark as a switch and break the loop:
+              shouldSwitch = true;
+              break;
+            }
+          }
+        }
+    }
+    if (shouldSwitch) {
+      /*If a switch has been marked, make the switch
+      and mark that a switch has been done:*/
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      //Each time a switch is done, increase this count by 1:
+      switchcount ++;      
+    } else {
+      /*If no switching has been done AND the direction is "asc",
+      set the direction to "desc" and run the while loop again.*/
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+}
+
+</script>
+<script src="/js/select_2.js"></script>
+<script src="/node_modules/select2/dist/js/select2.min.js"></script>

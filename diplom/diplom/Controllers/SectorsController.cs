@@ -150,5 +150,10 @@ namespace diplom.Controllers
         {
             return _context.Sectors.Any(e => e.Id == id);
         }
+
+        public List<Sector> GetSectors()
+        {
+            return _context.Sectors.ToList();
+        }
     }
 }
