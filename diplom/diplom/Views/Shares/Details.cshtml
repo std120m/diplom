@@ -6,7 +6,7 @@
 
 <h1>@Html.DisplayFor(model => model.Name)</h1>
 <div class="row">
-    <button id="changeChartType_b">Change chart type</button>
+    <button type="button" id="changeChartType_b" class="btn btn-primary float-end" style="margin-bottom:10px">Изменить тип графика</button>
     <div class="card sale-card">
         <div class="card-block">
             <div id="chart_div" style="height:300px; margin-bottom: 20px; display: inline-block; min-width: 1570px;"></div>
@@ -43,6 +43,9 @@
     });
 
     function drawChart(currentChartType) {
+        if (currentChartType != ChartTypes.TREND && currentChartType != ChartTypes.CANDLES) {
+            currentChartType = ChartTypes.TREND;
+        }
         $.ajax({
             type: "GET",
             url: '/api/share/candles',  
@@ -53,9 +56,18 @@
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (json) {
-                var data = [];
+                //var data = [];
+                let data = new google.visualization.DataTable();
+                data.addColumn('date', 'Date');
+                data.addColumn('number', 'Close');
+                if (currentChartType == ChartTypes.CANDLES) {
+                    data.addColumn('number', 'Open');
+                    data.addColumn('number', 'Low');
+                    data.addColumn('number', 'High'); 
+                }
                 var candles = json[0][0][1];
-                console.log(json[0][0][1][0]);
+                var rows = [];
+                console.log(json[0][0][1]);
                 for (var i = 0; i < candles.length; i++) {
                     let row = [];
                     row.push(new Date(candles[i].Date));
@@ -66,16 +78,17 @@
                         row.push(candles[i].High);
                     }
 
-                    data.push(row);
+                    //data.push(row);
+                    rows.push(row);
                 }
-                var chart_data = google.visualization.arrayToDataTable(data, true);
-
+                //var chart_data = google.visualization.arrayToDataTable(data, true);
+                data.addRows(rows);
                 var options = {
                     legend: 'none',
                     explorer: {
                         axis: 'horizontal',
                         keepInBounds: true,
-                        maxZoomIn: .005,
+                        maxZoomIn: .003,
                         maxZoomOut: 1.1
                     }
                 };
@@ -85,7 +98,7 @@
                 } else {
                     var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
                 }
-                chart.draw(chart_data, options);
+                chart.draw(data, options);
             },
         });
     }

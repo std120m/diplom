@@ -62,9 +62,9 @@ namespace diplom.Controllers
             List<object[]> candles = new List<object[]>();
             object[] shareInfo = new object[2];
             shareInfo[0] = share.Name ?? "";
-            if (currentChartType[0] == "trend")
-                shareInfo[1] = share.GetCandlesByDay(_context);
-            else
+            //if (currentChartType[0] == "trend")
+            //    shareInfo[1] = share.GetCandlesByDay(_context);
+            //else
                 shareInfo[1] = share.GetCandlesArray();
             candles.Add(shareInfo);
 
