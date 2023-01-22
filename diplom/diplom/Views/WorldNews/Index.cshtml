@@ -3,31 +3,149 @@
 @{
     ViewData["Title"] = "Index";
 }
+<script>
+const Search = () => {
+  const searchFilter = document.querySelector('#myInput').value
+  const trs = document.querySelectorAll('.table tr:not(.header)')
+  const regex = new RegExp(searchFilter, 'i')
+  const isFoundInTds = td => regex.test(td.innerHTML)
+  const isFound = childrenArr => childrenArr.some(isFoundInTds)
+  const setTrStyleDisplay = ({ style, children }) => {
+    style.display = isFound([
+      ...children // <-- All columns
+    ]) ? '' : 'none' 
+  }
+  
+  trs.forEach(setTrStyleDisplay)
+}
+</script>
 
-<h1>Index</h1>
+<!-- Include Required Prerequisites -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery/1/jquery.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
+ 
+<!-- Include Date Range Picker -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="myInput">Поиск новостей</label>
+            <input type="text" onkeyup="Search()" class="form-control" id="myInput" placeholder="">
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="daterange">Фильтр по дате</label>
+            <input type="text" class="form-control" name="daterange"  id="daterange"  />
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function() {
+    const FilterDate = (startDate, endDate) => {
+        var getDaysString = function(start, end) {
+            var string = "";
+            for(dt=new Date(start); dt<=new Date(end); dt.setDate(dt.getDate()+1)){
+                if (string == "") {
+                    string += new Date(dt).toLocaleDateString();
+                } else {
+                    string += "|" + new Date(dt).toLocaleDateString();
+                }
+            }
+            console.log(string);
+            return string;
+        };
+        var stringFilter = (startDate == null &&  endDate == null) ? "" : getDaysString(startDate, endDate)
+        const searchFilter = stringFilter;
+        const trs = document.querySelectorAll('.table tr:not(.header)')
+        const regex = new RegExp(searchFilter, 'i')
+        const isFoundInTds = td => regex.test(td.innerHTML)
+        const isFound = childrenArr => childrenArr.some(isFoundInTds)
+        const setTrStyleDisplay = ({ style, children }) => {
+        style.display = isFound([
+            ...children // <-- All columns
+        ]) ? '' : 'none' 
+        }
+  
+        trs.forEach(setTrStyleDisplay)
+    }
+    $('input[name="daterange"]').daterangepicker({
+        "locale": {
+            "format": "DD.MM.YYYY",
+            "separator": " - ",
+            "applyLabel": "Применить",
+            "cancelLabel": "Отменить",
+            "fromLabel": "С",
+            "toLabel": "По",
+            "customRangeLabel": "Custom",
+            "daysOfWeek": [
+                "Вс",
+                "Пн",
+                "Вт",
+                "Ср",
+                "Чт",
+                "Пт",
+                "Сб"
+            ],
+            "monthNames": [
+                "Январь",
+                "Февраль",
+                "Март",
+                "Апрель",
+                "Май",
+                "Июнь",
+                "Июль",
+                "Август",
+                "Сентябрь",
+                "Октябрь",
+                "Ноябрь",
+                "Декабрь"
+            ],
+            "firstDay": 1
+        }
+    });
+    $('#daterange').on('apply.daterangepicker', function(ev, picker) {
+        console.log(picker.startDate.format('YYYY-MM-DD'));
+        console.log(picker.endDate.format('YYYY-MM-DD'));
+        var startDate = new Date(picker.startDate.format('YYYY-MM-DD'));
+        var endDate = new Date(picker.endDate.format('YYYY-MM-DD'));
+        FilterDate(startDate, endDate);
+    });
+    $('#daterange').on('cancel.daterangepicker', function(ev, picker) {
+        console.log("cancel");
+        FilterDate(null, null);
+    });
+});
+</script>
+
+<table class="table" id="table">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.DateTime)
-            </th>
-            <th></th>
+        <tr class="header">
+            <th>Заголовок</th>
+            <th>Текст новости</th>
+            <th>Дата публикации</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Reverse()) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.DateTime)
+                <a href="/worldnews/details/@item.Id">@Html.DisplayFor(modelItem => item.Title)</a>
             </td>
+            @{
+                string shortDescription = item.Text.Length > 300 ? item.Text.Substring(0, 300) + "..." : item.Text; 
+            }
+            <td>@shortDescription</td>
+            @{
+                string shortDate = item.DateTime.ToShortDateString(); 
+            }
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                @shortDate
             </td>
         </tr>
 }
