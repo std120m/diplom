@@ -49,10 +49,9 @@ namespace diplom.Models
             return forecastingPipeline;
         }
 
-        private SsaForecastingTransformer getForecaster(out MLContext mlContext, out IDataView data, out DatabaseLoader loader)
+        private SsaForecastingTransformer getForecaster(long shareId, out MLContext mlContext, out IDataView data, out DatabaseLoader loader)
         {
             string modelPath = this.getModelPath();
-            long shareId = 10;
             string query = $@"SELECT close, time FROM candles where shareId = {shareId};";
             SsaForecastingTransformer forecaster = null;
 
@@ -124,11 +123,11 @@ namespace diplom.Models
 
                 data = loader.Load(source);
 
-                using (var file = File.OpenRead(modelPath))
-                {
-                    forecaster = mlContext.Model.Load(file, out DataViewSchema schema);
-                    //forecastEngine = forecaster.CreateTimeSeriesEngine<ModelInput, ModelOutput>(mlContext);
-                }
+                //using (var file = File.OpenRead(modelPath))
+                //{
+                //    forecaster = mlContext.Model.Load(file, out DataViewSchema schema);
+                //    //forecastEngine = forecaster.CreateTimeSeriesEngine<ModelInput, ModelOutput>(mlContext);
+                //}
 
                 SsaForecastingEstimator forecastingPipeline = mlContext.Forecasting.ForecastBySsa(
                     outputColumnName: "ForecastedClose",
@@ -156,18 +155,18 @@ namespace diplom.Models
             }
         }
 
-        public void Fit()
+        public void Fit(long shareId)
         {
-            SsaForecastingTransformer forecaster = this.getForecaster(out MLContext mlContext, out IDataView data, out DatabaseLoader loader);
+            SsaForecastingTransformer forecaster = this.getForecaster(shareId, out MLContext mlContext, out IDataView data, out DatabaseLoader loader);
 
             forecaster = this.GetForecastingPipline(mlContext).Fit(data);
             Evaluate(data, forecaster, mlContext);
             mlContext.Model.Save(forecaster, loader, "MLModel.zip");
         }
 
-        public void GetForecast()
+        public void GetForecast(long shareId)
         {
-            SsaForecastingTransformer forecaster = this.getForecaster(out MLContext mlContext, out IDataView data, out DatabaseLoader loader);
+            SsaForecastingTransformer forecaster = this.getForecaster(shareId, out MLContext mlContext, out IDataView data, out DatabaseLoader loader);
 
             TimeSeriesPredictionEngine<ModelInput, ModelOutput> forecastEngine = forecaster.CreateTimeSeriesEngine<ModelInput, ModelOutput>(mlContext);
             if (data != null && forecastEngine != null && forecaster != null)

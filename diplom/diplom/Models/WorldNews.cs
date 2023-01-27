@@ -13,6 +13,8 @@ namespace diplom.Models
         public String Title { get; set; }
         [JsonIgnore]
         public virtual ICollection<NewsQuotesImpact> NewsQuotesImpacts { get; set; } = new List<NewsQuotesImpact>();
+        [JsonIgnore]
+        public virtual ICollection<WorldNewsKeyword> Keywords { get; set; } = new List<WorldNewsKeyword>();
         //public virtual ICollection<Company> Companies { get; set; } = new List<Company>();
 
         public WorldNews()

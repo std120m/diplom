@@ -58,6 +58,7 @@ namespace diplom.Controllers
                 return NotFound();
             }
 
+            ///*ViewBag.Forecast =*/ new ForecastingModel().GetForecast(share.Id);
             return View(share);
         }
 

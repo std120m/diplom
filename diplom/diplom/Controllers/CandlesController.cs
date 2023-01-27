@@ -194,7 +194,7 @@ namespace diplom.Controllers
                 }
                 startParsingDate = tillParsingDate;
                 await _context.SaveChangesAsync();
-                Thread.Sleep(500);
+                Thread.Sleep(250);
             }
 
             await _context.SaveChangesAsync();

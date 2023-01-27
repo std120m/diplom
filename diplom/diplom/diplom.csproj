@@ -19,14 +19,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.ML" Version="1.7.1" />
-    <PackageReference Include="Microsoft.ML.FastTree" Version="1.7.1" />
-    <PackageReference Include="Microsoft.ML.SampleUtils" Version="0.19.1" />
-    <PackageReference Include="Microsoft.ML.TensorFlow" Version="1.7.1" />
-    <PackageReference Include="Microsoft.ML.TimeSeries" Version="1.7.1" />
+    <PackageReference Include="Microsoft.ML" Version="2.0.0" />
+    <PackageReference Include="Microsoft.ML.FastTree" Version="2.0.0" />
+    <PackageReference Include="Microsoft.ML.SampleUtils" Version="0.20.0" />
+    <PackageReference Include="Microsoft.ML.TensorFlow" Version="2.0.0" />
+    <PackageReference Include="Microsoft.ML.TimeSeries" Version="2.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.9" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />
-    <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.7.0" />
+    <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.10.0" />
     <PackageReference Include="System.Data.Odbc" Version="6.0.1" />
     <PackageReference Include="Tinkoff.InvestApi" Version="0.1.8" />
   </ItemGroup>

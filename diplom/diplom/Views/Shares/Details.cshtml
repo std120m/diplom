@@ -3,15 +3,426 @@
 @{
     ViewData["Title"] = "Details";
 }
+<style>
+    .logo {
+        width: 35px;
+        height: 35px;
+        left: 343px;
+        top: 121px;
 
+        background: #D9D9D9;
+    }
+    .chart_title {
+        width: 300px;
+        height: 24px;
+        left: 396px;
+        top: 283px;
+
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 24px;
+        align-items: center;
+        text-align: center;
+    }
+    #chart_div {
+        height: 400px;
+        margin-top: 15px;
+        left: 393px;
+        top: 336px;
+    }
+    #changeChartType_b {
+        position: absolute;
+        width: 179px;
+        height: 37.22px;
+        margin-left: 60%;
+    }
+    .chart {
+        left: 393px;
+        top: 277.78px;
+    }
+    h1 {
+        width: 154px;
+        height: 24px;
+        left: 396px;
+        top: 126px;
+
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 24px;
+        display: flex;
+        align-items: center;
+        text-align: center;
+
+        color: #000000;
+    }
+    .brand_info {
+        height: 66px;
+        left: 396px;
+        top: 176px;
+
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 22px;
+
+        display: flex;
+        align-items: center;
+
+        color: #000000;
+    }
+    .left_column {
+        width: 1180px;
+        height: 519px;
+        left: 125px;
+        top: 623px;
+
+        font-family: 'Inter';
+        font-style: normal;
+    }
+    .info_title {
+        margin-bottom: 15px;
+        height: 24px;
+        left: 396px;
+        top: 623px;
+
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 24px;
+        display: flex;
+        align-items: center;
+        text-align: center;
+
+        color: #000000;
+    }
+    .row {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        margin-right: -15px;
+        margin-left: -15px;
+        top: 700px;
+        left: 400px;
+    }
+    .analitic_title {
+        width: 241px;
+        height: 24px;
+        left: 397px;
+        top: 1203px;
+
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 24px;
+        display: flex;
+        align-items: center;
+        text-align: center;
+
+        color: #000000;
+    }
+    .info {
+	    white-space: nowrap;
+    }
+    .column {
+	    white-space: normal;	
+	    display: inline-block;
+	    width: 48%;
+	    vertical-align: top;
+    }
+    .info .column:first-child {
+	    margin-right: 4%;
+    }
+    .technical_analize_title {
+        margin-top: 15px;
+        margin-bottom: 10px;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 18px;
+        line-height: 22px;
+
+        display: flex;
+        align-items: center;
+        text-align: center;
+
+        color: #000000;
+    }
+    .forecast_block {
+        
+    }
+    .forecast {
+        display: inline-block;
+        box-sizing: border-box;
+
+        width: 302px;
+        height: 116px;
+        left: 407px;
+        top: 1349px;
+
+        border: 2px solid #B9B9B9;
+        border-radius: 10px;
+        margin-right: 10%;
+    }
+    .forecast_title {
+        position: relative;
+        width: 134px;
+        height: 17px;
+        left: 55%;
+        top: 65%;
+
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 17px;
+        /* identical to box height */
+
+        display: flex;
+        align-items: center;
+
+        color: #090909;
+    }
+    .forecast_value {
+        position: relative;
+        width: 134px;
+        height: 17px;
+        left: 25%;
+        top: 40%;
+
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 800;
+        font-size: 30px;
+        line-height: 17px;
+        /* identical to box height */
+
+        display: flex;
+        align-items: center;
+
+        color: #090909;
+    }
+</style>
+<img class="logo" src="@Html.DisplayFor(model => model.Company.Logo)"/>
 <h1>@Html.DisplayFor(model => model.Name)</h1>
-<div class="row">
-    <button type="button" id="changeChartType_b" class="btn btn-primary float-end" style="margin-bottom:10px">Изменить тип графика</button>
-    <div class="card sale-card">
-        <div class="card-block">
-            <div id="chart_div" style="height:300px; margin-bottom: 20px; display: inline-block; min-width: 1570px;"></div>
-        </div>
+
+<div class="brand_info">
+    @Html.DisplayFor(model => model.Company.BrandInfo)
+</div>
+<div class="chart">
+    <span class="chart_title">График изменения стоимости</span>
+    <button type="button" id="changeChartType_b">Изменить тип графика</button>
+    <div id="chart_div"></div>
+</div>
+
+<hr />
+
+<div class="info">
+<div class="column">
+    <span class="info_title">Экономические показатели</span>
+    <dl class="row">
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.Figi)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.Figi)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.Ticker)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.Ticker)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.ClassCode)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.ClassCode)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.Currency)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.Currency)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.IpoDate)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.IpoDate)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.IssueSize)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.IssueSize)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.IssuePlanSize)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.IssuePlanSize)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.ShareType)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.ShareType)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.ShareType)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.ShareType)
+        </dd>
+    </dl>
+</div>
+<div class="column">
+    <span class="info_title"></span>
+    <dl class="row">
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.Figi)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.Figi)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.Ticker)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.Ticker)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.ClassCode)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.ClassCode)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.Currency)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.Currency)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.IpoDate)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.IpoDate)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.IssueSize)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.IssueSize)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.IssuePlanSize)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.IssuePlanSize)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.ShareType)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.ShareType)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.ShareType)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.ShareType)
+        </dd>
+    </dl>
+</div>
+</div>
+
+<hr />
+<span class="analitic_title">Результаты анализа</span>
+<span class="technical_analize_title">Технический анализ</span>
+<div class="forecast_block">
+    <div class="forecast">
+        <span class="forecast_value">182</span>
+        <span class="forecast_title">Прогноз на неделю</span>
     </div>
+    <div class="forecast">
+        <span class="forecast_value">323</span>
+        <span class="forecast_title">Прогноз на месяц</span>
+    </div>
+    <div class="forecast">
+        <span class="forecast_value">343</span>
+        <span class="forecast_title">Прогноз на полгода</span>
+    </div>
+</div>
+<span class="technical_analize_title">Фундоментальный анализ</span>
+<div class="info">
+<div class="column">
+    <dl class="row">
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.Figi)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.Figi)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.Ticker)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.Ticker)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.ClassCode)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.ClassCode)
+        </dd>
+    </dl>
+</div>
+</div>
+<span class="technical_analize_title">Анализ на основе новостей</span>
+<div class="info">
+<div class="column">
+    <dl class="row">
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.Figi)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.Figi)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.Ticker)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.Ticker)
+        </dd>
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.ClassCode)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.ClassCode)
+        </dd>
+    </dl>
+</div>
 </div>
 
 <script type="text/javascript">
@@ -104,67 +515,25 @@
     }
 </script>
 
-<div>
-    <h4>Share</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Figi)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Figi)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ticker)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ticker)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ClassCode)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ClassCode)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Currency)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Currency)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IpoDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IpoDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IssueSize)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IssueSize)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IssuePlanSize)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IssuePlanSize)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ShareType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ShareType)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+@{
+    if (Model.Id > 0)
+    {
+        var weekDelta = 0;
+        var monthDelta = 0;
+        var halfYearDelta = 0;
+
+        bool isFastGrowingProfitShare = FundamentalAnalysis.IsFastGrowingProfitShare(Model);
+        bool isHighPotentialShare = FundamentalAnalysis.IsHighPotentialShare(Model);
+        bool isStableGrowthShare = FundamentalAnalysis.IsStableGrowthShare(Model);
+
+        var enterpriseValueToEBITDARatio = FundamentalAnalysis.EnterpriseValueToEBITDARatio(Model);
+        var deptToEBITDARatio = FundamentalAnalysis.DeptToEBITDARatio(Model);
+        var priceToBookRation = FundamentalAnalysis.PriceToBookRation(Model);
+        var forwardPERatio = FundamentalAnalysis.ForwardPERatio(Model);
+        var getSummaryRecommendation = FundamentalAnalysis.GetSummaryRecommendation(Model);
+
+        //Model.Company.NewsQuotesImpacts.First().WorldNews.Keywords.First().Keyword
+
+        //ViewBag.Forecast;
+    }
+}
