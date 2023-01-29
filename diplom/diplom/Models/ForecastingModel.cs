@@ -25,11 +25,54 @@ namespace diplom.Models
     public class ForecastingModel
     {
         const string connectionString = "server=localhost;database=test;user=root;password=1234";
+        public enum ForecastHorizon
+        {
+            week,
+            month,
+            halfYear
+        }
+        private ForecastHorizon horizon;
+
+        public ForecastingModel(ForecastHorizon horizon = ForecastHorizon.week)
+        {
+            this.horizon = horizon;
+        }
+
+        private string getFileName()
+        {
+            switch (this.horizon)
+            {
+                case ForecastHorizon.week:
+                    return "MLModel.zip";
+                case ForecastHorizon.month:
+                    return "MLModel_month.zip";
+                case ForecastHorizon.halfYear:
+                    return "MLModel_half_year.zip";
+                default:
+                    return "MLModel.zip";
+            }
+        }
+
+        private int getHorizonValue()
+        {
+            switch (this.horizon)
+            {
+                case ForecastHorizon.week:
+                    return 7*24;
+                case ForecastHorizon.month:
+                    return 24*30;
+                case ForecastHorizon.halfYear:
+                    return 24*180;
+                default:
+                    return 7*24;
+            }
+        }
 
         private string getModelPath()
         {
             string rootDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../"));
-            return Path.Combine(rootDir, "MLModel.zip");
+            string fileName = this.getFileName();
+            return Path.Combine(rootDir, fileName);
         }
 
         private SsaForecastingEstimator GetForecastingPipline(MLContext mlContext)
@@ -37,10 +80,10 @@ namespace diplom.Models
             SsaForecastingEstimator forecastingPipeline = mlContext.Forecasting.ForecastBySsa(
                 outputColumnName: "ForecastedClose",
                 inputColumnName: "Close",
-                windowSize: 24,
-                seriesLength: 30 * 24,
-                trainSize: 6917,
-                horizon: 24,
+                windowSize: 365,
+                seriesLength: 180 * 24,
+                trainSize: 365 * 5,
+                horizon: getHorizonValue(),
                 confidenceLevel: 0.95f,
                 confidenceLowerBoundColumn: "LowerBoundClose",
                 confidenceUpperBoundColumn: "UpperBoundClose"
@@ -66,18 +109,18 @@ namespace diplom.Models
 
             data = loader.Load(source);
 
-            if (File.Exists(modelPath))
-            {
-                using (var file = File.OpenRead(modelPath))
-                {
-                    forecaster = (SsaForecastingTransformer)mlContext.Model.Load(file, out DataViewSchema schema);
-                }
-            }
-            else
-            {
+            //if (File.Exists(modelPath))
+            //{
+            //    using (var file = File.OpenRead(modelPath))
+            //    {
+            //        forecaster = (SsaForecastingTransformer)mlContext.Model.Load(file, out DataViewSchema schema);
+            //    }
+            //}
+            //else
+            //{
                 forecaster = this.GetForecastingPipline(mlContext).Fit(data);
-                mlContext.Model.Save(forecaster, loader, "MLModel.zip");
-            }
+                mlContext.Model.Save(forecaster, loader, getFileName());
+            //}
 
             return forecaster;
         }
@@ -85,8 +128,8 @@ namespace diplom.Models
         public void GetForecast(IConfiguration configuration, diplomContext context, int shareId)
         {
             string rootDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../"));
-            string modelPath = Path.Combine(rootDir, "MLModel.zip");
-            string connectionString = "server=localhost;database=test;user=root;password=1234";
+            string modelPath = Path.Combine(rootDir, getFileName());
+            string connectionString = ForecastingModel.connectionString;
 
             MLContext mlContext = new MLContext();
 
@@ -132,10 +175,10 @@ namespace diplom.Models
                 SsaForecastingEstimator forecastingPipeline = mlContext.Forecasting.ForecastBySsa(
                     outputColumnName: "ForecastedClose",
                     inputColumnName: "Close",
-                    windowSize: 120*24,
-                    seriesLength: 180*24,
-                    trainSize: 6917,
-                    horizon: 7*24,
+                    windowSize: 365,
+                    seriesLength: 180 * 24,
+                    trainSize: 365 * 5,
+                    horizon: getHorizonValue(),
                     confidenceLevel: 0.95f,
                     confidenceLowerBoundColumn: "LowerBoundClose",
                     confidenceUpperBoundColumn: "UpperBoundClose");
@@ -145,13 +188,13 @@ namespace diplom.Models
                 Evaluate(data, forecaster, mlContext);
                 forecastEngine = forecaster.CreateTimeSeriesEngine<ModelInput, ModelOutput>(mlContext);
 
-                mlContext.Model.Save(forecaster, loader, "MLModel.zip");
+                mlContext.Model.Save(forecaster, loader, this.getFileName());
             }
 
             if (data != null && forecastEngine != null && forecaster != null)
             {
                 forecastEngine.CheckPoint(mlContext, modelPath);
-                Forecast(data, 7*24, forecastEngine, mlContext);
+                Forecast(data, getHorizonValue(), forecastEngine, mlContext);
             }
         }
 
@@ -161,10 +204,10 @@ namespace diplom.Models
 
             forecaster = this.GetForecastingPipline(mlContext).Fit(data);
             Evaluate(data, forecaster, mlContext);
-            mlContext.Model.Save(forecaster, loader, "MLModel.zip");
+            mlContext.Model.Save(forecaster, loader, this.getFileName());
         }
 
-        public void GetForecast(long shareId)
+        public ModelOutput GetForecast(long shareId)
         {
             SsaForecastingTransformer forecaster = this.getForecaster(shareId, out MLContext mlContext, out IDataView data, out DatabaseLoader loader);
 
@@ -172,8 +215,9 @@ namespace diplom.Models
             if (data != null && forecastEngine != null && forecaster != null)
             {
                 forecastEngine.CheckPoint(mlContext, this.getModelPath());
-                Forecast(data, 7, forecastEngine, mlContext);
+                return Forecast(data, getHorizonValue(), forecastEngine, mlContext);
             }
+            return null;
         }
 
         private void Evaluate(IDataView testData, ITransformer model, MLContext mlContext)
@@ -198,7 +242,7 @@ namespace diplom.Models
             Console.WriteLine($"Root Mean Squared Error: {RMSE:F3}\n");
         }
 
-        private float[] Forecast(IDataView testData, int horizon, TimeSeriesPredictionEngine<ModelInput, ModelOutput> forecaster, MLContext mlContext)
+        private ModelOutput Forecast(IDataView testData, int horizon, TimeSeriesPredictionEngine<ModelInput, ModelOutput> forecaster, MLContext mlContext)
         {
             ModelOutput forecast = forecaster.Predict();
 
@@ -224,7 +268,7 @@ namespace diplom.Models
             {
                 Console.WriteLine(prediction);
             }
-            return forecast.ForecastedClose;
+            return forecast;
         }
     }
 }

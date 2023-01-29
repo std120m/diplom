@@ -332,11 +332,25 @@ namespace diplom.Controllers
         //    return Json(TechnicalAnalysis.GetPrediction(share));
         //}
 
-        // GET: api/candles/forecast/{id}
-        [HttpGet("candles/forecast/{id}")]
-        public void GetForecasting(int id)
+        // GET: api/candles/forecast-7/{id}
+        [HttpGet("candles/forecast-7/{id}")]
+        public void GetWeekForecasting(int id)
         {
-            new ForecastingModel().GetForecast(_configuration, _context, id);
+            new ForecastingModel(ForecastingModel.ForecastHorizon.week).GetForecast(_configuration, _context, id);
+        }
+
+        // GET: api/candles/forecast-30/{id}
+        [HttpGet("candles/forecast-30/{id}")]
+        public void GetMonthForecasting(int id)
+        {
+            new ForecastingModel(ForecastingModel.ForecastHorizon.month).GetForecast(_configuration, _context, id);
+        }
+
+        // GET: api/candles/forecast-180/{id}
+        [HttpGet("candles/forecast-180/{id}")]
+        public void GetHalfYearForecasting(int id)
+        {
+            new ForecastingModel(ForecastingModel.ForecastHorizon.halfYear).GetForecast(_configuration, _context, id);
         }
 
         // GET: api/news/{id}/impact

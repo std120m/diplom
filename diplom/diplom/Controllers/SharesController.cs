@@ -58,7 +58,17 @@ namespace diplom.Controllers
                 return NotFound();
             }
 
-            ///*ViewBag.Forecast =*/ new ForecastingModel().GetForecast(share.Id);
+            var weekForecast = new ForecastingModel(ForecastingModel.ForecastHorizon.week).GetForecast(share.Id);
+            var monthForecast = new ForecastingModel(ForecastingModel.ForecastHorizon.month).GetForecast(share.Id);
+            var halfYearForecast = new ForecastingModel(ForecastingModel.ForecastHorizon.halfYear).GetForecast(share.Id);
+
+            ViewBag.WeekForecastDelta = GetForecastDelta(weekForecast);
+            ViewBag.MonthForecastDelta = GetForecastDelta(monthForecast);
+            ViewBag.HalfYearForecastDelta = GetForecastDelta(halfYearForecast);
+
+            ViewBag.WeekForecast = weekForecast.ForecastedClose.ToList().Last();
+            ViewBag.MonthForecast = monthForecast.ForecastedClose.ToList().Last();
+            ViewBag.HalfYearForecast = halfYearForecast.ForecastedClose.ToList().Last();
             return View(share);
         }
 
@@ -172,6 +182,15 @@ namespace diplom.Controllers
         public List<Share> GetShares() 
         {
             return _context.Shares.ToList();
+        }
+
+        private double GetForecastDelta(ModelOutput forecast)
+        {
+            var weekForecastDelta = Math.Round(((double)forecast.ForecastedClose.ToList().Last()- (double)forecast.LowerBoundClose.ToList().Last()) / (double)forecast.LowerBoundClose.ToList().Last() * 100, 2);
+            weekForecastDelta += Math.Round(((double)forecast.ForecastedClose.ToList().Last() - (double)forecast.UpperBoundClose.ToList().Last()) / (double)forecast.UpperBoundClose.ToList().Last() * 100, 2);
+            weekForecastDelta /= 2;
+
+            return weekForecastDelta;
         }
     }
 }
