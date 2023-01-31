@@ -58,6 +58,12 @@ namespace diplom.Controllers
                 return NotFound();
             }
 
+            foreach (var news in _context.WorldNews.ToList())
+            //foreach (var news in _context.WorldNews.Where(news => news.DateTime.Date == DateTime.Now.Date).ToList())
+            {
+                new WorldNewsController(_context, _configuration).GetWorldnewsImpact(news.Id, id);
+            }
+
             var weekForecast = new ForecastingModel(ForecastingModel.ForecastHorizon.week).GetForecast(share.Id);
             var monthForecast = new ForecastingModel(ForecastingModel.ForecastHorizon.month).GetForecast(share.Id);
             var halfYearForecast = new ForecastingModel(ForecastingModel.ForecastHorizon.halfYear).GetForecast(share.Id);
