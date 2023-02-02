@@ -26,7 +26,7 @@
           "Pullenti.Core": "1.0.0",
           "SciSharp.TensorFlow.Redist": "2.10.0",
           "System.Data.Odbc": "6.0.1",
-          "Tinkoff.InvestApi": "0.1.8"
+          "Tinkoff.InvestApi": "0.4.1"
         },
         "runtime": {
           "diplom.dll": {}
@@ -63,57 +63,57 @@
           }
         }
       },
-      "Google.Protobuf/3.19.6": {
+      "Google.Protobuf/3.21.8": {
         "runtime": {
           "lib/net5.0/Google.Protobuf.dll": {
-            "assemblyVersion": "3.19.6.0",
-            "fileVersion": "3.19.6.0"
+            "assemblyVersion": "3.21.8.0",
+            "fileVersion": "3.21.8.0"
           }
         }
       },
-      "Grpc.Core.Api/2.41.0": {
+      "Grpc.Core.Api/2.49.0": {
         "dependencies": {
           "System.Memory": "4.5.4"
         },
         "runtime": {
-          "lib/netstandard2.0/Grpc.Core.Api.dll": {
+          "lib/netstandard2.1/Grpc.Core.Api.dll": {
             "assemblyVersion": "2.0.0.0",
-            "fileVersion": "2.41.0.0"
+            "fileVersion": "2.49.0.0"
           }
         }
       },
-      "Grpc.Net.Client/2.41.0": {
+      "Grpc.Net.Client/2.49.0": {
         "dependencies": {
-          "Grpc.Net.Common": "2.41.0",
+          "Grpc.Net.Common": "2.49.0",
           "Microsoft.Extensions.Logging.Abstractions": "6.0.0"
         },
         "runtime": {
           "lib/net6.0/Grpc.Net.Client.dll": {
             "assemblyVersion": "2.0.0.0",
-            "fileVersion": "2.41.0.0"
+            "fileVersion": "2.49.0.0"
           }
         }
       },
-      "Grpc.Net.ClientFactory/2.41.0": {
+      "Grpc.Net.ClientFactory/2.49.0": {
         "dependencies": {
-          "Grpc.Net.Client": "2.41.0",
+          "Grpc.Net.Client": "2.49.0",
           "Microsoft.Extensions.Http": "3.0.3"
         },
         "runtime": {
           "lib/net6.0/Grpc.Net.ClientFactory.dll": {
             "assemblyVersion": "2.0.0.0",
-            "fileVersion": "2.41.0.0"
+            "fileVersion": "2.49.0.0"
           }
         }
       },
-      "Grpc.Net.Common/2.41.0": {
+      "Grpc.Net.Common/2.49.0": {
         "dependencies": {
-          "Grpc.Core.Api": "2.41.0"
+          "Grpc.Core.Api": "2.49.0"
         },
         "runtime": {
           "lib/net6.0/Grpc.Net.Common.dll": {
             "assemblyVersion": "2.0.0.0",
-            "fileVersion": "2.41.0.0"
+            "fileVersion": "2.49.0.0"
           }
         }
       },
@@ -1464,7 +1464,7 @@
       },
       "Microsoft.ML.TensorFlow/2.0.0": {
         "dependencies": {
-          "Google.Protobuf": "3.19.6",
+          "Google.Protobuf": "3.21.8",
           "Microsoft.ML": "2.0.0",
           "System.IO.FileSystem.AccessControl": "4.5.0",
           "System.Security.Principal.Windows": "4.7.0",
@@ -1874,7 +1874,7 @@
       },
       "Protobuf.Text/0.4.0": {
         "dependencies": {
-          "Google.Protobuf": "3.19.6"
+          "Google.Protobuf": "3.21.8"
         },
         "runtime": {
           "lib/netstandard2.0/Protobuf.Text.dll": {
@@ -2914,7 +2914,7 @@
       },
       "TensorFlow.NET/0.20.1": {
         "dependencies": {
-          "Google.Protobuf": "3.19.6",
+          "Google.Protobuf": "3.21.8",
           "NumSharp.Lite": "0.1.8",
           "Protobuf.Text": "0.4.0"
         },
@@ -2963,12 +2963,11 @@
           }
         }
       },
-      "Tinkoff.InvestApi/0.1.8": {
+      "Tinkoff.InvestApi/0.4.1": {
         "dependencies": {
-          "Google.Protobuf": "3.19.6",
-          "Grpc.Net.Client": "2.41.0",
-          "Grpc.Net.ClientFactory": "2.41.0",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "6.0.0"
+          "Google.Protobuf": "3.21.8",
+          "Grpc.Net.Client": "2.49.0",
+          "Grpc.Net.ClientFactory": "2.49.0"
         },
         "runtime": {
           "lib/net6.0/Tinkoff.InvestApi.dll": {
@@ -3004,40 +3003,40 @@
       "path": "deepmorphy/2.0.3",
       "hashPath": "deepmorphy.2.0.3.nupkg.sha512"
     },
-    "Google.Protobuf/3.19.6": {
+    "Google.Protobuf/3.21.8": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-I+gb51P2GrzyXkUD9y60pMzA6ox4d3ByvXCm5OYZsAii2/fs5S5cuKiEIoaseEv26cdIAnKL4W7W5W0QO0Iobw==",
-      "path": "google.protobuf/3.19.6",
-      "hashPath": "google.protobuf.3.19.6.nupkg.sha512"
+      "sha512": "sha512-k6984wrXAAq92cRZ0rCPcUDE0dTZXFC4vO4z7+CG/0bp8DewYs+zX69tcgzm30EEtDuO8Ggpn2Qmb1kQa4WTcg==",
+      "path": "google.protobuf/3.21.8",
+      "hashPath": "google.protobuf.3.21.8.nupkg.sha512"
     },
-    "Grpc.Core.Api/2.41.0": {
+    "Grpc.Core.Api/2.49.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-bQ/mLaeACJ16hINQzKZA0ge648acF0OUiHd8JMdvpywJ41UFilDOd+t3yDG0M2XxgbB98z8EUf0HnprHLOO0qg==",
-      "path": "grpc.core.api/2.41.0",
-      "hashPath": "grpc.core.api.2.41.0.nupkg.sha512"
+      "sha512": "sha512-6OTcSQ8iML+xzmELhH4anUZlNM3dHDKPFBsMLSdiT80LJaaZKxwZml/K9ZdfLIjSR/EzdMZzzU2Avbedz4N7BA==",
+      "path": "grpc.core.api/2.49.0",
+      "hashPath": "grpc.core.api.2.49.0.nupkg.sha512"
     },
-    "Grpc.Net.Client/2.41.0": {
+    "Grpc.Net.Client/2.49.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-hKuRI7eHxIdrBtricxXuNu+vzjErt7n+zcIr47M56pnajKnzFlG4zwLiPCuxKC22cZTI5S6ef50jCrI/vQrL2w==",
-      "path": "grpc.net.client/2.41.0",
-      "hashPath": "grpc.net.client.2.41.0.nupkg.sha512"
+      "sha512": "sha512-mLXxEJzqnRHseVzRCzSQznA7y8pcSStVbstLTUuQRulN7kREovh82ctNkGpkfwONi/DHoWscX9mJLiAmh0gjOQ==",
+      "path": "grpc.net.client/2.49.0",
+      "hashPath": "grpc.net.client.2.49.0.nupkg.sha512"
     },
-    "Grpc.Net.ClientFactory/2.41.0": {
+    "Grpc.Net.ClientFactory/2.49.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-8uUxz9Sbpz7dudq3i2hBfmaRbLHImFcGx1Kn9CtpGtBok3WXL7FepUj0SIU4Iv95VQNYbefi41mIGxFylAO6Mg==",
-      "path": "grpc.net.clientfactory/2.41.0",
-      "hashPath": "grpc.net.clientfactory.2.41.0.nupkg.sha512"
+      "sha512": "sha512-4Ac7dsrARbcs1g2vrUSUadtZ0kIGTk6yhA5ccOBjgM+RTzY3L54TgMddmeaV7/Z4f9sZn6T1ls6FmUiG8Dms+Q==",
+      "path": "grpc.net.clientfactory/2.49.0",
+      "hashPath": "grpc.net.clientfactory.2.49.0.nupkg.sha512"
     },
-    "Grpc.Net.Common/2.41.0": {
+    "Grpc.Net.Common/2.49.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Mcb6ybFRZYEqn1UVpfCADL2HSTJSK9+V2BBLyS6vebMNkmGwqa0KQ3x++kC+n28MAP4BlrR+jxW0XGNP6V9amw==",
-      "path": "grpc.net.common/2.41.0",
-      "hashPath": "grpc.net.common.2.41.0.nupkg.sha512"
+      "sha512": "sha512-G0TVTS8fjCk8b7td/E7C8/ssJPm3JnGVBKsveoj/89PIwIee72qkXG+tVn5c1gwTanEFPdyPoydna/bmU/NAaw==",
+      "path": "grpc.net.common/2.49.0",
+      "hashPath": "grpc.net.common.2.49.0.nupkg.sha512"
     },
     "Humanizer.Core/2.8.26": {
       "type": "package",
@@ -4509,12 +4508,12 @@
       "path": "tensorflowsharp/1.12.0",
       "hashPath": "tensorflowsharp.1.12.0.nupkg.sha512"
     },
-    "Tinkoff.InvestApi/0.1.8": {
+    "Tinkoff.InvestApi/0.4.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-a/T5vrqhU+7bYM945eiGHIv4Ip/s3qm+DLTqm4g1tEyFo19YAMyKbgDHvALw6+K6E39r7zdUFmFbuP95uwD74g==",
-      "path": "tinkoff.investapi/0.1.8",
-      "hashPath": "tinkoff.investapi.0.1.8.nupkg.sha512"
+      "sha512": "sha512-MQtwNENVFI2I6lRqulPlDHQq3TR812yFxeUBbUoYuAJYU2aYtqw5jjW2Ub1LTlJlp9lAPXaC4qKAIZJRpRVbXQ==",
+      "path": "tinkoff.investapi/0.4.1",
+      "hashPath": "tinkoff.investapi.0.4.1.nupkg.sha512"
     },
     "Pullenti.Core/1.0.0": {
       "type": "project",

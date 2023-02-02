@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "/4ZHZoIsi74DxAdC6lolnvXmoJ4XYYtx5nW1t4Wbg2ZzmlTHBFe04sEjk6azJPS+sm9J1j9JBIKwIvVGyp2sEA==",
+  "dgSpecHash": "2FeIKoKSxArjgYsBDd83Y6KT3gUspKLiCEq6BNeAaljrouUQnGE3FER3N2QJSTMCTTnzXYtXcBuN9s5MjknoAg==",
   "success": true,
   "projectFilePath": "X:\\diplom\\diplom\\diplom\\diplom.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\sdt1\\.nuget\\packages\\castle.core\\4.4.1\\castle.core.4.4.1.nupkg.sha512",
     "C:\\Users\\sdt1\\.nuget\\packages\\deepmorphy\\2.0.3\\deepmorphy.2.0.3.nupkg.sha512",
-    "C:\\Users\\sdt1\\.nuget\\packages\\google.protobuf\\3.19.6\\google.protobuf.3.19.6.nupkg.sha512",
-    "C:\\Users\\sdt1\\.nuget\\packages\\grpc.core.api\\2.41.0\\grpc.core.api.2.41.0.nupkg.sha512",
-    "C:\\Users\\sdt1\\.nuget\\packages\\grpc.net.client\\2.41.0\\grpc.net.client.2.41.0.nupkg.sha512",
-    "C:\\Users\\sdt1\\.nuget\\packages\\grpc.net.clientfactory\\2.41.0\\grpc.net.clientfactory.2.41.0.nupkg.sha512",
-    "C:\\Users\\sdt1\\.nuget\\packages\\grpc.net.common\\2.41.0\\grpc.net.common.2.41.0.nupkg.sha512",
+    "C:\\Users\\sdt1\\.nuget\\packages\\google.protobuf\\3.21.8\\google.protobuf.3.21.8.nupkg.sha512",
+    "C:\\Users\\sdt1\\.nuget\\packages\\grpc.core.api\\2.49.0\\grpc.core.api.2.49.0.nupkg.sha512",
+    "C:\\Users\\sdt1\\.nuget\\packages\\grpc.net.client\\2.49.0\\grpc.net.client.2.49.0.nupkg.sha512",
+    "C:\\Users\\sdt1\\.nuget\\packages\\grpc.net.clientfactory\\2.49.0\\grpc.net.clientfactory.2.49.0.nupkg.sha512",
+    "C:\\Users\\sdt1\\.nuget\\packages\\grpc.net.common\\2.49.0\\grpc.net.common.2.49.0.nupkg.sha512",
     "C:\\Users\\sdt1\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\sdt1\\.nuget\\packages\\messagepack\\2.1.152\\messagepack.2.1.152.nupkg.sha512",
     "C:\\Users\\sdt1\\.nuget\\packages\\messagepack.annotations\\2.1.152\\messagepack.annotations.2.1.152.nupkg.sha512",
@@ -221,7 +221,7 @@
     "C:\\Users\\sdt1\\.nuget\\packages\\system.xml.xmldocument\\4.3.0\\system.xml.xmldocument.4.3.0.nupkg.sha512",
     "C:\\Users\\sdt1\\.nuget\\packages\\tensorflow.net\\0.20.1\\tensorflow.net.0.20.1.nupkg.sha512",
     "C:\\Users\\sdt1\\.nuget\\packages\\tensorflowsharp\\1.12.0\\tensorflowsharp.1.12.0.nupkg.sha512",
-    "C:\\Users\\sdt1\\.nuget\\packages\\tinkoff.investapi\\0.1.8\\tinkoff.investapi.0.1.8.nupkg.sha512"
+    "C:\\Users\\sdt1\\.nuget\\packages\\tinkoff.investapi\\0.4.1\\tinkoff.investapi.0.4.1.nupkg.sha512"
   ],
   "logs": [
     {

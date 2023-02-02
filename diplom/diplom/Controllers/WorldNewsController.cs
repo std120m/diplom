@@ -323,7 +323,7 @@ namespace diplom.Controllers
                             if (share.Company == null || share.Company.BrandInfo == null)
                                 continue;
 
-                            var companyMorphInfo = morph.Parse(share.Company.BrandInfo.Split(' ')).ToList();
+                            var companyMorphInfo = morph.Parse(share.Company.BrandInfo.Replace("  ", " ").Split(' ')).ToList();
                             var companyKeywords = new List<string>();
                             foreach (var morphInfo in companyMorphInfo)
                             {

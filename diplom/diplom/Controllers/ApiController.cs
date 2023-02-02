@@ -360,6 +360,17 @@ namespace diplom.Controllers
             new WorldNewsController(_context, _configuration).GetWorldnewsImpact(id);
         }
 
+        // GET: api/news/impact
+        [HttpGet("news/impact")]
+        public void GetAllWorldNewsImpact()
+        {
+            foreach (var news in _context.WorldNews.ToList())
+            //foreach (var news in _context.WorldNews.Where(news => news.DateTime.Date == DateTime.Now.Date).ToList())
+            {
+                new WorldNewsController(_context, _configuration).GetWorldnewsImpact(news.Id);
+            }
+        }
+
         // GET: api/news/sentiment
         [HttpGet("news/sentiment")]
         public void GetSentimentPrediction()

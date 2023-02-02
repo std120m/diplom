@@ -183,18 +183,24 @@ namespace diplom.Controllers
                 DateTime tillParsingDate = startParsingDate.AddDays(1);
                 candlesRequest.From = Timestamp.FromDateTime(startParsingDate.ToUniversalTime());
                 candlesRequest.To = Timestamp.FromDateTime(tillParsingDate.ToUniversalTime());
-                GetCandlesResponse candlesResponse = _investApi.MarketData.GetCandles(candlesRequest);
-                foreach (ApiCandle apiCandle in candlesResponse.Candles)
+                try
                 {
-                    Candle candle = new Candle(apiCandle);
-                    if (candle.Time <= startParsingDate)
-                        break;
-                    share.Candles.Add(candle);
-                    _context.Candles.Add(candle);
+                    GetCandlesResponse candlesResponse = _investApi.MarketData.GetCandles(candlesRequest);
+                    foreach (ApiCandle apiCandle in candlesResponse.Candles)
+                    {
+                        Candle candle = new Candle(apiCandle);
+                        if (candle.Time < startParsingDate)
+                            break;
+                        share.Candles.Add(candle);
+                        _context.Candles.Add(candle);
+                    }
+                    startParsingDate = tillParsingDate;
+                    await _context.SaveChangesAsync();
+                } catch (Exception e)
+                {
+                    Console.WriteLine("Error" + e.ToString());
                 }
-                startParsingDate = tillParsingDate;
-                await _context.SaveChangesAsync();
-                Thread.Sleep(250);
+                Thread.Sleep(500);
             }
 
             await _context.SaveChangesAsync();
