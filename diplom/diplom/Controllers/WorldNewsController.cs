@@ -265,10 +265,10 @@ namespace diplom.Controllers
 
         public void GetWorldnewsImpact(int newsId, int? shareId = null)
         {
-            //WorldNews news = _context.WorldNews.Where(news => news.Id == newsId).ToList().First();
-            //if (news == null)
-            //    return;
-            List<WorldNews> allNews = _context.WorldNews.Where(news => news.Id > 29985).ToList();
+            WorldNews worldNews = _context.WorldNews.Where(news => news.Id == newsId).ToList().First();
+            if (worldNews == null)
+                return;
+            List<WorldNews> allNews = new List<WorldNews>() { worldNews };//_context.WorldNews.Where(news => news.Id > 29985).ToList();
             List<EntitySentimentPrediction> predictions = new List<EntitySentimentPrediction>();
             foreach (var news in allNews)
             {

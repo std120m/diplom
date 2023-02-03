@@ -58,8 +58,8 @@ namespace diplom.Controllers
                 return NotFound();
             }
 
-            foreach (var news in _context.WorldNews.ToList())
-            //foreach (var news in _context.WorldNews.Where(news => news.DateTime.Date == DateTime.Now.Date).ToList())
+            //foreach (var news in _context.WorldNews.ToList())
+            foreach (var news in _context.WorldNews.Where(news => news.DateTime.Date == DateTime.Now.Date).ToList())
             {
                 new WorldNewsController(_context, _configuration).GetWorldnewsImpact(news.Id, id);
             }
@@ -68,13 +68,30 @@ namespace diplom.Controllers
             var monthForecast = new ForecastingModel(ForecastingModel.ForecastHorizon.month).GetForecast(share.Id);
             var halfYearForecast = new ForecastingModel(ForecastingModel.ForecastHorizon.halfYear).GetForecast(share.Id);
 
-            ViewBag.WeekForecastDelta = GetForecastDelta(weekForecast);
-            ViewBag.MonthForecastDelta = GetForecastDelta(monthForecast);
-            ViewBag.HalfYearForecastDelta = GetForecastDelta(halfYearForecast);
+            ViewBag.WeekForecastAccuracy = 100 - GetForecastAccuracy(weekForecast);
+            ViewBag.MonthForecastAccuracy = 100 - GetForecastAccuracy(monthForecast);
+            ViewBag.HalfYearForecastAccuracy = 100 - GetForecastAccuracy(halfYearForecast);
 
-            ViewBag.WeekForecast = weekForecast.ForecastedClose.ToList().Last();
-            ViewBag.MonthForecast = monthForecast.ForecastedClose.ToList().Last();
-            ViewBag.HalfYearForecast = halfYearForecast.ForecastedClose.ToList().Last();
+            ViewBag.WeekForecast = weekForecast.ForecastedClose.Average();
+            ViewBag.MonthForecast = monthForecast.ForecastedClose.Average();
+            ViewBag.HalfYearForecast = halfYearForecast.ForecastedClose.Average();
+
+            ViewBag.WeekForecastDelta = (ViewBag.WeekForecast - share.Candles.Last().Close) / ViewBag.WeekForecast * 100;
+            ViewBag.MonthForecastDelta = (ViewBag.MonthForecast - share.Candles.Last().Close) / ViewBag.MonthForecast * 100;
+            ViewBag.HalfYearForecastDelta = (ViewBag.HalfYearForecast - share.Candles.Last().Close) / ViewBag.HalfYearForecast * 100;
+
+            switch (share.Currency)
+            {
+                case "rub":
+                    ViewBag.Currency = "₽";
+                    break;
+                case "eur":
+                    ViewBag.Currency = "€";
+                    break;
+                default:
+                    ViewBag.Currency = "$";
+                    break;
+            }
             return View(share);
         }
 
@@ -190,13 +207,13 @@ namespace diplom.Controllers
             return _context.Shares.ToList();
         }
 
-        private double GetForecastDelta(ModelOutput forecast)
+        private double GetForecastAccuracy(ModelOutput forecast)
         {
-            var weekForecastDelta = Math.Round(((double)forecast.ForecastedClose.ToList().Last()- (double)forecast.LowerBoundClose.ToList().Last()) / (double)forecast.LowerBoundClose.ToList().Last() * 100, 2);
-            weekForecastDelta += Math.Round(((double)forecast.ForecastedClose.ToList().Last() - (double)forecast.UpperBoundClose.ToList().Last()) / (double)forecast.UpperBoundClose.ToList().Last() * 100, 2);
-            weekForecastDelta /= 2;
+            var weekForecastAccuracy = Math.Round(((double)forecast.ForecastedClose.ToList().Last()- (double)forecast.LowerBoundClose.ToList().Last()) / (double)forecast.LowerBoundClose.ToList().Last() * 100, 2);
+            weekForecastAccuracy += Math.Round(((double)forecast.ForecastedClose.ToList().Last() - (double)forecast.UpperBoundClose.ToList().Last()) / (double)forecast.UpperBoundClose.ToList().Last() * 100, 2);
+            weekForecastAccuracy /= 2;
 
-            return weekForecastDelta;
+            return weekForecastAccuracy;
         }
     }
 }

@@ -3,6 +3,26 @@
 @{
     ViewData["Title"] = "Details";
 }
+
+@{
+    if (Model.Id > 0)
+    {
+        bool isFastGrowingProfitShare = FundamentalAnalysis.IsFastGrowingProfitShare(Model);
+        bool isHighPotentialShare = FundamentalAnalysis.IsHighPotentialShare(Model);
+        bool isStableGrowthShare = FundamentalAnalysis.IsStableGrowthShare(Model);
+
+        var enterpriseValueToEBITDARatio = FundamentalAnalysis.EnterpriseValueToEBITDARatio(Model);
+        var deptToEBITDARatio = FundamentalAnalysis.DeptToEBITDARatio(Model);
+        var priceToBookRation = FundamentalAnalysis.PriceToBookRation(Model);
+        var forwardPERatio = FundamentalAnalysis.ForwardPERatio(Model);
+        var getSummaryRecommendation = FundamentalAnalysis.GetSummaryRecommendation(Model);
+
+        //Model.Company.NewsQuotesImpacts.First().WorldNews.Keywords.First().Keyword
+
+        //ViewBag.Forecast;
+
+    }
+}
 <style>
     .logo {
         width: 35px;
@@ -209,6 +229,9 @@
 
         color: #090909;
     }
+    dd, dt {
+        padding-bottom: 10px;
+    }
 </style>
 <img class="logo" src="@Html.DisplayFor(model => model.Company.Logo)"/>
 <h1>@Html.DisplayFor(model => model.Name)</h1>
@@ -216,6 +239,7 @@
 <div class="brand_info">
     @Html.DisplayFor(model => model.Company.BrandInfo)
 </div>
+<a href="@Html.DisplayFor(model => model.Company.Website)">Сайт компании</a>
 <div class="chart">
     <span class="chart_title">График изменения стоимости</span>
     <button type="button" id="changeChartType_b">Изменить тип графика</button>
@@ -228,130 +252,407 @@
 <div class="column">
     <span class="info_title">Экономические показатели</span>
     <dl class="row">
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Figi)
+        <dt class = "col-sm-5">
+            Стоимость компании
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.Figi)
+            @{
+                var gag = "-";
+                var _enterpriseValue = "-";
+                if (Model.Company.EnterpriseValue != null){
+                    _enterpriseValue = Model.Company.EnterpriseValue.ToString() + " " + ViewBag.Currency;
+                }
+            }
+            @_enterpriseValue
         </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Ticker)
+        <dt class = "col-sm-5">
+            Стоимость компании / Ожидаемая прибыль на акцию
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.Ticker)
+             @{
+                var _forwardPES = "-";
+                if (Model.Company.ForwardPE != null){
+                    _forwardPES = Math.Round((double)Model.Company.ForwardPE, 3).ToString();
+                }
+            }
+            @_forwardPES
         </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.ClassCode)
+        <dt class = "col-sm-5">
+            Доль прибыли в общем доходе
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.ClassCode)
+             @{
+                var _profitMargins = "-";
+                if (Model.Company.ProfitMargins != null){
+                    _profitMargins = Math.Round((double)Model.Company.ProfitMargins * 100, 3).ToString() + " %";
+                }
+            }
+            @_profitMargins
         </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Currency)
+        <dt class = "col-sm-5">
+            Акции в наличии на фондовом рынке
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.Currency)
+            @if (Model.Company.FloatShares != null)
+            {
+                @Html.DisplayFor(model => model.Company.FloatShares)
+            } else
+            {
+                @gag
+            }
         </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Name)
+        <dt class = "col-sm-5">
+            Численность сотрудников
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.Name)
+            @if (Model.Company.FullTimeEmployees != null)
+            {
+                @Html.DisplayFor(model => model.Company.FullTimeEmployees)
+            } else
+            {
+                @gag
+            }
         </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.IpoDate)
+        <dt class = "col-sm-5">
+            Акции во владении
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.IpoDate)
+            @if (Model.Company.SharesOutstanding != null)
+            {
+                @Html.DisplayFor(model => model.Company.SharesOutstanding)
+            } else
+            {
+                @gag
+            }
         </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.IssueSize)
+        <dt class = "col-sm-5">
+            Акции в "шорте"
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.IssueSize)
+            @if (Model.Company.SharesShort != null)
+            {
+                @Html.DisplayFor(model => model.Company.SharesShort)
+            } else
+            {
+                @gag
+            }
         </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.IssuePlanSize)
+        <dt class = "col-sm-5">
+            Акции в "шорте" за месяц
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.IssuePlanSize)
+            @if (Model.Company.SharesShortPriorMonth != null)
+            {
+                @Html.DisplayFor(model => model.Company.SharesShortPriorMonth)
+            } else
+            {
+                @gag
+            }
         </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.ShareType)
+        <dt class = "col-sm-5">
+            Процент "шорта" от всего объема
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.ShareType)
+             @{
+                var _shortRatio = "-";
+                if (Model.Company.ShortRatio != null){
+                    _shortRatio = Math.Round((double)Model.Company.ShortRatio, 3).ToString() + " %";
+                }
+            }
+            @_shortRatio
         </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.ShareType)
+        <dt class = "col-sm-5">
+            Процент "шорта" от акций свободном доступе
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.ShareType)
+             @{
+                var _shortPercentOfFloat = "-";
+                if (Model.Company.ShortPercentOfFloat != null){
+                    _shortPercentOfFloat = Math.Round((double)Model.Company.ShortPercentOfFloat * 100, 3).ToString() + " %";
+                }
+            }
+            @_shortPercentOfFloat
+        </dd>
+        <dt class = "col-sm-5">
+            Капитал компании на акцию
+        </dt>
+        <dd class = "col-sm-6">
+            @if (Model.Company.BookValuePerShare != null)
+            {
+                @Html.DisplayFor(model => model.Company.BookValuePerShare) @ViewBag.Currency
+            } else
+            {
+                @gag
+            }
+        </dd>
+        <dt class = "col-sm-5">
+            Текущая капитализация / балансная стоимость компании
+        </dt>
+        <dd class = "col-sm-6">
+            @if (Model.Company.PriceToBook != null)
+            {
+                @Html.DisplayFor(model => model.Company.PriceToBook) @ViewBag.Currency
+            } else
+            {
+                @gag
+            }
+        </dd>
+        <dt class = "col-sm-5">
+            Чистая прибыль после вычета налогов
+        </dt>
+        <dd class = "col-sm-6">
+            @if (Model.Company.NetIncomeToCommon != null)
+            {
+                @Html.DisplayFor(model => model.Company.NetIncomeToCommon) @ViewBag.Currency
+            } else
+            {
+                @gag
+            }
+        </dd>
+        <dt class = "col-sm-5">
+            Стоимость компании / прибыль на акцию за год
+        </dt>
+        <dd class = "col-sm-6">
+            @if (Model.Company.TrailingEps != null)
+            {
+                @Html.DisplayFor(model => model.Company.TrailingEps) @ViewBag.Currency
+            } else
+            {
+                @gag
+            }
+        </dd>
+        <dt class = "col-sm-5">
+            Стоимость компании / доход
+        </dt>
+        <dd class = "col-sm-6">
+            @if (Model.Company.EnterpriseToRevenue != null)
+            {
+                @Html.DisplayFor(model => model.Company.EnterpriseToRevenue) @ViewBag.Currency
+            } else
+            {
+                @gag
+            }
+        </dd>
+        <dt class = "col-sm-5">
+            Стоимость компании / EBITDA
+        </dt>
+        <dd class = "col-sm-6">
+            @if (Model.Company.EnterpriseToEbitda != null)
+            {
+                @Html.DisplayFor(model => model.Company.EnterpriseToEbitda) @ViewBag.Currency
+            } else
+            {
+                @gag
+            }
         </dd>
     </dl>
 </div>
 <div class="column">
     <span class="info_title"></span>
     <dl class="row">
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Figi)
+        <dt class = "col-sm-5">
+            Изменения стоимость акции за 52 недели
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.Figi)
+             @{
+                var _week52Change = "-";
+                if (Model.Company.Week52Change != null){
+                    _week52Change = Math.Round((double)Model.Company.Week52Change * 100, 3).ToString() + " %";
+                }
+            }
+            @_week52Change
         </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Ticker)
+        <dt class = "col-sm-5">
+            Изменение выручки за 52 недели
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.Ticker)
+             @{
+                var _sandP52WeekChange = "-";
+                if (Model.Company.SandP52WeekChange != null){
+                    _sandP52WeekChange = Math.Round((double)Model.Company.SandP52WeekChange * 100, 3).ToString() + " %";
+                }
+            }
+            @_sandP52WeekChange
         </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.ClassCode)
+        <dt class = "col-sm-5">
+            Капитал компании
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.ClassCode)
+            @if (Model.Company.TotalCash != null)
+            {
+                @Html.DisplayFor(model => model.Company.TotalCash) @ViewBag.Currency
+            } else
+            {
+                @gag
+            }
         </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Currency)
+        <dt class = "col-sm-5">
+            Капитал компании на акцию
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.Currency)
+            @if (Model.Company.TotalCashPerShare != null)
+            {
+                @Html.DisplayFor(model => model.Company.TotalCashPerShare) @ViewBag.Currency
+            } else
+            {
+                @gag
+            }
         </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Name)
+        <dt class = "col-sm-5">
+            Прибыль до вычета процентов, подоходного налога и амортизации
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.Name)
+            @if (Model.Company.Ebitda != null)
+            {
+                @Html.DisplayFor(model => model.Company.Ebitda) @ViewBag.Currency
+            } else
+            {
+                @gag
+            }
         </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.IpoDate)
+        <dt class = "col-sm-5">
+            Обязательства компании
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.IpoDate)
+            @if (Model.Company.TotalDebt != null)
+            {
+                @Html.DisplayFor(model => model.Company.TotalDebt) @ViewBag.Currency
+            } else
+            {
+                @gag
+            }
         </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.IssueSize)
+        <dt class = "col-sm-5">
+            Коэффициент ликвидности
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.IssueSize)
+            @if (Model.Company.CurrentRatio != null)
+            {
+                @Html.DisplayFor(model => model.Company.CurrentRatio) @ViewBag.Currency
+            } else
+            {
+                @gag
+            }
         </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.IssuePlanSize)
+        <dt class = "col-sm-5">
+            Выручка
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.IssuePlanSize)
+            @if (Model.Company.Revenue != null)
+            {
+                @Html.DisplayFor(model => model.Company.Revenue) @ViewBag.Currency
+            } else
+            {
+                @gag
+            }
         </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.ShareType)
+        <dt class = "col-sm-5">
+            Заемный капитал / собственный капитал
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.ShareType)
+            @if (Model.Company.DebtToEquity != null)
+            {
+                @Html.DisplayFor(model => model.Company.DebtToEquity) @ViewBag.Currency
+            } else
+            {
+                @gag
+            }
         </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.ShareType)
+        <dt class = "col-sm-5">
+            Выручка с акции
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.ShareType)
+            @if (Model.Company.RevenuePerShare != null)
+            {
+                @Html.DisplayFor(model => model.Company.RevenuePerShare) @ViewBag.Currency
+            } else
+            {
+                @gag
+            }
+        </dd>
+        <dt class = "col-sm-5">
+            Доходность для инвестора
+        </dt>
+        <dd class = "col-sm-6">
+             @{
+                var _returnOnAssets = "-";
+                if (Model.Company.ReturnOnAssets != null){
+                    _returnOnAssets = Math.Round((double)Model.Company.ReturnOnAssets * 100, 3).ToString() + " %";
+                }
+            }
+            @_returnOnAssets
+        </dd>
+        <dt class = "col-sm-5">
+            Выручка - расходы на производство
+        </dt>
+        <dd class = "col-sm-6">
+            @{
+                var _returnOnEquity = "-";
+                if (Model.Company.ReturnOnEquity != null){
+                    _returnOnAssets = Model.Company.ReturnOnEquity.ToString() + " " + ViewBag.Currency;
+                }
+            }
+            @_returnOnEquity
+        </dd>
+        <dt class = "col-sm-5">
+            Средства на поддержание базы активов
+        </dt>
+        <dd class = "col-sm-6">
+            @if (Model.Company.GrossProfits != null)
+            {
+                @Html.DisplayFor(model => model.Company.GrossProfits) @ViewBag.Currency
+            } else
+            {
+                @gag
+            }
+        </dd>
+        <dt class = "col-sm-5">
+            Выручка - операционные издержки
+        </dt>
+        <dd class = "col-sm-6">
+            @if (Model.Company.FreeCashflow != null)
+            {
+                @Html.DisplayFor(model => model.Company.FreeCashflow) @ViewBag.Currency
+            } else
+            {
+                @gag
+            }
+        </dd>
+        <dt class = "col-sm-5">
+            Операционный денежный поток
+        </dt>
+        <dd class = "col-sm-6">
+            @if (Model.Company.OperatingCashflow != null)
+            {
+                @Html.DisplayFor(model => model.Company.OperatingCashflow) @ViewBag.Currency
+            } else
+            {
+                @gag
+            }
+        </dd>
+        <dt class = "col-sm-5">
+            Рост выручки
+        </dt>
+        <dd class = "col-sm-6">
+            @{
+                var _revenueGrowth = "-";
+                if (Model.Company.RevenueGrowth != null){
+                    _revenueGrowth = Math.Round((double)Model.Company.RevenueGrowth * 100, 3).ToString() + " " + ViewBag.Currency;
+                }
+            }
+            @_revenueGrowth
+        </dd>
+        <dt class = "col-sm-5">
+            Прибыль компании на единицу выручки
+        </dt>
+        <dd class = "col-sm-6">
+            @if (Model.Company.OperatingMargins != null)
+            {
+                @Html.DisplayFor(model => model.Company.OperatingMargins) @ViewBag.Currency
+            } else
+            {
+                @gag
+            }
         </dd>
     </dl>
 </div>
@@ -362,15 +663,20 @@
 <span class="technical_analize_title">Технический анализ</span>
 <div class="forecast_block">
     <div class="forecast">
-        <span class="forecast_value">@ViewBag.WeekForecast</span>
+        @{
+            var _weekForecast = Math.Round(ViewBag.WeekForecast, 3);
+            var _monthForecast = Math.Round(ViewBag.MonthForecast, 3);
+            var _halfYearForecast = Math.Round(ViewBag.HalfYearForecast, 3);
+        }
+        <span class="forecast_value">@_weekForecast</span>
         <span class="forecast_title">Прогноз на неделю</span>
     </div>
     <div class="forecast">
-        <span class="forecast_value">@ViewBag.MonthForecast</span>
+        <span class="forecast_value">@_monthForecast</span>
         <span class="forecast_title">Прогноз на месяц</span>
     </div>
     <div class="forecast">
-        <span class="forecast_value">@ViewBag.HalfYearForecast</span>
+        <span class="forecast_value">@_halfYearForecast</span>
         <span class="forecast_title">Прогноз на полгода</span>
     </div>
 </div>
@@ -378,19 +684,19 @@
 <div class="info">
 <div class="column">
     <dl class="row">
-        <dt class = "col-sm-4">
+        <dt class = "col-sm-5">
             @Html.DisplayNameFor(model => model.Figi)
         </dt>
         <dd class = "col-sm-6">
             @Html.DisplayFor(model => model.Figi)
         </dd>
-        <dt class = "col-sm-4">
+        <dt class = "col-sm-5">
             @Html.DisplayNameFor(model => model.Ticker)
         </dt>
         <dd class = "col-sm-6">
             @Html.DisplayFor(model => model.Ticker)
         </dd>
-        <dt class = "col-sm-4">
+        <dt class = "col-sm-5">
             @Html.DisplayNameFor(model => model.ClassCode)
         </dt>
         <dd class = "col-sm-6">
@@ -401,28 +707,30 @@
 </div>
 <span class="technical_analize_title">Анализ на основе новостей</span>
 <div class="info">
-<div class="column">
     <dl class="row">
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Figi)
-        </dt>
-        <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.Figi)
-        </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Ticker)
-        </dt>
-        <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.Ticker)
-        </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.ClassCode)
-        </dt>
-        <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.ClassCode)
-        </dd>
+        @{
+            long? lastId = null;
+        }
+        @foreach (var news in Model.Company.NewsQuotesImpacts)
+        {
+            if (lastId != news.WorldNewsId)
+            {
+                lastId = news.WorldNewsId;
+                <dt class = "col-sm-1">
+                    @{
+                        var influence = Math.Round(news.Influence, 3);
+                    }
+                    @influence %
+                </dt>
+                <dd class = "col-sm-4">
+                    <a href="/worldnews/details/@news.WorldNews.Id">@news.WorldNews.Title</a>
+                </dd>
+                <dd class = "col-sm-7">
+                    @news.WorldNews.Text.Substring(0, 110)...
+                </dd>
+            }
+        }
     </dl>
-</div>
 </div>
 
 <script type="text/javascript">
@@ -514,26 +822,3 @@
         });
     }
 </script>
-
-@{
-    if (Model.Id > 0)
-    {
-        var weekDelta = 0;
-        var monthDelta = 0;
-        var halfYearDelta = 0;
-
-        bool isFastGrowingProfitShare = FundamentalAnalysis.IsFastGrowingProfitShare(Model);
-        bool isHighPotentialShare = FundamentalAnalysis.IsHighPotentialShare(Model);
-        bool isStableGrowthShare = FundamentalAnalysis.IsStableGrowthShare(Model);
-
-        var enterpriseValueToEBITDARatio = FundamentalAnalysis.EnterpriseValueToEBITDARatio(Model);
-        var deptToEBITDARatio = FundamentalAnalysis.DeptToEBITDARatio(Model);
-        var priceToBookRation = FundamentalAnalysis.PriceToBookRation(Model);
-        var forwardPERatio = FundamentalAnalysis.ForwardPERatio(Model);
-        var getSummaryRecommendation = FundamentalAnalysis.GetSummaryRecommendation(Model);
-
-        //Model.Company.NewsQuotesImpacts.First().WorldNews.Keywords.First().Keyword
-
-        //ViewBag.Forecast;
-    }
-}
