@@ -250,17 +250,6 @@ namespace diplom.Controllers
                 }
                 catch (Exception e) { Console.WriteLine("Error: " + e.Message); }
             }
-
-            //string moreNewsPattern = "<a class=\"button-more-news__link\" data-path=\"(.*?)\"";
-            //foreach (Match match in Regex.Matches(text, moreNewsPattern))
-            //{
-            //    try
-            //    {
-            //        string moreNewsUrl = match.Groups[1].Value;
-            //        ParseWorldNews(moreNewsUrl, parsingDate);
-            //    }
-            //    catch (Exception e) { Console.WriteLine("Error: " + e.Message); }
-            //}
         }
 
         public void GetWorldnewsImpact(int newsId, int? shareId = null)

@@ -16,7 +16,10 @@ namespace diplom.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.9")
+                .HasAnnotation("ProductVersion", "7.0.2")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("diplom.Models.Candle", b =>
@@ -83,7 +86,9 @@ namespace diplom.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("Volume");
 
-                    b.ToView("View_CandlesByDay");
+                    b.ToTable((string)null);
+
+                    b.ToView("View_CandlesByDay", (string)null);
                 });
 
             modelBuilder.Entity("diplom.Models.Company", b =>
@@ -352,7 +357,8 @@ namespace diplom.Migrations
 
                     b.Property<DateTime?>("Date")
                         .HasColumnType("datetime(6)")
-                        .HasColumnName("Date");
+                        .HasColumnName("Date")
+                        .HasAnnotation("Relational:JsonPropertyName", "date");
 
                     b.Property<double?>("Energy")
                         .HasColumnType("double")
@@ -386,7 +392,9 @@ namespace diplom.Migrations
                         .HasColumnType("double")
                         .HasColumnName("Telecom");
 
-                    b.ToView("View_SectorsStats");
+                    b.ToTable((string)null);
+
+                    b.ToView("View_SectorsStats", (string)null);
                 });
 
             modelBuilder.Entity("diplom.Models.Share", b =>
@@ -572,7 +580,7 @@ namespace diplom.Migrations
                         .IsRequired();
 
                     b.HasOne("diplom.Models.WorldNews", "WorldNews")
-                        .WithMany()
+                        .WithMany("Keywords")
                         .HasForeignKey("WorldNewsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -615,6 +623,8 @@ namespace diplom.Migrations
 
             modelBuilder.Entity("diplom.Models.WorldNews", b =>
                 {
+                    b.Navigation("Keywords");
+
                     b.Navigation("NewsQuotesImpacts");
                 });
 #pragma warning restore 612, 618
